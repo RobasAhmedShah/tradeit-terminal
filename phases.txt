@@ -1,0 +1,41 @@
+Phase 1 — App shell
+
+Build:
+
+custom dark background
+bottom navigation
+shared header
+safe area layout
+basic screen wrappers
+
+Tabs only:
+
+Home | Trade | Wallet | Portfolio
+Profile opens from avatar later.
+
+Phase 2 — Home screen
+Build upgraded Home screen only.
+
+Phase 3 — Trade screen
+Build Market/Screener landing screen.
+
+Phase 4 — Stock detail screen
+Build stock overview screen.
+
+Phase 5 — Spot trading screen
+Build Buy/Sell screen.
+
+Phase 6 — Order confirmation
+Build confirm buy/sell screen.
+
+Phase 7 — Wallet
+Build wallet overview.
+
+Phase 8 — Deposit / Withdraw / Transfer flows
+Build one flow at a time.
+
+Phase 9 — Portfolio
+Build holdings, activity, empty/loading/error states.
+
+Phase 10 — Profile + Broker connection
+Build profile settings and broker linking.

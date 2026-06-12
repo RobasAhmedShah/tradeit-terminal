@@ -23,7 +23,7 @@ export const StockOverviewCards: React.FC<StockOverviewCardsProps> = ({ stock })
       </View>
 
       {/* Key Stats Card */}
-      <View className="bg-[#111214] border border-[#2A2B2F] rounded-2xl p-4 mt-6">
+      <View className="border border-[#2A2B2F] rounded-2xl p-4 mt-6">
         <Text className="text-white text-sm font-bold mb-4">Key Stats</Text>
         <View className="flex-row justify-between">
           <View className="flex-1">
@@ -44,7 +44,7 @@ export const StockOverviewCards: React.FC<StockOverviewCardsProps> = ({ stock })
       {/* Performance & Metrics Row */}
       <View className="flex-row mt-4 space-x-4">
         {/* Performance Card */}
-        <View className="bg-[#111214] border border-[#2A2B2F] rounded-2xl p-4 flex-1 mr-2">
+        <View className=" border border-[#2A2B2F] rounded-2xl p-4 flex-1 mr-2">
           <Text className="text-white text-sm font-bold mb-4">Performance</Text>
           <View className="space-y-3">
             <View className="flex-row justify-between mb-3">
@@ -71,7 +71,7 @@ export const StockOverviewCards: React.FC<StockOverviewCardsProps> = ({ stock })
         </View>
 
         {/* Key Metrics Card */}
-        <View className="bg-[#111214] border border-[#2A2B2F] rounded-2xl p-4 flex-1 ml-2">
+        <View className=" border border-[#2A2B2F] rounded-2xl p-4 flex-1 ml-2">
           <Text className="text-white text-sm font-bold mb-4">Key Metrics</Text>
           <View className="space-y-3">
             <View className="flex-row justify-between mb-3">
@@ -95,7 +95,7 @@ export const StockOverviewCards: React.FC<StockOverviewCardsProps> = ({ stock })
       </View>
 
       {/* Dividend Info Card */}
-      <View className="bg-[#111214] border border-[#2A2B2F] rounded-2xl p-4 mt-4">
+      <View className="border border-[#2A2B2F] rounded-2xl p-4 mt-4">
         <Text className="text-white text-sm font-bold mb-4">Dividend Info</Text>
         <View className="flex-row flex-wrap">
           <View className="w-1/2 mb-4">

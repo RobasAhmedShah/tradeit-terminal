@@ -14,6 +14,8 @@ import { StockDetailTabs } from '../../components/stock/StockDetailTabs';
 import { StockOverviewCards } from '../../components/stock/StockOverviewCards';
 import { StockNewsList } from '../../components/stock/StockNewsList';
 import { StockStickyActions } from '../../components/stock/StockStickyActions';
+import { StockFinancialsTab } from '../../components/stock/StockFinancialsTab';
+import { StockAnalysisTab } from '../../components/stock/StockAnalysisTab';
 
 export default function StockDetailScreen() {
   const { symbol } = useLocalSearchParams<{ symbol: string }>();
@@ -56,18 +58,23 @@ export default function StockDetailScreen() {
         
         <StockDetailTabs activeTab={activeTab} onTabChange={setActiveTab} />
         
-        {activeTab === 'Overview' ? (
+        {activeTab === 'Overview' && (
           <>
             <StockOverviewCards stock={stock} />
             <StockNewsList stock={stock} />
-            {/* Bottom spacer so content is not hidden by sticky action bar */}
             <View className="h-10" />
           </>
-        ) : (
-          <View className="px-4 py-12 items-center justify-center pb-32">
-            <Text className="text-[#9CA3AF]">Content for {activeTab} coming soon.</Text>
+        )}
+
+        {activeTab === 'Financials' && <StockFinancialsTab stock={stock} />}
+
+        {activeTab === 'News' && (
+          <View className="mt-4">
+            <StockNewsList stock={stock} />
           </View>
         )}
+
+        {activeTab === 'Analysis' && <StockAnalysisTab stock={stock} />}
       </ScrollView>
 
       <StockStickyActions 

@@ -4,10 +4,13 @@ import { MOCK_TRADES } from '../../data/mockTrades';
 
 interface RecentTradesCardProps {
   symbol: string;
+  compact?: boolean;
+  maxRows?: number;
 }
 
-export const RecentTradesCard: React.FC<RecentTradesCardProps> = ({ symbol }) => {
-  const trades = MOCK_TRADES[symbol] || MOCK_TRADES['AABS'];
+export const RecentTradesCard: React.FC<RecentTradesCardProps> = ({ symbol, compact, maxRows }) => {
+  const allTrades = MOCK_TRADES[symbol] || MOCK_TRADES['AABS'];
+  const trades = compact ? allTrades.slice(0, maxRows || 6) : allTrades;
 
   return (
     <View className="bg-[#111214] rounded-xl border border-[#2A2B2F] p-2 flex-1">

@@ -15,6 +15,9 @@ import { OrderBookCard } from '../../components/trading/OrderBookCard';
 import { RecentTradesCard } from '../../components/trading/RecentTradesCard';
 import { BuySellPanel } from '../../components/trading/BuySellPanel';
 import { MarketRangeStrip } from '../../components/trading/MarketRangeStrip';
+import { OrderBookTabContent } from '../../components/trading/OrderBookTabContent';
+import { TradesTabContent } from '../../components/trading/TradesTabContent';
+import { InfoTabContent } from '../../components/trading/InfoTabContent';
 
 export default function SpotTradingScreen() {
   const { symbol } = useLocalSearchParams<{ symbol: string }>();
@@ -45,7 +48,7 @@ export default function SpotTradingScreen() {
           <TradingTabs activeTab={activeTab} onTabChange={setActiveTab} />
         </View>
         
-        {activeTab === 'Chart' ? (
+        {activeTab === 'Chart' && (
           <>
             <View className="mb-3 px-3">
               <CandlestickChartPlaceholder />
@@ -54,8 +57,8 @@ export default function SpotTradingScreen() {
             <View className="flex-row px-3 gap-2">
               {/* Left Column: Order Book & Recent Trades (52%) */}
               <View style={{ flex: 0.52 }} className="gap-2">
-                <OrderBookCard symbol={stock.symbol} />
-                <RecentTradesCard symbol={stock.symbol} />
+                <OrderBookCard symbol={stock.symbol} compact maxRows={6} />
+                <RecentTradesCard symbol={stock.symbol} compact maxRows={6} />
               </View>
 
               {/* Right Column: Buy/Sell Panel (48%) */}
@@ -64,11 +67,13 @@ export default function SpotTradingScreen() {
               </View>
             </View>
           </>
-        ) : (
-          <View className="px-3 py-12 items-center justify-center">
-            <Text className="text-[#9CA3AF]">Content for {activeTab} coming soon.</Text>
-          </View>
         )}
+
+        {activeTab === 'Order Book' && <OrderBookTabContent stock={stock} />}
+        
+        {activeTab === 'Trades' && <TradesTabContent stock={stock} />}
+        
+        {activeTab === 'Info' && <InfoTabContent stock={stock} />}
 
         {/* Bottom Strip moved inside ScrollView as a compact block */}
         <View className="mt-4 px-3">

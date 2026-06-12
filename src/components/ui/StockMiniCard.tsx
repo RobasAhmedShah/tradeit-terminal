@@ -6,13 +6,14 @@ import { Ionicons } from '@expo/vector-icons';
 
 interface StockMiniCardProps {
   stock: Stock;
+  onPress?: () => void;
 }
 
-export const StockMiniCard: React.FC<StockMiniCardProps> = ({ stock }) => {
+export const StockMiniCard: React.FC<StockMiniCardProps> = ({ stock, onPress }) => {
   const isPositive = stock.isPositive;
 
   return (
-    <TouchableOpacity className="bg-[#111214] border border-[#2A2B2F] rounded-xl p-3 mr-3 w-36">
+    <TouchableOpacity onPress={onPress} className="bg-[#111214] border border-[#2A2B2F] rounded-xl p-3 mr-3 w-36">
       <View className="flex-row items-center mb-2">
         <View className="w-8 h-8 rounded-full bg-[#18191C] items-center justify-center mr-2">
           {/* Logo placeholder */}

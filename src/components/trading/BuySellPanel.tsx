@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
+import { MOCK_MARKET_STOCKS } from '../../data/mockStocks';
+
 interface BuySellPanelProps {
   symbol: string;
   currentPrice: number;
@@ -19,14 +21,42 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice
   const mainColor = isBuy ? 'bg-[#00C853]' : 'bg-[#FF3B30]';
   const mainColorText = isBuy ? 'text-[#00C853]' : 'text-[#FF3B30]';
 
+  const p = parseFloat(price || '0');
+  const q = parseFloat(qty || '0');
+  const tradeValue = p * q;
+  const brokerage = tradeValue * 0.0015;
+  const fed = tradeValue * 0.0001;
+  const secp = tradeValue * 0.00005;
+  const totalCost = tradeValue + brokerage + fed + secp;
+
+  const estimatedCost = totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const totalCharges = (brokerage + fed + secp).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
   const handleCtaPress = () => {
-    router.push(`/order-confirmation?symbol=${symbol}&side=${side}`);
+    const stock = MOCK_MARKET_STOCKS.find(s => s.symbol === symbol);
+    
+    const jsorderParams = {
+      symbol,
+      companyName: stock?.name || '',
+      side: isBuy ? 'BUY' : 'SELL',
+      orderType,
+      price: p,
+      quantity: q,
+      brokerage,
+      fed,
+      secp,
+      totalCost,
+      availableBalance: 125340.00,
+    };
+    
+    router.push({
+      pathname: '/order-review',
+      params: { data: JSON.stringify(jsorderParams) }
+    });
   };
 
-  const estimatedCost = (parseFloat(price || '0') * parseFloat(qty || '0')).toLocaleString();
-
   return (
-    <View className="bg-[#111214] rounded-xl border border-[#2A2B2F] p-2.5 flex-1">
+    <View className="bg-[#111214] rounded-xl border border-[#2A2B2F] p-2.5">
       
       {/* Buy / Sell Toggle */}
       <View className="flex-row bg-[#18191C] rounded-lg p-1 mb-3 border border-[#2A2B2F]">
@@ -60,7 +90,7 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice
       </View>
 
       {/* Price Input */}
-      <View className="mb-2"> 
+      <View className="mb-2">
         <Text className="text-[#9CA3AF] text-[9px] mb-1">Price (PKR)</Text>
         <View className="bg-[#18191C] border border-[#2A2B2F] rounded-lg flex-row items-center h-10">
           <TouchableOpacity className="px-3 h-full justify-center border-r border-[#2A2B2F]">
@@ -142,7 +172,7 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice
         <View className="flex-row justify-between items-center">
           <Text className="text-[#9CA3AF] text-[8px]">Includes charges & tax</Text>
           <View className="flex-row items-center">
-            <Text className="text-[#9CA3AF] text-[8px] mr-1">Rs 186.75</Text>
+            <Text className="text-[#9CA3AF] text-[8px] mr-1">Rs {totalCharges}</Text>
             <Ionicons name="chevron-down" size={8} color="#9CA3AF" />
           </View>
         </View>
@@ -151,7 +181,7 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice
       {/* CTA Button */}
       <TouchableOpacity 
         onPress={handleCtaPress}
-        className={`${isBuy ? 'bg-[#FF8A00]' : 'bg-[#FF3B30]'} rounded-xl py-3 items-center mt-auto`}
+        className={`${isBuy ? 'bg-[#FF8A00]' : 'bg-[#FF3B30]'} rounded-xl py-3 items-center`}
       >
         <Text className={`font-bold text-sm ${isBuy ? 'text-black' : 'text-white'}`}>
           {isBuy ? 'Buy' : 'Sell'} {symbol}

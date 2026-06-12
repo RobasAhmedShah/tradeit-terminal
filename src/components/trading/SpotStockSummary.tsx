@@ -1,14 +1,26 @@
-import React from 'react';
-import { View, Text } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { Stock } from '../../data/mockStocks';
+import { MarketSelectorSheet } from './MarketSelectorSheet';
 
 interface SpotStockSummaryProps {
   stock: Stock;
 }
 
 export const SpotStockSummary: React.FC<SpotStockSummaryProps> = ({ stock }) => {
+  const router = useRouter();
+  const [isSheetVisible, setIsSheetVisible] = useState(false);
+  
   const changeColor = stock.isPositive ? 'text-[#00C853]' : 'text-[#FF3B30]';
   const sign = stock.isPositive ? '+' : '';
+
+  const handleSelectStock = (selectedStock: Stock) => {
+    setIsSheetVisible(false);
+    // Replace the current spot route with the newly selected stock
+    router.replace(`/spot/${selectedStock.symbol}`);
+  };
 
   return (
     <View className="px-3 py-2 bg-[#050505]">
@@ -18,10 +30,13 @@ export const SpotStockSummary: React.FC<SpotStockSummaryProps> = ({ stock }) => 
           <View className="w-8 h-8 rounded-full bg-[#18191C] items-center justify-center border border-[#2A2B2F] mr-3">
             <Text className="text-white font-bold text-xs">{stock.symbol.charAt(0)}</Text>
           </View>
-          <View>
-            <Text className="text-white font-bold text-base">{stock.symbol}</Text>
+          <TouchableOpacity onPress={() => setIsSheetVisible(true)}>
+            <View className="flex-row items-center">
+              <Text className="text-white font-bold text-base mr-1">{stock.symbol}</Text>
+              <Ionicons name="caret-down" size={12} color="#9CA3AF" />
+            </View>
             <Text className="text-[#9CA3AF] text-xs" numberOfLines={1}>{stock.name}</Text>
-          </View>
+          </TouchableOpacity>
         </View>
 
         <View className="flex-row items-center">
@@ -70,6 +85,12 @@ export const SpotStockSummary: React.FC<SpotStockSummaryProps> = ({ stock }) => 
           </View>
         </View>
       </View>
+      
+      <MarketSelectorSheet 
+        visible={isSheetVisible} 
+        onClose={() => setIsSheetVisible(false)} 
+        onSelect={handleSelectStock} 
+      />
     </View>
   );
 };

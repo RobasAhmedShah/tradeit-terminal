@@ -1,6 +1,7 @@
 import React from 'react';
 import { ScrollView, View, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { AppHeader } from '../../components/ui/AppHeader';
 import { SearchBar } from '../../components/ui/SearchBar';
 import { PortfolioValueCard } from '../../components/ui/PortfolioValueCard';
@@ -13,6 +14,8 @@ import { MOCK_WATCHLIST, MOCK_TOP_GAINERS, MOCK_TOP_LOSERS } from '../../data/mo
 import { MOCK_NEWS } from '../../data/mockNews';
 
 export default function HomeScreen() {
+  const router = useRouter();
+
   return (
     <SafeAreaView className="flex-1 bg-[#050505]" edges={['top']}>
       <AppHeader />
@@ -29,7 +32,7 @@ export default function HomeScreen() {
           contentContainerStyle={{ paddingRight: 20 }}
         >
           {MOCK_WATCHLIST.map((stock) => (
-            <StockMiniCard key={stock.id} stock={stock} />
+            <StockMiniCard key={stock.id} stock={stock} onPress={() => router.push(`/stock/${stock.symbol}`)} />
           ))}
         </ScrollView>
 
@@ -38,7 +41,7 @@ export default function HomeScreen() {
             <Text className="text-white text-base font-bold mb-3">Top Gainers</Text>
             <View>
               {MOCK_TOP_GAINERS.map((stock) => (
-                <MarketMoverChip key={stock.id} stock={stock} />
+                <MarketMoverChip key={stock.id} stock={stock} onPress={() => router.push(`/stock/${stock.symbol}`)} />
               ))}
             </View>
           </View>
@@ -46,7 +49,7 @@ export default function HomeScreen() {
             <Text className="text-white text-base font-bold mb-3">Top Losers</Text>
             <View>
               {MOCK_TOP_LOSERS.map((stock) => (
-                <MarketMoverChip key={stock.id} stock={stock} />
+                <MarketMoverChip key={stock.id} stock={stock} onPress={() => router.push(`/stock/${stock.symbol}`)} />
               ))}
             </View>
           </View>
@@ -57,7 +60,8 @@ export default function HomeScreen() {
           <NewsCard key={news.id} news={news} />
         ))}
         
-        <View className="h-20" /> {/* Bottom padding for tab bar */}
+        {/* Bottom padding for tab bar */}
+        <View className="h-20" />
       </ScrollView>
     </SafeAreaView>
   );

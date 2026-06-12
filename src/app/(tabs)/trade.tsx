@@ -41,9 +41,7 @@ export default function TradeScreen() {
   };
 
   const handleTradePress = (symbol: string) => {
-    // TODO: Navigate to Spot Trading screen
-    // router.push(`/trade/${symbol}`);
-    console.log(`Navigate to /trade/${symbol}`);
+    router.push({ pathname: '/order-confirmation', params: { symbol, side: 'buy' } });
   };
 
   const renderHeader = () => (

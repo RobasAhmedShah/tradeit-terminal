@@ -5,10 +5,14 @@ import { MOCK_ORDER_BOOK } from '../../data/mockOrderBook';
 
 interface OrderBookCardProps {
   symbol: string;
+  compact?: boolean;
+  maxRows?: number;
 }
 
-export const OrderBookCard: React.FC<OrderBookCardProps> = ({ symbol }) => {
+export const OrderBookCard: React.FC<OrderBookCardProps> = ({ symbol, compact, maxRows }) => {
   const data = MOCK_ORDER_BOOK[symbol] || MOCK_ORDER_BOOK['AABS'];
+  const displayBids = compact ? data.bids.slice(0, maxRows || 6) : data.bids;
+  const displayAsks = compact ? data.asks.slice(0, maxRows || 6) : data.asks;
 
   return (
     <View className="bg-[#111214] rounded-xl border border-[#2A2B2F] p-2 flex-1">
@@ -39,7 +43,7 @@ export const OrderBookCard: React.FC<OrderBookCardProps> = ({ symbol }) => {
       <View className="flex-row justify-between">
         {/* Bids (Green) */}
         <View className="flex-1 pr-2 border-r border-[#2A2B2F]">
-          {data.bids.map((bid, i) => (
+          {displayBids.map((bid, i) => (
             <View key={`bid-${i}`} className="flex-row mb-1 relative items-center">
               <View className="absolute right-0 top-0 bottom-0 bg-[#00C853]/10" style={{ width: `${Math.random() * 80 + 20}%` }} />
               <Text className="text-[#00C853] text-[10px] font-semibold w-[55%]">{bid.price.toFixed(2)}</Text>
@@ -50,7 +54,7 @@ export const OrderBookCard: React.FC<OrderBookCardProps> = ({ symbol }) => {
 
         {/* Asks (Red) */}
         <View className="flex-1 pl-2">
-          {data.asks.map((ask, i) => (
+          {displayAsks.map((ask, i) => (
             <View key={`ask-${i}`} className="flex-row mb-1 relative items-center">
               <View className="absolute left-0 top-0 bottom-0 bg-[#FF3B30]/10" style={{ width: `${Math.random() * 80 + 20}%` }} />
               <Text className="text-[#FF3B30] text-[10px] font-semibold w-[55%]">{ask.price.toFixed(2)}</Text>

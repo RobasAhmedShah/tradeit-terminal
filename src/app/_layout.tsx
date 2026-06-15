@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemeProvider, DarkTheme } from '@react-navigation/native';
 import { COLORS } from '../constants/theme';
+import '../../global.css';
 
 
 const MyTheme = {

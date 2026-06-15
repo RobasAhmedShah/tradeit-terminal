@@ -50,6 +50,7 @@ export default function OrderConfirmationScreen() {
         <View className={`w-20 h-20 rounded-full items-center justify-center mb-6 ${isBuy ? 'bg-[#00C853]/10' : 'bg-[#FF3B30]/10'}`}>
           <Ionicons name="document-text-outline" size={40} color={isBuy ? '#00C853' : '#FF3B30'} />
         </View>
+
         <Text className="text-white text-2xl font-bold mb-2 text-center">
           Confirm Your {isBuy ? 'Buy' : 'Sell'} Order
         </Text>

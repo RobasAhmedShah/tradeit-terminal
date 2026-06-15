@@ -18,7 +18,7 @@ export const AppHeader = () => {
       </View>
 
       <View className="flex-row items-center space-x-4 gap-4">
-        <TouchableOpacity className="relative">
+        <TouchableOpacity className="relative" onPress={() => router.push('/notifications')}>
           <Ionicons name="notifications-outline" size={24} color="#FFFFFF" />
           <View className="absolute -top-1 -right-1 bg-[#FF8A00] rounded-full w-4 h-4 items-center justify-center border border-[#050505]">
             <Text className="text-white text-[9px] font-bold">2</Text>

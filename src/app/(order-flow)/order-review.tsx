@@ -7,13 +7,13 @@ import { Ionicons } from '@expo/vector-icons';
 export default function OrderReviewScreen() {
   const router = useRouter();
   const { data } = useLocalSearchParams<{ data: string }>();
-  
+
   let orderData = null;
   if (data) {
     try {
       orderData = JSON.parse(data);
     } catch (e) {
-      console.error("Failed to parse order data", e);
+      console.error('Failed to parse order data', e);
     }
   }
 
@@ -28,42 +28,36 @@ export default function OrderReviewScreen() {
     );
   }
 
-  // Extract variables with fallbacks just in case
   const {
-    symbol = '---', 
-    companyName = '---', 
-    side = 'BUY', 
-    orderType = 'Limit', 
-    price = 0, 
-    quantity = 0, 
+    symbol = '---',
+    companyName = '---',
+    side = 'BUY',
+    orderType = 'Limit',
+    price = 0,
+    quantity = 0,
     validity = 'Day',
-    brokerage = 0, 
-    fed = 0, 
-    secp = 0, 
-    totalCost = 0, 
+    brokerage = 0,
+    fed = 0,
+    secp = 0,
+    totalCost = 0,
     availableBalance = 0,
     currentMarketPrice = 0,
     priceChange = 0,
-    priceChangePct = 0
+    priceChangePct = 0,
   } = orderData;
 
   const isBuy = side === 'BUY' || side === 'Buy';
   const sideColor = isBuy ? 'text-[#4ade80]' : 'text-[#ef4444]';
   const sideDisplay = isBuy ? 'Buy' : 'Sell';
-  
-  // Calculate fees total
   const totalFees = brokerage + fed + secp;
   const estCost = price * quantity;
   const afterOrder = isBuy ? availableBalance - totalCost : availableBalance + totalCost;
 
   const handleConfirm = () => {
-    router.replace({
-      pathname: '/order-success',
-      params: { data }
-    });
+    router.replace({ pathname: '/order-success', params: { data } });
   };
 
-  const Row = ({ label, value, valueColor = "text-white" }: { label: string, value: string, valueColor?: string }) => (
+  const Row = ({ label, value, valueColor = 'text-white' }: { label: string; value: string; valueColor?: string }) => (
     <View className="flex-row justify-between py-3 border-b border-[#1e1e1e]">
       <Text className="text-[#666] text-sm font-semibold">{label}</Text>
       <Text className={`text-sm font-semibold ${valueColor}`}>{value}</Text>
@@ -72,8 +66,7 @@ export default function OrderReviewScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#0d0d0d]">
-      {/* 1. Header Section */}
-      {/* Empty Top Nav */}
+      {/* Header */}
       <View className="flex-row items-center px-4 py-3">
         <TouchableOpacity onPress={() => router.back()} className="w-10">
           <Ionicons name="arrow-back" size={28} color="white" />
@@ -87,7 +80,6 @@ export default function OrderReviewScreen() {
       </View>
 
       <ScrollView className="flex-1 px-4 pt-2" showsVerticalScrollIndicator={false}>
-        
         {/* Centered Block */}
         <View className="items-center mb-6">
           <View className="w-12 h-12 rounded-full border border-[#f97316] items-center justify-center mb-3">
@@ -100,7 +92,7 @@ export default function OrderReviewScreen() {
           <Text className="text-[#666] text-xs">Please review the details below before confirming</Text>
         </View>
 
-        {/* 2. Stock Card */}
+        {/* Stock Card */}
         <View className="bg-[#161616] rounded-xl p-3 flex-row items-center justify-between mb-4 border border-[#1e1e1e]">
           <View className="flex-row items-center flex-1">
             <View className="w-10 h-10 rounded-full bg-white items-center justify-center mr-3">
@@ -111,14 +103,9 @@ export default function OrderReviewScreen() {
               <Text className="text-[#666] text-[11px]" numberOfLines={1}>{companyName}</Text>
             </View>
           </View>
-          
           <View className="flex-1 items-center justify-center">
-            {/* Mini Sparkline mock */}
-            <View className="w-16 h-6 items-end justify-center">
-              <Ionicons name="trending-up" size={24} color="#4ade80" />
-            </View>
+            <Ionicons name="trending-up" size={24} color="#4ade80" />
           </View>
-
           <View className="items-end">
             <Text className="text-white font-bold text-sm">Rs {currentMarketPrice > 0 ? currentMarketPrice.toFixed(2) : price.toFixed(2)}</Text>
             <Text className="text-[#4ade80] text-[10px] font-semibold">
@@ -127,20 +114,19 @@ export default function OrderReviewScreen() {
           </View>
         </View>
 
-        {/* 3. Order Details Rows */}
+        {/* Order Details */}
         <View className="bg-[#161616] rounded-xl p-4 mb-4 border border-[#1e1e1e]">
           <Row label="Order Side" value={sideDisplay} valueColor={sideColor} />
           <Row label="Quantity" value={`${quantity.toLocaleString()} Shares`} />
           <Row label="Order Type" value={orderType} />
           <Row label="Limit Price" value={`Rs ${price.toFixed(2)}`} />
-          {/* Removing bottom border for last row manually since Row component has it */}
           <View className="flex-row justify-between pt-3">
             <Text className="text-[#666] text-sm font-semibold">Validity</Text>
             <Text className="text-white text-sm font-semibold">{validity}</Text>
           </View>
         </View>
 
-        {/* 4. Cost Breakdown Section */}
+        {/* Cost Breakdown */}
         <View className="bg-[#161616] rounded-xl p-4 mb-4 border border-[#1e1e1e]">
           <View className="flex-row justify-between pb-3 border-b border-[#1e1e1e] border-dashed">
             <Text className="text-[#666] text-xs font-semibold">Estimated Cost ({quantity} x {price.toFixed(2)})</Text>
@@ -155,23 +141,31 @@ export default function OrderReviewScreen() {
           </View>
           <View className="flex-row justify-between pt-3 items-center">
             <Text className="text-white text-sm font-bold">Total Estimated Amount</Text>
-            <Text className="text-[#f97316] text-base font-bold">Rs {totalCost > 0 ? totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : (estCost + totalFees).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
+            <Text className="text-[#f97316] text-base font-bold">
+              Rs {totalCost > 0
+                ? totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                : (estCost + totalFees).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </Text>
           </View>
         </View>
 
-        {/* 5. Buying Power Section */}
+        {/* Buying Power */}
         <View className="bg-[#161616] rounded-xl p-4 mb-4 border border-[#1e1e1e]">
           <View className="flex-row justify-between pb-3 border-b border-[#1e1e1e]">
             <Text className="text-[#666] text-xs font-semibold">Available Buying Power</Text>
-            <Text className="text-[#ccc] text-xs font-semibold">Rs {availableBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
+            <Text className="text-[#ccc] text-xs font-semibold">
+              Rs {availableBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </Text>
           </View>
           <View className="flex-row justify-between pt-3">
             <Text className="text-[#666] text-xs font-semibold">After Order (Est.)</Text>
-            <Text className={`${isBuy ? 'text-[#4ade80]' : 'text-white'} text-xs font-semibold`}>Rs {afterOrder.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
+            <Text className={`${isBuy ? 'text-[#4ade80]' : 'text-white'} text-xs font-semibold`}>
+              Rs {afterOrder.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </Text>
           </View>
         </View>
 
-        {/* 6. Risk Notice */}
+        {/* Risk Notice */}
         <View className="bg-[#1a1500] rounded-xl p-3 flex-row items-start mb-6 border border-[#f59e0b]/20">
           <Ionicons name="shield-checkmark-outline" size={18} color="#f97316" style={{ marginRight: 8, marginTop: 2 }} />
           <View className="flex-1">
@@ -182,8 +176,8 @@ export default function OrderReviewScreen() {
           </View>
         </View>
 
-        {/* 7. Action Buttons */}
-        <TouchableOpacity 
+        {/* Action Buttons */}
+        <TouchableOpacity
           onPress={handleConfirm}
           className="bg-[#f97316] py-3.5 rounded-xl items-center flex-row justify-center mb-3"
         >
@@ -191,8 +185,8 @@ export default function OrderReviewScreen() {
           <Ionicons name="arrow-forward" size={18} color="white" />
         </TouchableOpacity>
 
-        <TouchableOpacity 
-          onPress={() => router.back()} 
+        <TouchableOpacity
+          onPress={() => router.back()}
           className="py-3.5 rounded-xl items-center border border-[#f97316] mb-4"
         >
           <Text className="text-[#f97316] font-bold text-sm">Edit Order</Text>
@@ -202,7 +196,6 @@ export default function OrderReviewScreen() {
           <Ionicons name="lock-closed-outline" size={12} color="#666" style={{ marginRight: 4 }} />
           <Text className="text-[#666] text-[11px]">Your order will be placed securely.</Text>
         </View>
-
       </ScrollView>
     </SafeAreaView>
   );

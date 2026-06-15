@@ -24,8 +24,9 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <StatusBar style="light" />
         <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="profile" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="(account)" />
+          <Stack.Screen name="(order-flow)" />
         </Stack>
       </SafeAreaProvider>
     </ThemeProvider>

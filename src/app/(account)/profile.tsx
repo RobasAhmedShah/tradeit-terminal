@@ -43,17 +43,17 @@ export default function ProfileScreen() {
         </View>
         <View className="flex-row items-center w-16 justify-end">
           <Ionicons name="headset-outline" size={20} color="#e0e0e0" style={{ marginRight: 12 }} />
-          <View className="relative">
+          <TouchableOpacity className="relative" onPress={() => router.push('/notifications')}>
             <Ionicons name="notifications-outline" size={20} color="#e0e0e0" />
             <View className="absolute -top-1 -right-1 w-[14px] h-[14px] bg-[#f97316] rounded-full items-center justify-center border border-[#0a0a0c]">
               <Text className="text-white text-[8px] font-bold">3</Text>
             </View>
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
-        
+
         {/* SECTION 1 & 2 - UNIFIED USER & STATS CARD */}
         <View className="mx-4 mb-6 mt-2 bg-[#131316] rounded-xl overflow-hidden border border-transparent">
           {/* Top Info */}
@@ -64,7 +64,7 @@ export default function ProfileScreen() {
                 <Ionicons name="camera" size={12} color="#000" />
               </View>
             </View>
-            
+
             <View className="flex-1 ml-4 justify-center py-1">
               <View className="flex-row items-center">
                 <Text className="text-white text-[16px] font-bold">Guest Trader</Text>
@@ -97,7 +97,7 @@ export default function ProfileScreen() {
             </View>
             <View className="flex-1 items-center border-r border-[#222] px-1">
               <Text className="text-[#666] text-[10px] mb-1.5">Buying Power</Text>
-              <Text className="text-white text-[13px] font-bold">PKR 15,898,666.00</Text>
+              <Text className="text-white text-[13px] font-bold">PKR 450,000.00</Text>
             </View>
             <View className="flex-1 items-center px-1">
               <Text className="text-[#666] text-[10px] mb-1.5">Total Return</Text>
@@ -143,57 +143,22 @@ export default function ProfileScreen() {
 
         {/* SECTION 4 - MENU LIST */}
         <View className="mx-4 mb-4 bg-[#131316] rounded-xl overflow-hidden">
-          <MenuRow 
-            icon="person-outline" 
-            title="Account Information" 
-            sub="Personal details, address, CNIC" 
-          />
-          <MenuRow 
-            icon="briefcase-outline" 
-            title="Brokerage Accounts" 
-            sub="Manage your connected brokers" 
-          />
-          <MenuRow 
-            icon="link-outline" 
-            title="Linked Accounts" 
-            sub="Banks, eWallets & other accounts" 
-          />
-          <MenuRow 
-            icon="lock-closed-outline" 
-            title="Security Settings" 
-            sub="Password, 2FA, biometric" 
-            isSecurity={true}
-          />
-          <MenuRow 
-            icon="notifications-outline" 
-            title="Notification Settings" 
-            sub="Price alerts, order updates, news" 
-          />
-          <MenuRow 
-            icon="options-outline" 
-            title="Preferences" 
-            sub="Theme, language, default market" 
-            hideBorder={true}
-          />
+          <MenuRow icon="person-outline" title="Account Information" sub="Personal details, address, CNIC" />
+          <MenuRow icon="briefcase-outline" title="Brokerage Accounts" sub="Manage your connected brokers" />
+          <MenuRow icon="link-outline" title="Linked Accounts" sub="Banks, eWallets & other accounts" />
+          <MenuRow icon="lock-closed-outline" title="Security Settings" sub="Password, 2FA, biometric" isSecurity={true} />
+          <MenuRow icon="notifications-outline" title="Notification Settings" sub="Price alerts, order updates, news" />
+          <MenuRow icon="options-outline" title="Preferences" sub="Theme, language, default market" hideBorder={true} />
         </View>
 
         {/* SECTION 5 - SUPPORT LIST */}
         <View className="mx-4 mb-4 bg-[#131316] rounded-xl overflow-hidden">
-          <MenuRow 
-            icon="help-circle-outline" 
-            title="Help & Support" 
-            sub="FAQs, guides & customer support" 
-          />
-          <MenuRow 
-            icon="information-circle-outline" 
-            title="About TradeIt" 
-            sub="App info, terms & conditions" 
-            hideBorder={true}
-          />
+          <MenuRow icon="help-circle-outline" title="Help & Support" sub="FAQs, guides & customer support" />
+          <MenuRow icon="information-circle-outline" title="About TradeIt" sub="App info, terms & conditions" hideBorder={true} />
         </View>
 
         {/* SECTION 6 - LOG OUT BUTTON */}
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={handleLogout}
           className="mx-4 bg-[#131316] rounded-xl flex-row items-center justify-center py-4 mb-[30px]"
         >

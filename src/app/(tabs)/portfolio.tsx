@@ -157,8 +157,7 @@ export default function PortfolioScreen() {
 
         {/* SECTION 3 - INFO CARDS */}
         <View className="flex-row px-[14px] mb-4 gap-2">
-          <TouchableOpacity 
-            onPress={() => router.push('/(tabs)/wallet')}
+          <View
             className="flex-1 bg-[#161616] rounded-[12px] p-3 border border-[#1e1e1e]"
           >
             <View className="flex-row justify-between items-start mb-1">
@@ -167,7 +166,7 @@ export default function PortfolioScreen() {
             </View>
             <Text className="text-white font-bold text-[13px] mb-0.5">Rs 1,589,666.00</Text>
             <Text className="text-[#444] text-[9px]">Available to trade</Text>
-          </TouchableOpacity>
+          </View>
 
           <TouchableOpacity className="flex-1 bg-[#161616] rounded-[12px] p-3 border border-[#1e1e1e]">
             <View className="flex-row justify-between items-start mb-1">

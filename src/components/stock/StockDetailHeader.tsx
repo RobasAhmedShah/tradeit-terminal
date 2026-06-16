@@ -6,9 +6,11 @@ import { useRouter } from 'expo-router';
 interface StockDetailHeaderProps {
   symbol: string;
   name: string;
+  isWatchlisted: boolean;
+  onWatchlistPress: () => void;
 }
 
-export const StockDetailHeader: React.FC<StockDetailHeaderProps> = ({ symbol, name }) => {
+export const StockDetailHeader: React.FC<StockDetailHeaderProps> = ({ symbol, name, isWatchlisted, onWatchlistPress }) => {
   const router = useRouter();
 
   return (
@@ -16,18 +18,18 @@ export const StockDetailHeader: React.FC<StockDetailHeaderProps> = ({ symbol, na
       <TouchableOpacity onPress={() => router.back()} className="p-2 -ml-2">
         <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
       </TouchableOpacity>
-      
+
       <View className="flex-1 ml-4 justify-center">
         <Text className="text-white text-base font-bold leading-tight">{symbol}</Text>
         <Text className="text-[#9CA3AF] text-xs leading-tight" numberOfLines={1}>{name}</Text>
       </View>
 
       <View className="flex-row items-center">
-        <TouchableOpacity className="p-2">
+        <TouchableOpacity onPress={() => router.push('/(tabs)/home')} className="p-2">
           <Ionicons name="home-outline" size={24} color="#9CA3AF" />
         </TouchableOpacity>
-        <TouchableOpacity className="p-2 -mr-2">
-          <Ionicons name="star-outline" size={24} color="#9CA3AF" />
+        <TouchableOpacity onPress={onWatchlistPress} className="p-2 -mr-2">
+          <Ionicons name={isWatchlisted ? 'star' : 'star-outline'} size={24} color={isWatchlisted ? '#FF8A00' : '#9CA3AF'} />
         </TouchableOpacity>
       </View>
     </View>

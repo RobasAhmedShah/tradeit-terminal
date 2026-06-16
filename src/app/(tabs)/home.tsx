@@ -1,68 +1,194 @@
-import React from 'react';
-import { ScrollView, View, Text } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { FlatList, View, Text, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { AppHeader } from '../../components/ui/AppHeader';
-import { SearchBar } from '../../components/ui/SearchBar';
+import { AppHeader }          from '../../components/ui/AppHeader';
+import { SearchBar }          from '../../components/ui/SearchBar';
 import { PortfolioValueCard } from '../../components/ui/PortfolioValueCard';
-import { QuickActionGrid } from '../../components/ui/QuickActionGrid';
-import { SectionHeader } from '../../components/ui/SectionHeader';
-import { StockMiniCard } from '../../components/ui/StockMiniCard';
-import { MarketMoverChip } from '../../components/ui/MarketMoverChip';
-import { NewsCard } from '../../components/ui/NewsCard';
-import { MOCK_WATCHLIST, MOCK_TOP_GAINERS, MOCK_TOP_LOSERS } from '../../data/mockStocks';
-import { MOCK_NEWS } from '../../data/mockNews';
+import { QuickActionGrid }    from '../../components/ui/QuickActionGrid';
+import { SectionHeader }      from '../../components/ui/SectionHeader';
+import { StockMiniCard }      from '../../components/ui/StockMiniCard';
+import { MarketMoverChip }    from '../../components/ui/MarketMoverChip';
+import { NewsCard }           from '../../components/ui/NewsCard';
+import { useWatchlist }       from '../../context/WatchlistContext';
+import { MOCK_TOP_GAINERS, MOCK_TOP_LOSERS } from '../../data/mockStocks';
+import { MOCK_NEWS, NEWS_CATEGORIES, NewsCategory, NewsPost } from '../../data/mockNews';
 
+const SCREEN_H = Dimensions.get('window').height;
+
+/* ─── list item types ─────────────────────────────────────── */
+type ListItem =
+  | { type: 'above-news' }
+  | { type: 'news-tabs' }
+  | { type: 'news'; post: NewsPost; featured?: boolean };
+
+/* ─── screen ──────────────────────────────────────────────── */
 export default function HomeScreen() {
   const router = useRouter();
+  const { watchlist } = useWatchlist();
+  const [activeCategory, setActiveCategory] = useState<'Discover' | NewsCategory>('Discover');
+  const [dismissed, setDismissed] = useState<Set<string>>(new Set());
+
+  /* refs for scroll-to-news on category change */
+  const flatListRef     = useRef<FlatList>(null);
+  const aboveNewsHeight = useRef(0);
+  const isMounted       = useRef(false);
+
+  const dismiss = (id: string) =>
+    setDismissed(prev => new Set([...prev, id]));
+
+  const visibleNews  = MOCK_NEWS.filter(n => !dismissed.has(n.id));
+  const featuredPost = visibleNews.find(n => n.featured);
+  const regularPosts = visibleNews.filter(n => {
+    if (n.featured) return false;
+    return activeCategory === 'Discover' || n.category === activeCategory;
+  });
+  const showFeatured =
+    !!featuredPost &&
+    (activeCategory === 'Discover' || activeCategory === featuredPost.category);
+
+  const listData: ListItem[] = [
+    { type: 'above-news' },
+    { type: 'news-tabs' },
+    ...(showFeatured ? [{ type: 'news' as const, post: featuredPost!, featured: true }] : []),
+    ...regularPosts.map(n => ({ type: 'news' as const, post: n })),
+  ];
+
+  /* when category changes, scroll so sticky tabs are at top and posts are visible */
+  useEffect(() => {
+    if (!isMounted.current) { isMounted.current = true; return; }
+    flatListRef.current?.scrollToOffset({
+      offset: aboveNewsHeight.current,
+      animated: true,
+    });
+  }, [activeCategory]);
+
+  /* ── above-news block ────────────────────────────────────── */
+  const renderAboveNews = () => (
+    <View onLayout={e => { aboveNewsHeight.current = e.nativeEvent.layout.height; }}>
+      <SearchBar />
+      <PortfolioValueCard />
+      <QuickActionGrid />
+
+      {/* Watchlist */}
+      <SectionHeader
+        title="Watchlist"
+        subtitle="My Stocks"
+        onViewAll={() => router.push('/watchlist')}
+      />
+      {watchlist.length === 0 ? (
+        <View className="mx-4 py-6 items-center bg-[#111214] border border-[#1e1e1e] rounded-xl mb-2">
+          <Text className="text-[#555] text-sm">No stocks in watchlist</Text>
+          <TouchableOpacity onPress={() => router.push('/watchlist')} className="mt-2">
+            <Text className="text-[#FF8A00] text-sm font-semibold">Browse Stocks →</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingLeft: 16, paddingRight: 20, paddingBottom: 8 }}
+        >
+          {watchlist.map(stock => (
+            <StockMiniCard
+              key={stock.id}
+              stock={stock}
+              onPress={() => router.push(`/stock/${stock.symbol}`)}
+            />
+          ))}
+        </ScrollView>
+      )}
+
+      {/* Top Gainers */}
+      <View className="mt-5 mb-4">
+        <Text className="text-white text-base font-bold mb-3 mx-4">Top Gainers</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16 }}>
+          {MOCK_TOP_GAINERS.map(stock => (
+            <MarketMoverChip key={stock.id} stock={stock} onPress={() => router.push(`/stock/${stock.symbol}`)} />
+          ))}
+        </ScrollView>
+      </View>
+
+      {/* Top Losers */}
+      <View className="mb-2">
+        <Text className="text-white text-base font-bold mb-3 mx-4">Top Losers</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16 }}>
+          {MOCK_TOP_LOSERS.map(stock => (
+            <MarketMoverChip key={stock.id} stock={stock} onPress={() => router.push(`/stock/${stock.symbol}`)} />
+          ))}
+        </ScrollView>
+      </View>
+    </View>
+  );
+
+  /* ── sticky news-tabs block ──────────────────────────────── */
+  const renderNewsTabs = () => (
+    <View style={{ backgroundColor: '#050505', borderBottomWidth: 1, borderBottomColor: '#141414' }}>
+      <View className="flex-row items-center justify-between px-4 pt-5 pb-1">
+        <Text className="text-white text-lg font-bold">Latest News</Text>
+        <TouchableOpacity onPress={() => router.push('/news')} className="flex-row items-center">
+          <Text className="text-[#FF8A00] text-sm mr-1">View all</Text>
+          <Ionicons name="chevron-forward" size={14} color="#FF8A00" />
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 10 }}
+      >
+        {(['Discover', ...NEWS_CATEGORIES] as const).map(cat => {
+          const active = activeCategory === cat;
+          return (
+            <TouchableOpacity
+              key={cat}
+              onPress={() => setActiveCategory(cat)}
+              style={{
+                marginRight: 24,
+                paddingBottom: 10,
+                borderBottomWidth: 2,
+                borderBottomColor: active ? '#FF8A00' : 'transparent',
+              }}
+            >
+              <Text style={{
+                fontSize: 14,
+                fontWeight: active ? '700' : '500',
+                color: active ? '#FF8A00' : '#9CA3AF',
+              }}>
+                {cat}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
+    </View>
+  );
+
+  /* ── FlatList renderItem ─────────────────────────────────── */
+  const renderItem = ({ item }: { item: ListItem }) => {
+    if (item.type === 'above-news') return renderAboveNews();
+    if (item.type === 'news-tabs')  return renderNewsTabs();
+    if (item.type === 'news')
+      return <NewsCard post={item.post} featured={item.featured} onDismiss={() => dismiss(item.post.id)} />;
+    return null;
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-[#050505]" edges={['top']}>
       <AppHeader />
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <SearchBar />
-        <PortfolioValueCard />
-        <QuickActionGrid />
-
-        <SectionHeader title="Watchlist" subtitle="People Also Own" />
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
-          className="pl-4 pb-2"
-          contentContainerStyle={{ paddingRight: 20 }}
-        >
-          {MOCK_WATCHLIST.map((stock) => (
-            <StockMiniCard key={stock.id} stock={stock} onPress={() => router.push(`/stock/${stock.symbol}`)} />
-          ))}
-        </ScrollView>
-
-        <View className="flex-row mx-4 mt-6 mb-3">
-          <View className="flex-1 mr-2">
-            <Text className="text-white text-base font-bold mb-3">Top Gainers</Text>
-            <View>
-              {MOCK_TOP_GAINERS.map((stock) => (
-                <MarketMoverChip key={stock.id} stock={stock} onPress={() => router.push(`/stock/${stock.symbol}`)} />
-              ))}
-            </View>
-          </View>
-          <View className="flex-1 ml-2">
-            <Text className="text-white text-base font-bold mb-3">Top Losers</Text>
-            <View>
-              {MOCK_TOP_LOSERS.map((stock) => (
-                <MarketMoverChip key={stock.id} stock={stock} onPress={() => router.push(`/stock/${stock.symbol}`)} />
-              ))}
-            </View>
-          </View>
-        </View>
-
-        <SectionHeader title="Latest News" />
-        {MOCK_NEWS.map((news) => (
-          <NewsCard key={news.id} news={news} />
-        ))}
-        
-        {/* Bottom padding for tab bar */}
-        <View className="h-20" />
-      </ScrollView>
+      <FlatList
+        ref={flatListRef}
+        data={listData}
+        keyExtractor={(item, index) =>
+          item.type === 'news' ? `news-${item.post.id}` : `${item.type}-${index}`
+        }
+        renderItem={renderItem}
+        stickyHeaderIndices={[1]}
+        showsVerticalScrollIndicator={false}
+        ListFooterComponent={<View style={{ height: SCREEN_H }} />}
+        removeClippedSubviews={false}
+      />
     </SafeAreaView>
   );
 }

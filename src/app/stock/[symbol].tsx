@@ -3,6 +3,7 @@ import { View, ScrollView, Text } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MOCK_MARKET_STOCKS } from '../../data/mockStocks';
+import { useWatchlist } from '../../context/WatchlistContext';
 
 // Import newly refactored components
 import { StockDetailHeader } from '../../components/stock/StockDetailHeader';
@@ -20,9 +21,9 @@ import { StockAnalysisTab } from '../../components/stock/StockAnalysisTab';
 export default function StockDetailScreen() {
   const { symbol } = useLocalSearchParams<{ symbol: string }>();
   const router = useRouter();
-  
+  const { isWatchlisted, toggleWatchlist } = useWatchlist();
+
   const [activeTab, setActiveTab] = useState('Overview');
-  const [isWatchlisted, setIsWatchlisted] = useState(false);
 
   const stock = MOCK_MARKET_STOCKS.find((s) => s.symbol === symbol);
 
@@ -35,17 +36,21 @@ export default function StockDetailScreen() {
   }
 
   const handleTradePress = () => {
-    // Navigate to Spot Trading Phase 5 route
     router.push(`/spot/${symbol}`);
   };
 
   const handleWatchlistPress = () => {
-    setIsWatchlisted(!isWatchlisted);
+    toggleWatchlist(stock);
   };
 
   return (
     <SafeAreaView className="flex-1 bg-[#050505]" edges={['top']}>
-      <StockDetailHeader symbol={stock.symbol} name={stock.name} />
+      <StockDetailHeader
+        symbol={stock.symbol}
+        name={stock.name}
+        isWatchlisted={isWatchlisted(stock.symbol)}
+        onWatchlistPress={handleWatchlistPress}
+      />
       
       <ScrollView showsVerticalScrollIndicator={false}>
         <StockPriceHeader stock={stock} />

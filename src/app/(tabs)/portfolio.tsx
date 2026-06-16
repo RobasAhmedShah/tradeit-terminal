@@ -134,7 +134,7 @@ export default function PortfolioScreen() {
 
         {/* SECTION 2 - QUICK ACTIONS */}
         <View className="flex-row px-[14px] mb-4 gap-2">
-          <TouchableOpacity className="flex-1 bg-[#161616] rounded-[12px] p-3 flex-row items-center border border-[#1e1e1e]">
+          <TouchableOpacity onPress={() => router.push('/deposit')} className="flex-1 bg-[#161616] rounded-[12px] p-3 flex-row items-center border border-[#1e1e1e]">
             <View className="w-8 h-8 rounded-lg items-center justify-center mr-3 bg-[#1e1e1e]">
               <Ionicons name="arrow-down-outline" size={18} color="#f97316" />
             </View>
@@ -144,7 +144,7 @@ export default function PortfolioScreen() {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity className="flex-1 bg-[#161616] rounded-[12px] p-3 flex-row items-center border border-[#1e1e1e]">
+          <TouchableOpacity onPress={() => router.push('/withdraw')} className="flex-1 bg-[#161616] rounded-[12px] p-3 flex-row items-center border border-[#1e1e1e]">
             <View className="w-8 h-8 rounded-lg items-center justify-center mr-3 bg-[#1e1e1e]">
               <Ionicons name="arrow-up-outline" size={18} color="#f97316" />
             </View>

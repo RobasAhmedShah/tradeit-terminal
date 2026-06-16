@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemeProvider, DarkTheme } from '@react-navigation/native';
 import { COLORS } from '../constants/theme';
+import { WatchlistProvider } from '../context/WatchlistContext';
 import '../../global.css';
 
 
@@ -22,12 +23,14 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={MyTheme}>
       <SafeAreaProvider>
-        <StatusBar style="light" />
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="(account)" />
-          <Stack.Screen name="(order-flow)" />
-        </Stack>
+        <WatchlistProvider>
+          <StatusBar style="light" />
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="(account)" />
+            <Stack.Screen name="(order-flow)" />
+          </Stack>
+        </WatchlistProvider>
       </SafeAreaProvider>
     </ThemeProvider>
   );

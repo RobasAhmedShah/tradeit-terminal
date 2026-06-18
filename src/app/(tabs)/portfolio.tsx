@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Path, Defs, LinearGradient, Stop } from 'react-native-svg';
+import { FuturesPortfolioSummaryCard } from '../../components/futures/FuturesPortfolioSummaryCard';
 
 export default function PortfolioScreen() {
   const router = useRouter();
@@ -131,6 +132,8 @@ export default function PortfolioScreen() {
             })}
           </View>
         </View>
+
+        <FuturesPortfolioSummaryCard />
 
         {/* SECTION 2 - QUICK ACTIONS */}
         <View className="flex-row px-[14px] mb-4 gap-2">

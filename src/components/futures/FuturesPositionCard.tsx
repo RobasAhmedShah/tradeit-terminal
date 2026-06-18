@@ -1,0 +1,84 @@
+import React from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
+import { FuturesPosition, formatFuturesPrice } from '../../data/mockFutures';
+
+interface FuturesPositionCardProps {
+  position: FuturesPosition;
+  onClose: (position: FuturesPosition) => void;
+  compact?: boolean;
+}
+
+export const FuturesPositionCard: React.FC<FuturesPositionCardProps> = ({
+  position,
+  onClose,
+  compact = false,
+}) => {
+  const router = useRouter();
+  const isLong = position.side === 'Long';
+
+  return (
+    <TouchableOpacity
+      activeOpacity={0.85}
+      onPress={() => router.push(`/futures/position/${position.id}`)}
+      className="bg-[#111214] border border-[#2A2B2F] rounded-xl p-3 mb-2"
+    >
+      <View className="flex-row items-center">
+        <View
+          className={`px-1.5 py-0.5 rounded border ${
+            isLong ? 'bg-[#00C853]/10 border-[#00C853]/30' : 'bg-[#FF3B30]/10 border-[#FF3B30]/30'
+          }`}
+        >
+          <Text className={`text-[11px] font-bold ${isLong ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}>
+            {position.side}
+          </Text>
+        </View>
+        <View className="flex-1 ml-2">
+          <Text className="text-white text-sm font-semibold">{position.symbol}</Text>
+          <Text className="text-[#9CA3AF] text-[11px]">
+            {position.expiry} · {position.leverage}x
+          </Text>
+        </View>
+        <TouchableOpacity
+          onPress={(e) => {
+            e.stopPropagation?.();
+            onClose(position);
+          }}
+          className="bg-[#18191C] border border-[#2A2B2F] px-2.5 py-1 rounded"
+        >
+          <Text className="text-[#9CA3AF] text-[11px] font-semibold">Close</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View className={`flex-row ${compact ? 'mt-2' : 'mt-2.5'}`}>
+        <View className="flex-1">
+          <Text className="text-[#9CA3AF] text-[10px] mb-1">Size (Lots)</Text>
+          <Text className="text-white text-xs font-medium">{position.sizeLots}</Text>
+        </View>
+        <View className="flex-1">
+          <Text className="text-[#9CA3AF] text-[10px] mb-1">Entry</Text>
+          <Text className="text-white text-xs font-medium">{formatFuturesPrice(position.entryPrice)}</Text>
+        </View>
+        <View className="flex-1">
+          <Text className="text-[#9CA3AF] text-[10px] mb-1">Mark</Text>
+          <Text className="text-white text-xs font-medium">{formatFuturesPrice(position.markPrice)}</Text>
+        </View>
+        <View className="flex-1 items-end">
+          <Text className="text-[#9CA3AF] text-[10px] mb-1">Unrealized PnL</Text>
+          <Text
+            className={`text-xs font-medium ${position.unrealizedPnl >= 0 ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}
+          >
+            {position.unrealizedPnl >= 0 ? '+' : ''}
+            {formatFuturesPrice(position.unrealizedPnl)}
+          </Text>
+          <Text
+            className={`text-[10px] ${position.unrealizedPnlPct >= 0 ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}
+          >
+            ({position.unrealizedPnlPct >= 0 ? '+' : ''}
+            {position.unrealizedPnlPct.toFixed(2)}%)
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};

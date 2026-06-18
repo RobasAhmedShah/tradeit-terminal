@@ -5,18 +5,41 @@ import { Ionicons } from '@expo/vector-icons';
 interface AdvancedFilterChipProps {
   label: string;
   icon?: keyof typeof Ionicons.glyphMap;
+  isActive?: boolean;
+  sortDirection?: 'asc' | 'desc';
   onPress?: () => void;
 }
 
-export const AdvancedFilterChip: React.FC<AdvancedFilterChipProps> = ({ label, icon, onPress }) => {
+export const AdvancedFilterChip: React.FC<AdvancedFilterChipProps> = ({
+  label,
+  icon,
+  isActive = false,
+  sortDirection,
+  onPress,
+}) => {
   return (
-    <TouchableOpacity 
+    <TouchableOpacity
       onPress={onPress}
-      className="flex-row items-center px-3 py-1.5 rounded-lg mr-2 bg-[#050505] border border-[#2A2B2F]"
+      className={`flex-row items-center px-3 py-1.5 rounded-lg mr-2 border ${
+        isActive ? 'border-[#FF8A00] bg-[#FF8A00]/10' : 'bg-[#050505] border-[#2A2B2F]'
+      }`}
     >
-      {icon && <Ionicons name={icon} size={12} color="#9CA3AF" style={{ marginRight: 4 }} />}
-      <Text className="text-[#9CA3AF] text-xs font-medium mr-1">{label}</Text>
-      <Ionicons name="chevron-down" size={12} color="#9CA3AF" />
+      {icon && (
+        <Ionicons
+          name={icon}
+          size={12}
+          color={isActive ? '#FF8A00' : '#9CA3AF'}
+          style={{ marginRight: 4 }}
+        />
+      )}
+      <Text className={`text-xs font-medium mr-1 ${isActive ? 'text-[#FF8A00]' : 'text-[#9CA3AF]'}`}>
+        {label}
+      </Text>
+      <Ionicons
+        name={isActive ? (sortDirection === 'asc' ? 'chevron-up' : 'chevron-down') : 'chevron-down'}
+        size={12}
+        color={isActive ? '#FF8A00' : '#9CA3AF'}
+      />
     </TouchableOpacity>
   );
 };

@@ -413,3 +413,12 @@ export const MOCK_TOP_GAINERS: Stock[] = MOCK_MARKET_STOCKS.filter((s) =>
 export const MOCK_TOP_LOSERS: Stock[] = MOCK_MARKET_STOCKS.filter((s) =>
   ['IDSM', 'PAKQATAR', 'ZUMA', 'PQGTL'].includes(s.symbol)
 ).sort((a, b) => a.changePercent - b.changePercent);
+
+// ─── Index membership (mock) ──────────────────────────────────────────────────
+export const KSE_100_SYMBOLS = new Set([
+  'FANM', 'FFLM', 'FTSM', 'PSO', 'HBL', 'OGDC', 'AABS', 'PIAHCLB', 'SAZEW', 'FATM', 'BPL', 'REDCO',
+]);
+
+export const KSE_30_SYMBOLS = new Set([
+  'FANM', 'PSO', 'HBL', 'OGDC', 'FATM', 'AABS', 'PIAHCLB',
+]);

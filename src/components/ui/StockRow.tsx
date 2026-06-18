@@ -1,16 +1,14 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { Stock } from '../../data/mockStocks';
 import { SparklinePlaceholder } from './SparklinePlaceholder';
 
 interface StockRowProps {
   stock: Stock;
   onPress: () => void;
-  onTradePress: () => void;
 }
 
-export const StockRow: React.FC<StockRowProps> = ({ stock, onPress, onTradePress }) => {
+export const StockRow: React.FC<StockRowProps> = ({ stock, onPress }) => {
   const isPositive = stock.isPositive;
   const changeColor = isPositive ? 'text-[#00C853]' : 'text-[#FF3B30]';
   const sign = isPositive ? '+' : '';
@@ -56,22 +54,6 @@ export const StockRow: React.FC<StockRowProps> = ({ stock, onPress, onTradePress
         <Text className={`${changeColor} text-[11px] mt-0.5`}>
           {sign}{stock.changeValue?.toFixed(2)}
         </Text>
-      </View>
-
-      {/* Action Column (Trade Button or Chevron) */}
-      <View className="w-[48px] items-end justify-center">
-        {stock.symbol === 'OGDC' || stock.symbol === 'HBL' || stock.symbol === 'PSO' ? (
-          <TouchableOpacity onPress={onTradePress} className="py-2 pl-2">
-            <Ionicons name="chevron-forward" size={16} color="#9CA3AF" />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity 
-            onPress={onTradePress}
-            className="border border-[#FF8A00] rounded p-1 px-2"
-          >
-            <Text className="text-[#FF8A00] text-[10px] font-bold">Trade</Text>
-          </TouchableOpacity>
-        )}
       </View>
     </TouchableOpacity>
   );

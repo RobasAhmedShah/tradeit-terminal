@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, ScrollView, TextInput } from 'react-nativ
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useFutures } from '../../context/FuturesContext';
+import { formatFuturesPrice } from '../../data/mockFutures';
 
 // ─── Mock Data ─────────────────────────────────────────────────────────────────
 const DEPOSIT_MOCK = {
@@ -44,13 +46,23 @@ type Step = 1 | 2 | 3 | 4 | 5 | 6;
 
 export default function DepositScreen() {
   const router = useRouter();
+  const { addFuturesMargin, marginAvailable } = useFutures();
 
   const [step, setStep]                           = useState<Step>(1);
   const [selectedMethod, setSelectedMethod]       = useState('bankTransfer');
   const [selectedBank, setSelectedBank]           = useState('meezan');
   const [amount, setAmount]                       = useState('');
   const [selectedQuickAmount, setSelectedQuickAmount] = useState<number | null>(null);
+  const [creditToFutures, setCreditToFutures]     = useState(true);
   const [timeLeft, setTimeLeft]                   = useState(30 * 60);
+  const [marginCredited, setMarginCredited]       = useState(false);
+
+  const parsedAmount    = parseInt(amount, 10) || 0;
+  const isAmountValid   = parsedAmount >= 1000;
+  const displayAmount   = parsedAmount > 0
+    ? `PKR ${parsedAmount.toLocaleString()}.00`
+    : `PKR ${DEPOSIT_MOCK.amount.toLocaleString()}.00`;
+  const selectedBankData = BANKS.find((b) => b.id === selectedBank) || BANKS[0];
 
   // ── Timer for step 5 ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -65,18 +77,17 @@ export default function DepositScreen() {
     return () => clearInterval(timer);
   }, [step]);
 
+  useEffect(() => {
+    if (step !== 6 || !creditToFutures || parsedAmount <= 0 || marginCredited) return;
+    addFuturesMargin(parsedAmount);
+    setMarginCredited(true);
+  }, [step, creditToFutures, parsedAmount, marginCredited, addFuturesMargin]);
+
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60).toString().padStart(2, '0');
     const s = (seconds % 60).toString().padStart(2, '0');
     return `${m}:${s}`;
   };
-
-  const parsedAmount    = parseInt(amount, 10) || 0;
-  const isAmountValid   = parsedAmount >= 1000;
-  const displayAmount   = parsedAmount > 0
-    ? `PKR ${parsedAmount.toLocaleString()}.00`
-    : `PKR ${DEPOSIT_MOCK.amount.toLocaleString()}.00`;
-  const selectedBankData = BANKS.find((b) => b.id === selectedBank) || BANKS[0];
 
   const goBack = () => { if (step === 1) router.back(); else setStep((step - 1) as Step); };
 
@@ -365,6 +376,69 @@ export default function DepositScreen() {
         ))}
       </View>
 
+      {/* Futures margin allocation */}
+      <TouchableOpacity
+        onPress={() => setCreditToFutures((v) => !v)}
+        style={{
+          marginTop: 12,
+          backgroundColor: creditToFutures ? '#1A0E00' : '#161616',
+          borderRadius: 12,
+          padding: 14,
+          borderWidth: 1.5,
+          borderColor: creditToFutures ? '#FF8A00' : '#1e1e1e',
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}
+      >
+        <View
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 10,
+            backgroundColor: creditToFutures ? '#FF8A0020' : '#111',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginRight: 12,
+          }}
+        >
+          <Ionicons name="pulse" size={20} color={creditToFutures ? '#FF8A00' : '#555'} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={{ color: '#fff', fontSize: 13, fontWeight: '600' }}>
+            Credit to Futures Margin
+          </Text>
+          <Text style={{ color: '#888', fontSize: 11, marginTop: 3 }}>
+            Available now: {formatFuturesPrice(marginAvailable)}
+          </Text>
+        </View>
+        <View
+          style={{
+            width: 22,
+            height: 22,
+            borderRadius: 6,
+            borderWidth: 2,
+            borderColor: creditToFutures ? '#FF8A00' : '#333',
+            backgroundColor: creditToFutures ? '#FF8A00' : 'transparent',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {creditToFutures && <Ionicons name="checkmark" size={14} color="#000" />}
+        </View>
+      </TouchableOpacity>
+
+      {creditToFutures && parsedAmount > 0 && (
+        <View style={{ marginTop: 8, backgroundColor: '#111214', borderRadius: 10, padding: 12, borderWidth: 1, borderColor: '#2A2B2F' }}>
+          <Text style={{ color: '#9CA3AF', fontSize: 11 }}>
+            After deposit,{' '}
+            <Text style={{ color: '#FF8A00', fontWeight: '600' }}>
+              PKR {parsedAmount.toLocaleString()}
+            </Text>{' '}
+            will be added to your futures margin wallet.
+          </Text>
+        </View>
+      )}
+
       {/* Warning */}
       <View style={{ marginTop: 12, backgroundColor: '#111111', borderRadius: 8, padding: 10, flexDirection: 'row', gap: 8 }}>
         <Ionicons name="information-circle-outline" size={14} color="#555" style={{ marginTop: 1 }} />
@@ -512,17 +586,29 @@ export default function DepositScreen() {
       <View style={{ backgroundColor: '#111111', borderRadius: 10, padding: 12, marginTop: 12, flexDirection: 'row', gap: 8 }}>
         <Ionicons name="information-circle-outline" size={14} color="#555" style={{ marginTop: 1 }} />
         <Text style={{ color: '#555', fontSize: 11, flex: 1 }}>
-          Your funds will be added to your wallet once the payment is verified.
+          {creditToFutures && marginCredited
+            ? `PKR ${parsedAmount.toLocaleString()} has been credited to your futures margin wallet.`
+            : 'Your funds will be added to your wallet once the payment is verified.'}
         </Text>
       </View>
 
       {/* Action Buttons */}
       <View style={{ marginTop: 20 }}>
+        {creditToFutures && marginCredited && (
+          <TouchableOpacity
+            onPress={() => router.push('/(tabs)/futures')}
+            style={{ backgroundColor: '#FF8A00', borderRadius: 100, paddingVertical: 15, marginBottom: 10 }}
+          >
+            <Text style={{ color: '#000', fontSize: 15, fontWeight: '700', textAlign: 'center' }}>
+              Trade Futures
+            </Text>
+          </TouchableOpacity>
+        )}
         <TouchableOpacity
           onPress={() => router.push('/(tabs)/portfolio')}
-          style={{ backgroundColor: '#f97316', borderRadius: 100, paddingVertical: 15, marginBottom: 10 }}
+          style={{ backgroundColor: creditToFutures && marginCredited ? 'transparent' : '#f97316', borderWidth: creditToFutures && marginCredited ? 1.5 : 0, borderColor: '#f97316', borderRadius: 100, paddingVertical: 15, marginBottom: 10 }}
         >
-          <Text style={{ color: '#fff', fontSize: 15, fontWeight: '700', textAlign: 'center' }}>View Portfolio</Text>
+          <Text style={{ color: creditToFutures && marginCredited ? '#f97316' : '#fff', fontSize: 15, fontWeight: '700', textAlign: 'center' }}>View Portfolio</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => router.push('/(tabs)/home')}

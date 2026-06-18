@@ -8,6 +8,7 @@ import {
   formatFuturesPrice,
   FuturesSide,
 } from '../../data/mockFutures';
+import { usePortfolio } from '../../context/PortfolioContext';
 
 type RowProps = { label: string; value: string; valueColor?: string };
 
@@ -239,6 +240,7 @@ function SpotOrderReview({
   rawData: string;
 }) {
   const router = useRouter();
+  const { summary } = usePortfolio();
 
   const symbol = String(data.symbol ?? '---');
   const companyName = String(data.companyName ?? '---');
@@ -251,7 +253,7 @@ function SpotOrderReview({
   const fed = Number(data.fed ?? 0);
   const secp = Number(data.secp ?? 0);
   const totalCost = Number(data.totalCost ?? 0);
-  const availableBalance = Number(data.availableBalance ?? 0);
+  const availableBalance = summary.buyingPower;
   const currentMarketPrice = Number(data.currentMarketPrice ?? 0);
   const priceChange = Number(data.priceChange ?? 0);
   const priceChangePct = Number(data.priceChangePct ?? 0);

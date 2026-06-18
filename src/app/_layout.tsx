@@ -4,6 +4,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemeProvider, DarkTheme } from '@react-navigation/native';
 import { COLORS } from '../constants/theme';
 import { WatchlistProvider } from '../context/WatchlistContext';
+import { PortfolioProvider } from '../context/PortfolioContext';
 import { FuturesProvider } from '../context/FuturesContext';
 import '../../global.css';
 
@@ -25,13 +26,15 @@ export default function RootLayout() {
     <ThemeProvider value={MyTheme}>
       <SafeAreaProvider>
         <WatchlistProvider>
-          <FuturesProvider>
+          <PortfolioProvider>
+            <FuturesProvider>
             <StatusBar style="light" />
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="(tabs)" />
               <Stack.Screen name="(account)" />
             </Stack>
           </FuturesProvider>
+          </PortfolioProvider>
         </WatchlistProvider>
       </SafeAreaProvider>
     </ThemeProvider>

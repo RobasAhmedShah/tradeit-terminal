@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, TextInput } from 'react-nativ
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { usePortfolio } from '../../context/PortfolioContext';
 
 // ─── Mock Data ─────────────────────────────────────────────────────────────────
 const WITHDRAW_MOCK = {
@@ -39,6 +40,7 @@ type Step = 1 | 2 | 3 | 4 | 5 | 6;
 
 export default function WithdrawScreen() {
   const router = useRouter();
+  const { withdrawCash } = usePortfolio();
   const inputRefs = useRef<(TextInput | null)[]>([]);
 
   const [step, setStep]                               = useState<Step>(1);
@@ -49,6 +51,7 @@ export default function WithdrawScreen() {
   const [otpValues, setOtpValues]                     = useState<string[]>(['4', '7', '2', '9', '1', '']);
   const [resendTimer, setResendTimer]                 = useState(45);
   const [canResend, setCanResend]                     = useState(false);
+  const [cashDebited, setCashDebited]                 = useState(false);
 
   // ── Resend countdown for step 5 ───────────────────────────────────────────
   useEffect(() => {
@@ -88,6 +91,13 @@ export default function WithdrawScreen() {
 
   const parsedAmount     = parseInt(amount, 10) || 0;
   const isAmountValid    = parsedAmount >= 1000;
+
+  useEffect(() => {
+    if (step !== 6 || parsedAmount <= 0 || cashDebited) return;
+    withdrawCash(parsedAmount);
+    setCashDebited(true);
+  }, [step, parsedAmount, cashDebited, withdrawCash]);
+
   const displayAmount    = parsedAmount > 0
     ? `PKR ${parsedAmount.toLocaleString()}.00`
     : `PKR ${WITHDRAW_MOCK.withdrawAmount.toLocaleString()}.00`;

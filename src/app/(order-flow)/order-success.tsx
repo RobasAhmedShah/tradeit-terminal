@@ -4,8 +4,8 @@ import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing } from 'react-native-reanimated';
-import { MOCK_ORDERS } from '../../data/mockOrders';
 import { useFutures } from '../../context/FuturesContext';
+import { usePortfolio } from '../../context/PortfolioContext';
 import { formatFuturesPrice, FuturesOrderPayload } from '../../data/mockFutures';
 
 const SPOT_STEPS = [
@@ -28,6 +28,7 @@ export default function OrderSuccessScreen() {
   const router = useRouter();
   const { data } = useLocalSearchParams<{ data: string }>();
   const { fulfillFuturesOrder } = useFutures();
+  const { applySpotTrade } = usePortfolio();
 
   const [isProcessing, setIsProcessing] = useState(true);
   const [activeStep, setActiveStep] = useState(0);
@@ -108,6 +109,17 @@ export default function OrderSuccessScreen() {
           orderId,
           timestamp
         );
+      } else if (parsedOrder) {
+        applySpotTrade({
+          symbol: parsedOrder.symbol,
+          companyName: parsedOrder.companyName,
+          side: parsedOrder.side,
+          price: parsedOrder.price,
+          quantity: parsedOrder.quantity,
+          totalCost: parsedOrder.totalCost,
+          orderId,
+          orderType: parsedOrder.orderType,
+        });
       }
 
       setOrderFinalData(finalData);
@@ -115,7 +127,7 @@ export default function OrderSuccessScreen() {
     }, 500);
 
     return () => clearInterval(interval);
-  }, [data, isProcessing, isFutures, parsedOrder, steps.length, fulfillFuturesOrder]);
+  }, [data, isProcessing, isFutures, parsedOrder, steps.length, fulfillFuturesOrder, applySpotTrade]);
 
   if (!data && !isProcessing) {
     return (
@@ -299,7 +311,8 @@ function SpotSuccessReceipt({
   onDone: () => void;
 }) {
   const router = useRouter();
-  const { symbol, side, orderType, price, quantity, totalCost, orderId, status, timestamp } = order || {};
+  const { side, orderType, price, quantity, totalCost, orderId, status, timestamp } = order || {};
+  const sym = String(order?.symbol ?? '');
   const isBuy = side === 'BUY';
   const typeColor = isBuy ? 'text-[#4ade80]' : 'text-[#ef4444]';
 
@@ -332,7 +345,7 @@ function SpotSuccessReceipt({
         </View>
 
         <View className="bg-[#111] rounded-2xl p-5 mb-8 border border-[#1e1e1e]">
-          <Row label="Stock" value={`${symbol} · ${Number(quantity).toLocaleString()} shares`} />
+          <Row label="Stock" value={`${sym} · ${Number(quantity).toLocaleString()} shares`} />
           <Row label="Type" value={`${side} · ${orderType}`} valueClass={typeColor} />
           <Row label="Limit Price" value={`Rs ${Number(price).toLocaleString(undefined, { minimumFractionDigits: 2 })}`} />
           <Row
@@ -346,46 +359,34 @@ function SpotSuccessReceipt({
           </View>
         </View>
 
-        <View className="flex-row gap-3 mb-6">
-          <TouchableOpacity className="flex-[0.8] items-center py-4 rounded-xl border border-[#2a2a2a] bg-[#111]">
-            <Text className="text-white font-semibold">Share</Text>
+        <View className="gap-3 mb-6">
+          {isBuy && sym ? (
+            <TouchableOpacity
+              onPress={() => router.push(`/portfolio/holding/${sym}`)}
+              className="items-center py-4 rounded-xl bg-[#FF8A00]"
+            >
+              <Text className="text-black font-bold">View Holding</Text>
+            </TouchableOpacity>
+          ) : null}
+          <TouchableOpacity
+            onPress={() => router.push('/portfolio/activity')}
+            className="items-center py-4 rounded-xl border border-[#2a2a2a] bg-[#111]"
+          >
+            <Text className="text-white font-semibold">View Activity</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => {
-              if (orderId) {
-                MOCK_ORDERS.unshift({
-                  id: String(orderId),
-                  symbol: String(symbol || ''),
-                  companyName: 'Mock Company',
-                  side: side as 'BUY' | 'SELL',
-                  type: orderType as 'Limit' | 'Market' | 'Stop Limit',
-                  quantity: Number(quantity) || 0,
-                  filledQty: status === 'Executed' ? Number(quantity) || 0 : 0,
-                  remainingQty: status === 'Executed' ? 0 : Number(quantity) || 0,
-                  price: Number(price) || 0,
-                  status: status === 'Executed' ? 'Executed' : 'Pending',
-                  createdTime: String(timestamp) || '',
-                  date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
-                  timeline: [
-                    { title: 'Created', time: String(timestamp), isCompleted: true },
-                    { title: 'Submitted', time: String(timestamp), isCompleted: true },
-                    { title: 'Exchange Accepted', time: String(timestamp), isCompleted: true, isActive: true },
-                  ],
-                });
-                router.navigate(`/orders/${orderId}`);
-              }
-            }}
-            className="flex-[1.2] items-center py-4 rounded-xl border border-[#2a2a2a] bg-[#111]"
+            onPress={() => router.push('/(tabs)/portfolio')}
+            className="items-center py-4 rounded-xl border border-[#FF8A00]/40 bg-[#111]"
           >
-            <Text className="text-white font-semibold">View Order</Text>
+            <Text className="text-[#FF8A00] font-bold">Portfolio</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={onDone} className="flex-1 items-center py-4 rounded-xl bg-[#f97316]">
-            <Text className="text-white font-bold text-base">Done</Text>
+          <TouchableOpacity onPress={onDone} className="py-3 items-center">
+            <Text className="text-[#9CA3AF] font-semibold">Back to Trade</Text>
           </TouchableOpacity>
         </View>
 
         <TouchableOpacity className="items-center pb-10">
-          <Text className="text-[#f97316] text-sm font-semibold">Set price alert for {String(symbol)} →</Text>
+          <Text className="text-[#f97316] text-sm font-semibold">Set price alert for {sym} →</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

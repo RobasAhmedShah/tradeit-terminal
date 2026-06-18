@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useFutures } from '../../context/FuturesContext';
+import { usePortfolio } from '../../context/PortfolioContext';
 import { formatFuturesPrice } from '../../data/mockFutures';
 
 // ─── Mock Data ─────────────────────────────────────────────────────────────────
@@ -47,15 +48,17 @@ type Step = 1 | 2 | 3 | 4 | 5 | 6;
 export default function DepositScreen() {
   const router = useRouter();
   const { addFuturesMargin, marginAvailable } = useFutures();
+  const { addCash } = usePortfolio();
 
   const [step, setStep]                           = useState<Step>(1);
   const [selectedMethod, setSelectedMethod]       = useState('bankTransfer');
   const [selectedBank, setSelectedBank]           = useState('meezan');
   const [amount, setAmount]                       = useState('');
   const [selectedQuickAmount, setSelectedQuickAmount] = useState<number | null>(null);
-  const [creditToFutures, setCreditToFutures]     = useState(true);
+  const [creditToFutures, setCreditToFutures]     = useState(false);
   const [timeLeft, setTimeLeft]                   = useState(30 * 60);
   const [marginCredited, setMarginCredited]       = useState(false);
+  const [cashCredited, setCashCredited]           = useState(false);
 
   const parsedAmount    = parseInt(amount, 10) || 0;
   const isAmountValid   = parsedAmount >= 1000;
@@ -78,10 +81,20 @@ export default function DepositScreen() {
   }, [step]);
 
   useEffect(() => {
-    if (step !== 6 || !creditToFutures || parsedAmount <= 0 || marginCredited) return;
-    addFuturesMargin(parsedAmount);
-    setMarginCredited(true);
-  }, [step, creditToFutures, parsedAmount, marginCredited, addFuturesMargin]);
+    if (step !== 6 || parsedAmount <= 0) return;
+
+    // Always add to buying power (main wallet)
+    if (!cashCredited) {
+      addCash(parsedAmount);
+      setCashCredited(true);
+    }
+
+    // Optionally also credit futures margin
+    if (creditToFutures && !marginCredited) {
+      addFuturesMargin(parsedAmount);
+      setMarginCredited(true);
+    }
+  }, [step, creditToFutures, parsedAmount, marginCredited, cashCredited, addFuturesMargin, addCash]);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60).toString().padStart(2, '0');
@@ -405,10 +418,10 @@ export default function DepositScreen() {
         </View>
         <View style={{ flex: 1 }}>
           <Text style={{ color: '#fff', fontSize: 13, fontWeight: '600' }}>
-            Credit to Futures Margin
+            Also credit to Futures Margin
           </Text>
           <Text style={{ color: '#888', fontSize: 11, marginTop: 3 }}>
-            Available now: {formatFuturesPrice(marginAvailable)}
+            Buying power always increases. Turn this on to also add futures margin.
           </Text>
         </View>
         <View
@@ -430,11 +443,8 @@ export default function DepositScreen() {
       {creditToFutures && parsedAmount > 0 && (
         <View style={{ marginTop: 8, backgroundColor: '#111214', borderRadius: 10, padding: 12, borderWidth: 1, borderColor: '#2A2B2F' }}>
           <Text style={{ color: '#9CA3AF', fontSize: 11 }}>
-            After deposit,{' '}
-            <Text style={{ color: '#FF8A00', fontWeight: '600' }}>
-              PKR {parsedAmount.toLocaleString()}
-            </Text>{' '}
-            will be added to your futures margin wallet.
+            PKR {parsedAmount.toLocaleString()} will also go to futures margin (avail.{' '}
+            {formatFuturesPrice(marginAvailable)}).
           </Text>
         </View>
       )}
@@ -586,8 +596,12 @@ export default function DepositScreen() {
       <View style={{ backgroundColor: '#111111', borderRadius: 10, padding: 12, marginTop: 12, flexDirection: 'row', gap: 8 }}>
         <Ionicons name="information-circle-outline" size={14} color="#555" style={{ marginTop: 1 }} />
         <Text style={{ color: '#555', fontSize: 11, flex: 1 }}>
-          {creditToFutures && marginCredited
-            ? `PKR ${parsedAmount.toLocaleString()} has been credited to your futures margin wallet.`
+          {cashCredited
+            ? `PKR ${parsedAmount.toLocaleString()} added to your buying power.${
+                creditToFutures && marginCredited
+                  ? ' Futures margin was also credited.'
+                  : ''
+              }`
             : 'Your funds will be added to your wallet once the payment is verified.'}
         </Text>
       </View>

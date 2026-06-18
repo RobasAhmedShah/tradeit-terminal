@@ -4,6 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
 import { MOCK_MARKET_STOCKS } from '../../data/mockStocks';
+import { usePortfolio } from '../../context/PortfolioContext';
+import { formatPortfolioRs } from '../../data/mockPortfolio';
 
 interface BuySellPanelProps {
   symbol: string;
@@ -12,10 +14,11 @@ interface BuySellPanelProps {
 
 export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice }) => {
   const router = useRouter();
+  const { summary } = usePortfolio();
   const [side, setSide] = useState<'buy' | 'sell'>('buy');
-  const [orderType, setOrderType] = useState('Limit');
+  const [orderType, setOrderType] = useState('Market');
   const [price, setPrice] = useState(currentPrice.toString());
-  const [qty, setQty] = useState('100');
+  const [qty, setQty] = useState('10');
 
   const isBuy = side === 'buy';
   const mainColor = isBuy ? 'bg-[#00C853]' : 'bg-[#FF3B30]';
@@ -29,12 +32,13 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice
   const secp = tradeValue * 0.00005;
   const totalCost = tradeValue + brokerage + fed + secp;
 
+  const buyingPower = summary.buyingPower;
   const estimatedCost = totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const totalCharges = (brokerage + fed + secp).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   const handleCtaPress = () => {
-    const stock = MOCK_MARKET_STOCKS.find(s => s.symbol === symbol);
-    
+    const stock = MOCK_MARKET_STOCKS.find((s) => s.symbol === symbol);
+
     const jsorderParams = {
       symbol,
       companyName: stock?.name || '',
@@ -46,27 +50,25 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice
       fed,
       secp,
       totalCost,
-      availableBalance: 125340.00,
+      availableBalance: buyingPower,
     };
-    
+
     router.push({
       pathname: '/order-review',
-      params: { data: JSON.stringify(jsorderParams) }
+      params: { data: JSON.stringify(jsorderParams) },
     });
   };
 
   return (
     <View className="bg-[#111214] rounded-xl border border-[#2A2B2F] p-2.5">
-      
-      {/* Buy / Sell Toggle */}
       <View className="flex-row bg-[#18191C] rounded-lg p-1 mb-3 border border-[#2A2B2F]">
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => setSide('buy')}
           className={`flex-1 items-center py-1.5 rounded-md ${isBuy ? 'bg-[#00C853]' : ''}`}
         >
           <Text className={`font-bold text-xs ${isBuy ? 'text-black' : 'text-white'}`}>Buy</Text>
         </TouchableOpacity>
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => setSide('sell')}
           className={`flex-1 items-center py-1.5 rounded-md ${!isBuy ? 'bg-[#FF3B30]' : ''}`}
         >
@@ -74,10 +76,9 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice
         </TouchableOpacity>
       </View>
 
-      {/* Order Types */}
       <View className="flex-row justify-between items-center mb-3">
         <View className="flex-row gap-3">
-          {['Limit', 'Market', 'Stop Limit'].map(type => (
+          {['Limit', 'Market', 'Stop Limit'].map((type) => (
             <TouchableOpacity key={type} onPress={() => setOrderType(type)}>
               <Text className={`text-[10px] font-semibold ${orderType === type ? mainColorText : 'text-[#9CA3AF]'}`}>
                 {type}
@@ -89,7 +90,6 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice
         <Ionicons name="information-circle-outline" size={12} color="#9CA3AF" />
       </View>
 
-      {/* Price Input */}
       <View className="mb-2">
         <Text className="text-[#9CA3AF] text-[9px] mb-1">Price (PKR)</Text>
         <View className="bg-[#18191C] border border-[#2A2B2F] rounded-lg flex-row items-center h-10">
@@ -97,7 +97,7 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice
             <Ionicons name="remove" size={14} color="#9CA3AF" />
           </TouchableOpacity>
           <View className="flex-1 items-center justify-center">
-            <TextInput 
+            <TextInput
               value={price}
               onChangeText={setPrice}
               keyboardType="numeric"
@@ -110,7 +110,6 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice
         </View>
       </View>
 
-      {/* Quantity Input */}
       <View className="mb-3">
         <Text className="text-[#9CA3AF] text-[9px] mb-1">Qty (Shares)</Text>
         <View className="bg-[#18191C] border border-[#2A2B2F] rounded-lg flex-row items-center h-10">
@@ -118,7 +117,7 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice
             <Ionicons name="remove" size={14} color="#9CA3AF" />
           </TouchableOpacity>
           <View className="flex-1 items-center justify-center">
-            <TextInput 
+            <TextInput
               value={qty}
               onChangeText={setQty}
               keyboardType="numeric"
@@ -131,55 +130,27 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice
         </View>
       </View>
 
-      {/* Percentage Shortcuts */}
-      <View className="flex-row gap-1.5 mb-3">
-        {['25%', '50%', '75%', '100%'].map(pct => (
-          <TouchableOpacity key={pct} className="bg-[#18191C] border border-[#2A2B2F] rounded py-1.5 flex-1 items-center">
-            <Text className="text-[#9CA3AF] text-[10px]">{pct}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      {/* Slider Placeholder */}
-      <View className="h-1 bg-[#2A2B2F] w-full rounded-full mb-4 relative">
-        <View className={`absolute left-0 top-0 bottom-0 w-[25%] ${mainColor} rounded-full`} />
-        <View className="absolute left-[25%] -ml-1.5 -mt-1 w-3 h-3 bg-white rounded-full shadow" />
-      </View>
-
-      {/* Account Info */}
       <View className="space-y-1.5 mb-3">
         <View className="flex-row justify-between items-center">
-          <Text className="text-[#9CA3AF] text-[9px]">Available</Text>
-          <Text className="text-white text-[11px] font-semibold">Rs 125,340.00</Text>
-        </View>
-        <View className="flex-row justify-between items-center">
-          <View className="flex-row items-center">
-            <Text className="text-[#9CA3AF] text-[9px] mr-1">Buying Power</Text>
-            <Ionicons name="sync-outline" size={10} color="#9CA3AF" />
-          </View>
-          <Text className="text-white text-[11px] font-semibold">Rs 125,340.00</Text>
+          <Text className="text-[#9CA3AF] text-[9px]">Buying Power</Text>
+          <Text className="text-[#FF8A00] text-[11px] font-semibold">
+            Rs {formatPortfolioRs(buyingPower)}
+          </Text>
         </View>
       </View>
 
-      {/* Estimated Cost */}
       <View className="border-t border-[#2A2B2F] pt-2.5 mb-4">
         <View className="flex-row justify-between items-center mb-0.5">
-          <View className="flex-row items-center">
-            <Text className="text-[#9CA3AF] text-[10px] mr-1">Estimated Cost</Text>
-          </View>
+          <Text className="text-[#9CA3AF] text-[10px] mr-1">Estimated Cost</Text>
           <Text className="text-white text-sm font-bold">Rs {estimatedCost}</Text>
         </View>
         <View className="flex-row justify-between items-center">
           <Text className="text-[#9CA3AF] text-[8px]">Includes charges & tax</Text>
-          <View className="flex-row items-center">
-            <Text className="text-[#9CA3AF] text-[8px] mr-1">Rs {totalCharges}</Text>
-            <Ionicons name="chevron-down" size={8} color="#9CA3AF" />
-          </View>
+          <Text className="text-[#9CA3AF] text-[8px]">Rs {totalCharges}</Text>
         </View>
       </View>
 
-      {/* CTA Button */}
-      <TouchableOpacity 
+      <TouchableOpacity
         onPress={handleCtaPress}
         className={`${isBuy ? 'bg-[#FF8A00]' : 'bg-[#FF3B30]'} rounded-xl py-3 items-center`}
       >

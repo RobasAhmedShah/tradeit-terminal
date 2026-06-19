@@ -22,10 +22,13 @@ const TRUNCATE = 160;
 interface Props {
   post:        NewsPost;
   featured?:   boolean;
+  saved?:      boolean;
   onDismiss?:  () => void;
+  onSave?:     () => void;
+  onOpen?:     () => void;
 }
 
-export const NewsCard: React.FC<Props> = ({ post, featured, onDismiss }) => {
+export const NewsCard: React.FC<Props> = ({ post, featured, saved, onDismiss, onSave, onOpen }) => {
   const router  = useRouter();
   const [liked,    setLiked]    = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -37,6 +40,7 @@ export const NewsCard: React.FC<Props> = ({ post, featured, onDismiss }) => {
     : post.content;
 
   return (
+    <TouchableOpacity activeOpacity={0.92} onPress={onOpen} disabled={!onOpen}>
     <View style={{ backgroundColor: '#050505', borderBottomWidth: 1, borderBottomColor: '#141414' }}>
 
       {/* orange top stripe for featured */}
@@ -90,7 +94,10 @@ export const NewsCard: React.FC<Props> = ({ post, featured, onDismiss }) => {
           {/* dismiss X */}
           {onDismiss && (
             <TouchableOpacity
-              onPress={onDismiss}
+              onPress={(e) => {
+                e.stopPropagation?.();
+                onDismiss();
+              }}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               style={{ marginLeft: 10, padding: 2 }}
             >
@@ -200,11 +207,23 @@ export const NewsCard: React.FC<Props> = ({ post, featured, onDismiss }) => {
           <Text style={{ color: '#555', fontSize: 12, marginLeft: 5 }}>{post.engagement.views}</Text>
         </View>
 
-        {/* share */}
+        {/* share + save */}
+        {onSave && (
+          <TouchableOpacity
+            onPress={(e) => {
+              e.stopPropagation?.();
+              onSave();
+            }}
+            style={{ marginRight: 14 }}
+          >
+            <Ionicons name={saved ? 'bookmark' : 'bookmark-outline'} size={15} color={saved ? '#FF8A00' : '#555'} />
+          </TouchableOpacity>
+        )}
         <TouchableOpacity>
           <Ionicons name="paper-plane-outline" size={15} color="#555" />
         </TouchableOpacity>
       </View>
     </View>
+    </TouchableOpacity>
   );
 };

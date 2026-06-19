@@ -4,26 +4,26 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MOCK_MARKET_STOCKS } from '../../data/mockStocks';
 import { useWatchlist } from '../../context/WatchlistContext';
-
-// Import newly refactored components
 import { StockDetailHeader } from '../../components/stock/StockDetailHeader';
 import { StockPriceHeader } from '../../components/stock/StockPriceHeader';
 import { StockLineChartPlaceholder } from '../../components/charts/StockLineChartPlaceholder';
 import { StockTimeframeTabs } from '../../components/stock/StockTimeframeTabs';
 import { StockStatsGrid } from '../../components/stock/StockStatsGrid';
-import { StockDetailTabs } from '../../components/stock/StockDetailTabs';
+import { StockDetailTabs, StockDetailTab } from '../../components/stock/StockDetailTabs';
 import { StockOverviewCards } from '../../components/stock/StockOverviewCards';
 import { StockNewsList } from '../../components/stock/StockNewsList';
 import { StockStickyActions } from '../../components/stock/StockStickyActions';
 import { StockFinancialsTab } from '../../components/stock/StockFinancialsTab';
 import { StockAnalysisTab } from '../../components/stock/StockAnalysisTab';
+import { OrderBookTabContent } from '../../components/trading/OrderBookTabContent';
+import { TradesTabContent } from '../../components/trading/TradesTabContent';
 
 export default function StockDetailScreen() {
   const { symbol } = useLocalSearchParams<{ symbol: string }>();
   const router = useRouter();
   const { isWatchlisted, toggleWatchlist } = useWatchlist();
 
-  const [activeTab, setActiveTab] = useState('Overview');
+  const [activeTab, setActiveTab] = useState<StockDetailTab>('Overview');
 
   const stock = MOCK_MARKET_STOCKS.find((s) => s.symbol === symbol);
 
@@ -43,6 +43,12 @@ export default function StockDetailScreen() {
     toggleWatchlist(stock);
   };
 
+  const handleAlertPress = () => {
+    router.push({ pathname: '/alerts/create', params: { symbol: stock.symbol } });
+  };
+
+  const showChartSection = activeTab === 'Overview';
+
   return (
     <SafeAreaView className="flex-1 bg-[#050505]" edges={['top']}>
       <StockDetailHeader
@@ -50,26 +56,35 @@ export default function StockDetailScreen() {
         name={stock.name}
         isWatchlisted={isWatchlisted(stock.symbol)}
         onWatchlistPress={handleWatchlistPress}
+        onAlertPress={handleAlertPress}
       />
-      
-      <ScrollView showsVerticalScrollIndicator={false}>
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 100 }}
+      >
         <StockPriceHeader stock={stock} />
-        
-        <StockLineChartPlaceholder />
-        
-        <StockTimeframeTabs />
-        
-        <StockStatsGrid stock={stock} />
-        
+
+        {showChartSection && (
+          <>
+            <StockLineChartPlaceholder />
+            <StockTimeframeTabs />
+            <StockStatsGrid stock={stock} />
+          </>
+        )}
+
         <StockDetailTabs activeTab={activeTab} onTabChange={setActiveTab} />
-        
+
         {activeTab === 'Overview' && (
           <>
             <StockOverviewCards stock={stock} />
             <StockNewsList stock={stock} />
-            <View className="h-10" />
           </>
         )}
+
+        {activeTab === 'Order Book' && <OrderBookTabContent stock={stock} />}
+
+        {activeTab === 'Trades' && <TradesTabContent stock={stock} />}
 
         {activeTab === 'Financials' && <StockFinancialsTab stock={stock} />}
 
@@ -82,10 +97,11 @@ export default function StockDetailScreen() {
         {activeTab === 'Analysis' && <StockAnalysisTab stock={stock} />}
       </ScrollView>
 
-      <StockStickyActions 
+      <StockStickyActions
         onTradePress={handleTradePress}
         onWatchlistPress={handleWatchlistPress}
-        isWatchlisted={isWatchlisted}
+        onAlertPress={handleAlertPress}
+        isWatchlisted={isWatchlisted(stock.symbol)}
       />
     </SafeAreaView>
   );

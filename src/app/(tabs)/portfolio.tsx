@@ -7,7 +7,6 @@ import { AppHeader } from '../../components/ui/AppHeader';
 import { PortfolioHeroCard } from '../../components/portfolio/PortfolioHeroCard';
 import { HoldingRow, HoldingsEmptyState } from '../../components/portfolio/HoldingRow';
 import { FuturesPortfolioSummaryCard } from '../../components/futures/FuturesPortfolioSummaryCard';
-import { useWatchlist } from '../../context/WatchlistContext';
 import { usePortfolio } from '../../context/PortfolioContext';
 import { formatPortfolioRs } from '../../data/mockPortfolio';
 import { sortHoldings } from '../../utils/portfolioUi';
@@ -15,7 +14,6 @@ import { PortfolioActivityList } from '../../components/portfolio/PortfolioActiv
 
 export default function PortfolioScreen() {
   const router = useRouter();
-  const { watchlist } = useWatchlist();
   const { holdings, summary, activities, isRefreshing, lastRefreshedAt, refreshPortfolio } = usePortfolio();
 
   const previewHoldings = useMemo(() => sortHoldings(holdings, 'value').slice(0, 3), [holdings]);
@@ -162,45 +160,6 @@ export default function PortfolioScreen() {
               ))}
             </>
           )}
-        </View>
-
-        <View className="mx-4 mb-4">
-          <View className="flex-row justify-between items-end mb-3">
-            <Text className="text-white text-sm font-semibold">Lists / Watchlists</Text>
-            <TouchableOpacity onPress={() => router.push('/watchlist')}>
-              <Text className="text-[#FF8A00] text-xs font-semibold">View all</Text>
-            </TouchableOpacity>
-          </View>
-
-          <TouchableOpacity
-            onPress={() => router.push('/watchlist')}
-            className="bg-[#111214] rounded-xl p-3 flex-row items-center border border-[#2A2B2F] mb-2"
-          >
-            <View className="w-8 h-8 rounded-lg bg-[#2d1f5e] items-center justify-center mr-3">
-              <Ionicons name="add" size={16} color="#8b5cf6" />
-            </View>
-            <View className="flex-1">
-              <Text className="text-white font-semibold text-[11px] mb-0.5">Create watchlist or screener</Text>
-              <Text className="text-[#9CA3AF] text-[9px]">Track stocks your way</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={14} color="#9CA3AF" />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => router.push('/watchlist')}
-            className="bg-[#111214] rounded-xl p-3 flex-row items-center border border-[#2A2B2F]"
-          >
-            <View className="w-8 h-8 rounded-lg bg-[#00C853]/10 items-center justify-center mr-3">
-              <Ionicons name="trending-up" size={16} color="#00C853" />
-            </View>
-            <View className="flex-1">
-              <Text className="text-white font-semibold text-[11px] mb-0.5">My Watchlist</Text>
-              <Text className="text-[#9CA3AF] text-[9px]">
-                {watchlist.length} stock{watchlist.length === 1 ? '' : 's'}
-              </Text>
-            </View>
-            <Ionicons name="chevron-forward" size={14} color="#9CA3AF" />
-          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>

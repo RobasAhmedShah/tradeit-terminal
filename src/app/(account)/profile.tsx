@@ -14,8 +14,11 @@ export default function ProfileScreen() {
     ]);
   };
 
-  const MenuRow = ({ icon, title, sub, isSecurity, hideBorder }: any) => (
-    <TouchableOpacity className={`flex-row items-center py-4 px-4 ${hideBorder ? '' : 'border-b border-[#222]'}`}>
+  const MenuRow = ({ icon, title, sub, isSecurity, hideBorder, onPress }: any) => (
+    <TouchableOpacity
+      onPress={onPress}
+      className={`flex-row items-center py-4 px-4 ${hideBorder ? '' : 'border-b border-[#222]'}`}
+    >
       <View className="mr-4 w-6 items-center">
         <Ionicons name={icon} size={22} color="#888" />
       </View>
@@ -147,6 +150,12 @@ export default function ProfileScreen() {
           <MenuRow icon="briefcase-outline" title="Brokerage Accounts" sub="Manage your connected brokers" />
           <MenuRow icon="link-outline" title="Linked Accounts" sub="Banks, eWallets & other accounts" />
           <MenuRow icon="lock-closed-outline" title="Security Settings" sub="Password, 2FA, biometric" isSecurity={true} />
+          <MenuRow
+            icon="alarm-outline"
+            title="Price Alerts"
+            sub="Create and manage stock price alerts"
+            onPress={() => router.push('/alerts')}
+          />
           <MenuRow icon="notifications-outline" title="Notification Settings" sub="Price alerts, order updates, news" />
           <MenuRow icon="options-outline" title="Preferences" sub="Theme, language, default market" hideBorder={true} />
         </View>

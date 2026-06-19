@@ -1,144 +1,210 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Stock } from '../../types';
+import { useWatchlist } from '../../context/WatchlistContext';
+import { hapticLight } from '../../utils/haptics';
 
 interface InfoTabContentProps {
   stock: Stock;
 }
 
+function SectionTitle({ children }: { children: string }) {
+  return (
+    <Text className="text-[#555] text-[10px] font-semibold uppercase tracking-wider mb-2.5">
+      {children}
+    </Text>
+  );
+}
+
+function InfoRow({
+  label,
+  value,
+  valueColor = 'text-white',
+  last = false,
+}: {
+  label: string;
+  value: string;
+  valueColor?: string;
+  last?: boolean;
+}) {
+  return (
+    <View className={`flex-row justify-between items-center py-3 ${last ? '' : 'border-b border-[#1A1A1A]'}`}>
+      <Text className="text-[#9CA3AF] text-[12px]">{label}</Text>
+      <Text className={`text-[12px] font-medium text-right flex-1 ml-4 ${valueColor}`} numberOfLines={1}>
+        {value}
+      </Text>
+    </View>
+  );
+}
+
+function StatCell({ label, value, valueColor = 'text-white' }: { label: string; value: string; valueColor?: string }) {
+  return (
+    <View className="flex-1 p-3.5 bg-[#111214]">
+      <Text className="text-[#555] text-[10px] mb-1">{label}</Text>
+      <Text className={`text-[13px] font-semibold ${valueColor}`}>{value}</Text>
+    </View>
+  );
+}
+
+function formatVolume(vol?: number): string {
+  if (!vol) return '—';
+  if (vol >= 1_000_000) return `${(vol / 1_000_000).toFixed(2)}M`;
+  if (vol >= 1_000) return `${(vol / 1_000).toFixed(1)}K`;
+  return vol.toLocaleString();
+}
+
+function ActionRow({
+  icon,
+  label,
+  onPress,
+  last = false,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  onPress: () => void;
+  last?: boolean;
+}) {
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.65}
+      className={`flex-row items-center py-3.5 ${last ? '' : 'border-b border-[#1A1A1A]'}`}
+    >
+      <Ionicons name={icon} size={16} color="#666" />
+      <Text className="text-white text-[13px] ml-3 flex-1">{label}</Text>
+      <Ionicons name="chevron-forward" size={14} color="#444" />
+    </TouchableOpacity>
+  );
+}
+
 export const InfoTabContent: React.FC<InfoTabContentProps> = ({ stock }) => {
   const router = useRouter();
+  const { isWatchlisted, toggleWatchlist } = useWatchlist();
+  const watchlisted = isWatchlisted(stock.symbol);
+
+  const prevClose = (stock.price - (stock.changeValue ?? 0)).toFixed(2);
+  const sectorLine = [stock.sector, stock.industry].filter(Boolean).join(' · ') || 'PSX Listed';
+  const about =
+    stock.about ??
+    `${stock.name} is a publicly listed company on the Pakistan Stock Exchange.`;
 
   return (
-    <ScrollView className="flex-1 px-3 py-3 space-y-3" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
-      
-      {/* Stock Overview Card */}
-      <View className="bg-[#111214] border border-[#2A2B2F] rounded-xl p-4">
-        <Text className="text-white text-sm font-bold mb-4">Stock Overview</Text>
-        <View className="space-y-3">
-          <View className="flex-row justify-between">
-            <Text className="text-[#9CA3AF] text-[11px]">Symbol</Text>
-            <Text className="text-white text-[11px] font-semibold">{stock.symbol}</Text>
+    <View className="px-4 pt-3 pb-8">
+      {/* Company */}
+      <View className="mb-6">
+        <View className="flex-row items-center mb-1">
+          <Text className="text-white text-[15px] font-bold">{stock.symbol}</Text>
+          <Text className="text-[#444] text-[13px] mx-2">·</Text>
+          <Text className="text-[#666] text-[12px]">PSX</Text>
+        </View>
+        <Text className="text-[#9CA3AF] text-[13px] mb-2.5" numberOfLines={2}>
+          {stock.name}
+        </Text>
+        <View className="flex-row items-center flex-wrap gap-2 mb-3">
+          {stock.isShariahCompliant && (
+            <View className="bg-[#00C853]/10 px-2 py-0.5 rounded">
+              <Text className="text-[#00C853] text-[10px] font-medium">Shariah Compliant</Text>
+            </View>
+          )}
+          <Text className="text-[#555] text-[11px]">{sectorLine}</Text>
+        </View>
+        <Text className="text-[#666] text-[12px] leading-[18px]" numberOfLines={3}>
+          {about}
+        </Text>
+      </View>
+
+      {/* Market data */}
+      <View className="mb-6">
+        <SectionTitle>Market Data</SectionTitle>
+        <View className="border border-[#2A2B2F] rounded-xl overflow-hidden">
+          <View className="flex-row border-b border-[#2A2B2F]">
+            <StatCell label="Open" value={stock.open?.toFixed(2) ?? '—'} />
+            <View className="w-px bg-[#2A2B2F]" />
+            <StatCell label="Prev Close" value={prevClose} />
           </View>
-          <View className="flex-row justify-between">
-            <Text className="text-[#9CA3AF] text-[11px]">Company</Text>
-            <Text className="text-white text-[11px] font-semibold text-right flex-1 ml-4" numberOfLines={1}>{stock.name}</Text>
+          <View className="flex-row border-b border-[#2A2B2F]">
+            <StatCell label="Day High" value={stock.high?.toFixed(2) ?? '—'} valueColor="text-[#00C853]" />
+            <View className="w-px bg-[#2A2B2F]" />
+            <StatCell label="Day Low" value={stock.low?.toFixed(2) ?? '—'} valueColor="text-[#FF3B30]" />
           </View>
-          <View className="flex-row justify-between">
-            <Text className="text-[#9CA3AF] text-[11px]">Exchange</Text>
-            <Text className="text-white text-[11px] font-semibold">PSX</Text>
-          </View>
-          <View className="flex-row justify-between">
-            <Text className="text-[#9CA3AF] text-[11px]">Board</Text>
-            <Text className="text-white text-[11px] font-semibold">KSE 100</Text>
-          </View>
-          <View className="flex-row justify-between">
-            <Text className="text-[#9CA3AF] text-[11px]">Sector</Text>
-            <Text className="text-white text-[11px] font-semibold">Financials / Multi</Text>
-          </View>
-          <View className="flex-row justify-between">
-            <Text className="text-[#9CA3AF] text-[11px]">Shariah Status</Text>
-            <Text className={stock.isShariahCompliant ? 'text-[#00C853] text-[11px] font-semibold' : 'text-white text-[11px] font-semibold'}>
-              {stock.isShariahCompliant ? 'Compliant' : 'Non-Compliant'}
-            </Text>
+          <View className="flex-row">
+            <StatCell label="Volume" value={formatVolume(stock.volume)} />
+            <View className="w-px bg-[#2A2B2F]" />
+            <StatCell label="Avg Vol (20D)" value={String(stock.avgVolume ?? '—')} />
           </View>
         </View>
       </View>
 
-      {/* Trading Stats Card */}
-      <View className="bg-[#111214] border border-[#2A2B2F] rounded-xl p-4">
-        <Text className="text-white text-sm font-bold mb-4">Trading Stats</Text>
-        <View className="flex-row flex-wrap justify-between">
-          <View className="w-[48%] mb-3">
-            <Text className="text-[#9CA3AF] text-[10px] mb-0.5">Open</Text>
-            <Text className="text-white text-[11px] font-semibold">{stock.open?.toFixed(2) || '892.50'}</Text>
+      {/* Valuation */}
+      <View className="mb-6">
+        <SectionTitle>Valuation</SectionTitle>
+        <View className="flex-row border border-[#2A2B2F] rounded-xl overflow-hidden">
+          <StatCell label="P/E" value={String(stock.peRatio ?? '—')} />
+          <View className="w-px bg-[#2A2B2F]" />
+          <StatCell label="EPS (TTM)" value={String(stock.eps ?? '—')} />
+          <View className="w-px bg-[#2A2B2F]" />
+          <StatCell
+            label="Div. Yield"
+            value={stock.dividendYield != null ? `${stock.dividendYield}%` : '—'}
+          />
+        </View>
+        {stock.marketCap != null && (
+          <View className="flex-row justify-between items-center mt-3 px-1">
+            <Text className="text-[#555] text-[11px]">Market Cap</Text>
+            <Text className="text-white text-[12px] font-medium">{String(stock.marketCap)}</Text>
           </View>
-          <View className="w-[48%] mb-3">
-            <Text className="text-[#9CA3AF] text-[10px] mb-0.5">Prev Close</Text>
-            <Text className="text-white text-[11px] font-semibold">{(stock.price - (stock.changeValue || 0)).toFixed(2)}</Text>
-          </View>
-          <View className="w-[48%] mb-3">
-            <Text className="text-[#9CA3AF] text-[10px] mb-0.5">High</Text>
-            <Text className="text-[#00C853] text-[11px] font-semibold">{stock.high?.toFixed(2) || '912.50'}</Text>
-          </View>
-          <View className="w-[48%] mb-3">
-            <Text className="text-[#9CA3AF] text-[10px] mb-0.5">Low</Text>
-            <Text className="text-[#FF3B30] text-[11px] font-semibold">{stock.low?.toFixed(2) || '888.00'}</Text>
-          </View>
-          <View className="w-[48%] mb-3">
-            <Text className="text-[#9CA3AF] text-[10px] mb-0.5">Volume</Text>
-            <Text className="text-white text-[11px] font-semibold">{stock.volume ? (stock.volume / 1000000).toFixed(2) + 'M' : '2.90M'}</Text>
-          </View>
-          <View className="w-[48%] mb-3">
-            <Text className="text-[#9CA3AF] text-[10px] mb-0.5">Avg Vol (20D)</Text>
-            <Text className="text-white text-[11px] font-semibold">{stock.avgVolume || '2.21M'}</Text>
-          </View>
-          <View className="w-full">
-            <Text className="text-[#9CA3AF] text-[10px] mb-0.5">Market Cap</Text>
-            <Text className="text-white text-[11px] font-semibold">{stock.marketCap || 'Rs 69.42B'}</Text>
-          </View>
+        )}
+      </View>
+
+      {/* Trading rules */}
+      <View className="mb-6">
+        <SectionTitle>Trading</SectionTitle>
+        <View className="border border-[#2A2B2F] rounded-xl px-4 bg-[#111214]">
+          <InfoRow label="Exchange" value="PSX" />
+          <InfoRow label="Board" value="KSE 100" />
+          <InfoRow label="Tick Size" value="Rs 0.25" />
+          <InfoRow label="Min. Order" value="1 share" />
+          <InfoRow label="Order Types" value="Limit · Market · Stop" />
+          <InfoRow label="Settlement" value="T+2" last />
         </View>
       </View>
 
-      {/* Order Limits Card */}
-      <View className="bg-[#111214] border border-[#2A2B2F] rounded-xl p-4">
-        <Text className="text-white text-sm font-bold mb-4">Order Limits</Text>
-        <View className="space-y-3">
-          <View className="flex-row justify-between">
-            <Text className="text-[#9CA3AF] text-[11px]">Minimum Order</Text>
-            <Text className="text-white text-[11px] font-semibold">1 share</Text>
-          </View>
-          <View className="flex-row justify-between">
-            <Text className="text-[#9CA3AF] text-[11px]">Tick Size</Text>
-            <Text className="text-white text-[11px] font-semibold">Rs 0.25</Text>
-          </View>
-          <View className="flex-row justify-between">
-            <Text className="text-[#9CA3AF] text-[11px]">Order Types</Text>
-            <Text className="text-white text-[11px] font-semibold">Limit, Market, Stop Limit</Text>
-          </View>
-          <View className="flex-row justify-between">
-            <Text className="text-[#9CA3AF] text-[11px]">Time in Force</Text>
-            <Text className="text-white text-[11px] font-semibold">Day</Text>
-          </View>
-          <View className="flex-row justify-between">
-            <Text className="text-[#9CA3AF] text-[11px]">Settlement</Text>
-            <Text className="text-white text-[11px] font-semibold">T+2</Text>
-          </View>
+      {/* Actions */}
+      <View className="mb-5">
+        <SectionTitle>Actions</SectionTitle>
+        <View className="border border-[#2A2B2F] rounded-xl px-4 bg-[#111214]">
+          <ActionRow
+            icon={watchlisted ? 'star' : 'star-outline'}
+            label={watchlisted ? 'Remove from Watchlist' : 'Add to Watchlist'}
+            onPress={() => {
+              hapticLight();
+              toggleWatchlist(stock);
+            }}
+          />
+          <ActionRow
+            icon="analytics-outline"
+            label="Full Stock Detail"
+            onPress={() => router.push(`/stock/${stock.symbol}`)}
+          />
+          <ActionRow
+            icon="notifications-outline"
+            label="Set Price Alert"
+            onPress={() => router.push({ pathname: '/alerts/create', params: { symbol: stock.symbol } })}
+          />
+          <ActionRow
+            icon="list-outline"
+            label="Manage Alerts"
+            onPress={() => router.push('/alerts')}
+            last
+          />
         </View>
       </View>
 
-      {/* Risk Note Card */}
-      <View className="bg-[#FF8A00]/10 border border-[#FF8A00]/30 rounded-xl p-4 mb-2 flex-row">
-        <Ionicons name="warning" size={20} color="#FF8A00" className="mr-3" />
-        <View className="flex-1 ml-2">
-          <Text className="text-[#FF8A00] text-[11px] font-semibold mb-1">Trading Notice</Text>
-          <Text className="text-[#9CA3AF] text-[10px] leading-4">
-            Stock prices can move quickly during market hours. Review price, quantity, and available buying power before placing orders.
-          </Text>
-        </View>
-      </View>
-
-      {/* Related Actions */}
-      <View className="bg-[#111214] border border-[#2A2B2F] rounded-xl p-2 mb-4">
-        <TouchableOpacity className="flex-row items-center p-3 border-b border-[#2A2B2F]">
-          <Ionicons name="star-outline" size={18} color="#9CA3AF" />
-          <Text className="text-white text-xs font-semibold ml-3 flex-1">Add to Watchlist</Text>
-          <Ionicons name="chevron-forward" size={16} color="#9CA3AF" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push(`/stock/${stock.symbol}`)} className="flex-row items-center p-3 border-b border-[#2A2B2F]">
-          <Ionicons name="podium-outline" size={18} color="#9CA3AF" />
-          <Text className="text-white text-xs font-semibold ml-3 flex-1">View Stock Detail</Text>
-          <Ionicons name="chevron-forward" size={16} color="#9CA3AF" />
-        </TouchableOpacity>
-        <TouchableOpacity className="flex-row items-center p-3">
-          <Ionicons name="notifications-outline" size={18} color="#9CA3AF" />
-          <Text className="text-white text-xs font-semibold ml-3 flex-1">Set Price Alert</Text>
-          <Ionicons name="chevron-forward" size={16} color="#9CA3AF" />
-        </TouchableOpacity>
-      </View>
-
-    </ScrollView>
+      <Text className="text-[#444] text-[10px] leading-[15px] text-center px-2">
+        Prices may differ from the exchange during volatile periods. Confirm order details before submitting.
+      </Text>
+    </View>
   );
 };

@@ -68,6 +68,38 @@ export const MOCK_ORDER_BOOK: Record<string, OrderBookData> = {
     spread: {
       value: 0.05,
       percent: 0.66,
-    }
-  }
+    },
+  },
+  SAZEW: {
+    bids: [
+      { price: 2118.50, qty: 5200 },
+      { price: 2118.00, qty: 8400 },
+      { price: 2117.50, qty: 12600 },
+      { price: 2117.00, qty: 18300 },
+      { price: 2116.50, qty: 9700 },
+      { price: 2116.00, qty: 7900 },
+      { price: 2115.50, qty: 6200 },
+      { price: 2115.00, qty: 11500 },
+      { price: 2114.50, qty: 4100 },
+      { price: 2114.00, qty: 3800 },
+      { price: 2113.50, qty: 3500 },
+    ],
+    asks: [
+      { price: 2119.00, qty: 6300 },
+      { price: 2119.50, qty: 7800 },
+      { price: 2120.00, qty: 11200 },
+      { price: 2120.50, qty: 13400 },
+      { price: 2121.00, qty: 15600 },
+      { price: 2121.50, qty: 8900 },
+      { price: 2122.00, qty: 6700 },
+      { price: 2122.50, qty: 10200 },
+      { price: 2123.00, qty: 5400 },
+      { price: 2123.50, qty: 3900 },
+      { price: 2124.00, qty: 3200 },
+    ],
+    spread: {
+      value: 0.50,
+      percent: 0.02,
+    },
+  },
 };

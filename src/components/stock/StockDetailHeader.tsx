@@ -8,9 +8,16 @@ interface StockDetailHeaderProps {
   name: string;
   isWatchlisted: boolean;
   onWatchlistPress: () => void;
+  onAlertPress?: () => void;
 }
 
-export const StockDetailHeader: React.FC<StockDetailHeaderProps> = ({ symbol, name, isWatchlisted, onWatchlistPress }) => {
+export const StockDetailHeader: React.FC<StockDetailHeaderProps> = ({
+  symbol,
+  name,
+  isWatchlisted,
+  onWatchlistPress,
+  onAlertPress,
+}) => {
   const router = useRouter();
 
   return (
@@ -25,6 +32,11 @@ export const StockDetailHeader: React.FC<StockDetailHeaderProps> = ({ symbol, na
       </View>
 
       <View className="flex-row items-center">
+        {onAlertPress && (
+          <TouchableOpacity onPress={onAlertPress} className="p-2">
+            <Ionicons name="notifications-outline" size={22} color="#9CA3AF" />
+          </TouchableOpacity>
+        )}
         <TouchableOpacity onPress={() => router.push('/(tabs)/home')} className="p-2">
           <Ionicons name="home-outline" size={24} color="#9CA3AF" />
         </TouchableOpacity>

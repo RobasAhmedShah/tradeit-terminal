@@ -385,7 +385,10 @@ function SpotSuccessReceipt({
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity className="items-center pb-10">
+        <TouchableOpacity
+          className="items-center pb-10"
+          onPress={() => router.push({ pathname: '/alerts/create', params: { symbol: sym } })}
+        >
           <Text className="text-[#FF8A00] text-sm font-semibold">Set price alert for {sym} →</Text>
         </TouchableOpacity>
       </ScrollView>

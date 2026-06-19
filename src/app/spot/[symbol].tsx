@@ -75,10 +75,11 @@ export default function SpotTradingScreen() {
         
         {activeTab === 'Info' && <InfoTabContent stock={stock} />}
 
-        {/* Bottom Strip moved inside ScrollView as a compact block */}
-        <View className="mt-4 px-3">
-          <MarketRangeStrip stock={stock} />
-        </View>
+        {(activeTab === 'Chart') && (
+          <View className="mt-4 px-3">
+            <MarketRangeStrip stock={stock} />
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );

@@ -75,12 +75,12 @@ export default function HomeScreen() {
       <SectionHeader
         title="Watchlist"
         subtitle="My Stocks"
-        onViewAll={() => router.push('/watchlist')}
+        onViewAll={() => router.push('/markets?tab=watchlist')}
       />
       {watchlist.length === 0 ? (
         <View className="mx-4 py-6 items-center bg-[#111214] border border-[#1e1e1e] rounded-xl mb-2">
           <Text className="text-[#555] text-sm">No stocks in watchlist</Text>
-          <TouchableOpacity onPress={() => router.push('/watchlist')} className="mt-2">
+          <TouchableOpacity onPress={() => router.push('/markets?tab=watchlist')} className="mt-2">
             <Text className="text-[#FF8A00] text-sm font-semibold">Browse Stocks →</Text>
           </TouchableOpacity>
         </View>
@@ -102,7 +102,13 @@ export default function HomeScreen() {
 
       {/* Top Gainers */}
       <View className="mt-5 mb-4">
-        <Text className="text-white text-base font-bold mb-3 mx-4">Top Gainers</Text>
+        <View className="flex-row items-end justify-between px-4 mb-3">
+          <Text className="text-white text-base font-bold">Top Gainers</Text>
+          <TouchableOpacity onPress={() => router.push('/markets?tab=movers&type=gainers')} className="flex-row items-center">
+            <Text className="text-[#FF8A00] text-sm mr-1">View all</Text>
+            <Ionicons name="chevron-forward" size={14} color="#FF8A00" />
+          </TouchableOpacity>
+        </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16 }}>
           {MOCK_TOP_GAINERS.map(stock => (
             <MarketMoverChip key={stock.id} stock={stock} onPress={() => router.push(`/stock/${stock.symbol}`)} />
@@ -112,7 +118,13 @@ export default function HomeScreen() {
 
       {/* Top Losers */}
       <View className="mb-2">
-        <Text className="text-white text-base font-bold mb-3 mx-4">Top Losers</Text>
+        <View className="flex-row items-end justify-between px-4 mb-3">
+          <Text className="text-white text-base font-bold">Top Losers</Text>
+          <TouchableOpacity onPress={() => router.push('/markets?tab=movers&type=losers')} className="flex-row items-center">
+            <Text className="text-[#FF8A00] text-sm mr-1">View all</Text>
+            <Ionicons name="chevron-forward" size={14} color="#FF8A00" />
+          </TouchableOpacity>
+        </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16 }}>
           {MOCK_TOP_LOSERS.map(stock => (
             <MarketMoverChip key={stock.id} stock={stock} onPress={() => router.push(`/stock/${stock.symbol}`)} />
@@ -127,7 +139,7 @@ export default function HomeScreen() {
     <View style={{ backgroundColor: '#050505', borderBottomWidth: 1, borderBottomColor: '#141414' }}>
       <View className="flex-row items-center justify-between px-4 pt-5 pb-1">
         <Text className="text-white text-lg font-bold">Latest News</Text>
-        <TouchableOpacity onPress={() => router.push('/news')} className="flex-row items-center">
+        <TouchableOpacity onPress={() => router.push('/markets?tab=news')} className="flex-row items-center">
           <Text className="text-[#FF8A00] text-sm mr-1">View all</Text>
           <Ionicons name="chevron-forward" size={14} color="#FF8A00" />
         </TouchableOpacity>
@@ -170,7 +182,14 @@ export default function HomeScreen() {
     if (item.type === 'above-news') return renderAboveNews();
     if (item.type === 'news-tabs')  return renderNewsTabs();
     if (item.type === 'news')
-      return <NewsCard post={item.post} featured={item.featured} onDismiss={() => dismiss(item.post.id)} />;
+      return (
+        <NewsCard
+          post={item.post}
+          featured={item.featured}
+          onDismiss={() => dismiss(item.post.id)}
+          onOpen={() => router.push(`/news/${item.post.id}`)}
+        />
+      );
     return null;
   };
 

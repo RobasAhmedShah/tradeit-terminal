@@ -19,7 +19,7 @@ export const TradingTabs: React.FC<TradingTabsProps> = ({ activeTab, onTabChange
             onPress={() => onTabChange(tab)}
             className={`py-3 px-2 border-b-2 ${isActive ? 'border-[#FF8A00]' : 'border-transparent'}`}
           >
-            <Text className={`font-semibold ${isActive ? 'text-[#FF8A00]' : 'text-[#9CA3AF]'}`}>
+            <Text className={`text-[13px] font-semibold ${isActive ? 'text-[#FF8A00]' : 'text-[#9CA3AF]'}`}>
               {tab}
             </Text>
           </TouchableOpacity>

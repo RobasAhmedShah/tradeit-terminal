@@ -318,14 +318,14 @@ function SpotSuccessReceipt({
 
   const Row = ({ label, value, valueClass = 'text-white' }: { label: string; value: string; valueClass?: string }) => (
     <View className="flex-row justify-between py-3">
-      <Text className="text-[#666] text-sm">{label}</Text>
+      <Text className="text-[#9CA3AF] text-sm">{label}</Text>
       <Text className={`text-sm font-semibold ${valueClass}`}>{value}</Text>
     </View>
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0d0d0d]">
-      <View className="flex-row items-center px-4 py-3 border-b border-[#1e1e1e]">
+    <SafeAreaView className="flex-1 bg-[#050505]">
+      <View className="flex-row items-center px-4 py-3 border-b border-[#2A2B2F]">
         <TouchableOpacity onPress={onDone} className="w-10">
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
@@ -338,13 +338,13 @@ function SpotSuccessReceipt({
             <Ionicons name="checkmark" size={32} color="#4ade80" />
           </View>
           <Text className="text-white text-2xl font-bold mb-2">Order Placed!</Text>
-          <Text className="text-[#666] text-sm mb-4">Your {String(side).toLowerCase()} order is live on PSX</Text>
-          <View className="bg-[#1e1e1e] px-4 py-1.5 rounded-full border border-[#2a2a2a]">
+          <Text className="text-[#9CA3AF] text-sm mb-4">Your {String(side).toLowerCase()} order is live on PSX</Text>
+          <View className="bg-[#111214] px-4 py-1.5 rounded-full border border-[#2A2B2F]">
             <Text className="text-[#9CA3AF] text-xs font-semibold">Order ID {String(orderId)}</Text>
           </View>
         </View>
 
-        <View className="bg-[#111] rounded-2xl p-5 mb-8 border border-[#1e1e1e]">
+        <View className="bg-[#111214] rounded-2xl p-5 mb-8 border border-[#2A2B2F]">
           <Row label="Stock" value={`${sym} · ${Number(quantity).toLocaleString()} shares`} />
           <Row label="Type" value={`${side} · ${orderType}`} valueClass={typeColor} />
           <Row label="Limit Price" value={`Rs ${Number(price).toLocaleString(undefined, { minimumFractionDigits: 2 })}`} />
@@ -354,8 +354,8 @@ function SpotSuccessReceipt({
           />
           <Row label="Status" value={`● ${status}`} valueClass="text-[#4ade80]" />
           <View className="flex-row justify-between pt-3 mt-1">
-            <Text className="text-[#666] text-sm">Time</Text>
-            <Text className="text-[#666] text-sm font-semibold">{String(timestamp)}</Text>
+            <Text className="text-[#9CA3AF] text-sm">Time</Text>
+            <Text className="text-[#9CA3AF] text-sm font-semibold">{String(timestamp)}</Text>
           </View>
         </View>
 
@@ -370,13 +370,13 @@ function SpotSuccessReceipt({
           ) : null}
           <TouchableOpacity
             onPress={() => router.push('/portfolio/activity')}
-            className="items-center py-4 rounded-xl border border-[#2a2a2a] bg-[#111]"
+            className="items-center py-4 rounded-xl border border-[#2A2B2F] bg-[#111214]"
           >
             <Text className="text-white font-semibold">View Activity</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => router.push('/(tabs)/portfolio')}
-            className="items-center py-4 rounded-xl border border-[#FF8A00]/40 bg-[#111]"
+            className="items-center py-4 rounded-xl border border-[#FF8A00]/40 bg-[#111214]"
           >
             <Text className="text-[#FF8A00] font-bold">Portfolio</Text>
           </TouchableOpacity>
@@ -386,7 +386,7 @@ function SpotSuccessReceipt({
         </View>
 
         <TouchableOpacity className="items-center pb-10">
-          <Text className="text-[#f97316] text-sm font-semibold">Set price alert for {sym} →</Text>
+          <Text className="text-[#FF8A00] text-sm font-semibold">Set price alert for {sym} →</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

@@ -103,8 +103,6 @@ export default function TradeScreen() {
   const header = useMemo(
     () => (
       <View className="bg-[#050505]">
-        <TradeSearchBar value={draftQuery} onChangeText={setDraftQuery} />
-
         <View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-4">
             {MARKET_FILTERS.map((filter) => (
@@ -143,7 +141,7 @@ export default function TradeScreen() {
         />
       </View>
     ),
-    [draftQuery, activeFilter, sortField, sortDirection]
+    [activeFilter, sortField, sortDirection]
   );
 
   const renderEmpty = () => (
@@ -167,6 +165,8 @@ export default function TradeScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#050505]" edges={['top']}>
       <AppHeader />
+
+      <TradeSearchBar value={draftQuery} onChangeText={setDraftQuery} />
 
       <FlatList
         data={filteredStocks}

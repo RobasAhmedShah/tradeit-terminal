@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(del \"c:\\\\Users\\\\Pc\\\\Desktop\\\\Mudassir\\\\New_TradeIT_UI\\\\my-expo-app\\\\src\\\\app\\\\\\(order-flow\\)\\\\order-confirmation.tsx\")"
+    ]
+  }
+}

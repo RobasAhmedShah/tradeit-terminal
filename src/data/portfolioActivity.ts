@@ -12,19 +12,7 @@ export interface PortfolioActivity {
   status: 'completed' | 'pending' | 'processing';
 }
 
-export const SEED_ACTIVITIES: PortfolioActivity[] = [
-  {
-    id: 'act-seed-1',
-    type: 'order_pending',
-    title: 'Pending sell order',
-    subtitle: 'SELL 500 SAZEW @ Rs 2,125.00',
-    amount: 1062500,
-    symbol: 'SAZEW',
-    orderId: 'PSX-2026-001246',
-    timestamp: Date.now() - 1000 * 60 * 45,
-    status: 'pending',
-  },
-];
+export const SEED_ACTIVITIES: PortfolioActivity[] = [];
 
 export function formatActivityTime(ts: number): string {
   const d = new Date(ts);

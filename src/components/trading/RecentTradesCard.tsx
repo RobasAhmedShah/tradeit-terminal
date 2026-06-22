@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { MOCK_TRADES } from '../../data/mockTrades';
+import { MOCK_MARKET_STOCKS } from '../../data/mockStocks';
+import { buildTradesForStock } from '../../utils/tradeMarketDepth';
 
 interface RecentTradesCardProps {
   symbol: string;
@@ -9,7 +11,8 @@ interface RecentTradesCardProps {
 }
 
 export const RecentTradesCard: React.FC<RecentTradesCardProps> = ({ symbol, compact, maxRows }) => {
-  const allTrades = MOCK_TRADES[symbol] || MOCK_TRADES['AABS'];
+  const stock = MOCK_MARKET_STOCKS.find((s) => s.symbol === symbol);
+  const allTrades = MOCK_TRADES[symbol] ?? (stock ? buildTradesForStock(stock) : MOCK_TRADES['AABS']);
   const trades = compact ? allTrades.slice(0, maxRows || 6) : allTrades;
 
   return (

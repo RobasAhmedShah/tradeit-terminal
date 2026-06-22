@@ -41,7 +41,7 @@ export const FuturesOrderPanel: React.FC<FuturesOrderPanelProps> = ({
   onBookPriceFillConsumed,
 }) => {
   const router = useRouter();
-  const [orderType, setOrderType] = useState<FuturesOrderType>('Limit');
+  const [orderType, setOrderType] = useState<FuturesOrderType>('Market');
   const [limitPrice, setLimitPrice] = useState(formatFuturesPrice(contract.markPrice));
   const [quantity, setQuantity] = useState('1');
   const [sliderValue, setSliderValue] = useState(0);

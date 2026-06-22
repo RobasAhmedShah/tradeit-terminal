@@ -67,7 +67,7 @@ export default function StockDetailScreen() {
 
         {showChartSection && (
           <>
-            <StockLineChartPlaceholder />
+            <StockLineChartPlaceholder stock={stock} />
             <StockTimeframeTabs />
             <StockStatsGrid stock={stock} />
           </>

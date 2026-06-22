@@ -9,6 +9,11 @@ import { WatchlistProvider } from '../context/WatchlistContext';
 import { PortfolioProvider } from '../context/PortfolioContext';
 import { FuturesProvider } from '../context/FuturesContext';
 import { PriceAlertsProvider } from '../context/PriceAlertsContext';
+import { NotificationsProvider } from '../context/NotificationsContext';
+import { OrdersProvider } from '../context/OrdersContext';
+import { PriceAlertMonitor } from '../components/system/PriceAlertMonitor';
+import { OrderFillMonitor } from '../components/system/OrderFillMonitor';
+import { FuturesOrderFillMonitor } from '../components/system/FuturesOrderFillMonitor';
 import '../../global.css';
 
 
@@ -33,11 +38,37 @@ export default function RootLayout() {
           <PortfolioProvider>
             <FuturesProvider>
             <PriceAlertsProvider>
+            <NotificationsProvider>
+            <OrdersProvider>
+            <PriceAlertMonitor />
+            <OrderFillMonitor />
+            <FuturesOrderFillMonitor />
             <StatusBar style="light" />
-            <Stack screenOptions={{ headerShown: false }}>
+            <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
               <Stack.Screen name="(tabs)" />
               <Stack.Screen name="(account)" />
+              <Stack.Screen name="markets" />
+              <Stack.Screen name="stock/[symbol]" />
+              <Stack.Screen name="spot/[symbol]" />
+              <Stack.Screen name="alerts/index" options={{ presentation: 'card' }} />
+              <Stack.Screen name="alerts/create" />
+              <Stack.Screen name="orders/open" />
+              <Stack.Screen name="orders/history" />
+              <Stack.Screen name="orders/[id]" />
+              <Stack.Screen name="orders/edit/[id]" />
+              <Stack.Screen name="(order-flow)/order-review" />
+              <Stack.Screen name="(order-flow)/order-success" />
+              <Stack.Screen name="portfolio/holdings" />
+              <Stack.Screen name="portfolio/activity" />
+              <Stack.Screen name="portfolio/holding/[symbol]" />
+              <Stack.Screen name="futures/positions" />
+              <Stack.Screen name="futures/position/[id]" />
+              <Stack.Screen name="futures/close-review" />
+              <Stack.Screen name="futures/close-success" />
+              <Stack.Screen name="news/[id]" />
             </Stack>
+            </OrdersProvider>
+            </NotificationsProvider>
             </PriceAlertsProvider>
           </FuturesProvider>
           </PortfolioProvider>

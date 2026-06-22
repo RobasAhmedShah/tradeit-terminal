@@ -10,6 +10,7 @@ import { MOCK_MARKET_STOCKS } from '../data/mockStocks';
 import { PortfolioHolding, PortfolioSummary } from '../data/mockPortfolio';
 import { PortfolioActivity } from '../data/portfolioActivity';
 import { Stock } from '../types';
+import { tickStockPrice } from '../utils/marketsHub';
 import {
   DEFAULT_PORTFOLIO_STATE,
   loadPortfolioState,
@@ -66,7 +67,8 @@ function buildSummary(holdings: PortfolioHolding[], buyingPower: number): Portfo
   const baseForPct = holdingsValue - todayPnl;
 
   return {
-    totalValue: holdingsValue,
+    totalValue: holdingsValue + buyingPower,
+    holdingsValue,
     todayPnl,
     todayPnlPct: baseForPct > 0 ? Math.round((todayPnl / baseForPct) * 10000) / 100 : 0,
     totalReturn,
@@ -82,6 +84,7 @@ function prependActivity(activities: PortfolioActivity[], item: PortfolioActivit
 
 interface PortfolioContextType {
   holdings: PortfolioHolding[];
+  recentTradeSymbols: string[];
   summary: PortfolioSummary;
   activities: PortfolioActivity[];
   isRefreshing: boolean;
@@ -96,8 +99,10 @@ interface PortfolioContextType {
 
 const PortfolioContext = createContext<PortfolioContextType>({
   holdings: [],
+  recentTradeSymbols: [],
   summary: {
     totalValue: 0,
+    holdingsValue: 0,
     todayPnl: 0,
     todayPnlPct: 0,
     totalReturn: 0,
@@ -120,6 +125,8 @@ const stockMap = new Map(MOCK_MARKET_STOCKS.map((s) => [s.symbol, s]));
 
 export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [portfolio, setPortfolio] = useState<PortfolioPersistedState>(DEFAULT_PORTFOLIO_STATE);
+  const [livePrices, setLivePrices] = useState<Record<string, Stock>>({});
+  const [recentTradeSymbols, setRecentTradeSymbols] = useState<string[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastRefreshedAt, setLastRefreshedAt] = useState<number | null>(null);
@@ -136,12 +143,35 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     savePortfolioState(portfolio);
   }, [portfolio, loaded]);
 
+  const holdingSymbols = useMemo(
+    () => portfolio.holdings.filter((h) => h.qty > 0).map((h) => h.symbol),
+    [portfolio.holdings]
+  );
+
+  useEffect(() => {
+    if (holdingSymbols.length === 0) return;
+
+    const tick = () => {
+      setLivePrices((prev) => {
+        const next = { ...prev };
+        for (const sym of holdingSymbols) {
+          const base = next[sym] ?? stockMap.get(sym);
+          if (base) next[sym] = tickStockPrice(base);
+        }
+        return next;
+      });
+    };
+
+    const id = setInterval(tick, 3500);
+    return () => clearInterval(id);
+  }, [holdingSymbols]);
+
   const holdings = useMemo(
     () =>
       portfolio.holdings
         .filter((h) => h.qty > 0)
-        .map((core) => toDisplayHolding(core, stockMap.get(core.symbol))),
-    [portfolio.holdings]
+        .map((core) => toDisplayHolding(core, livePrices[core.symbol] ?? stockMap.get(core.symbol))),
+    [portfolio.holdings, livePrices]
   );
 
   const summary = useMemo(
@@ -205,14 +235,21 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, []);
 
   const applySpotTrade = useCallback((order: SpotOrderPayload) => {
-    const isBuy = order.side === 'BUY' || order.side === 'Buy';
+    const isBuy = order.side === 'BUY' || order.side === 'Buy' || order.side === 'buy';
+    const price = Number(order.price);
+    const quantity = Number(order.quantity);
+    const totalCost = Number(order.totalCost);
+    if (!order.symbol || !Number.isFinite(price) || !Number.isFinite(quantity) || quantity <= 0) {
+      return;
+    }
+
     const orderType = order.orderType ?? 'Market';
     const activity: PortfolioActivity = {
       id: `act-${Date.now()}`,
       type: isBuy ? 'buy' : 'sell',
       title: isBuy ? `Bought ${order.symbol}` : `Sold ${order.symbol}`,
-      subtitle: `${order.side} ${order.quantity} @ Rs ${order.price.toLocaleString()} · ${orderType}`,
-      amount: order.totalCost,
+      subtitle: `${order.side} ${quantity} @ Rs ${price.toLocaleString()} · ${orderType}`,
+      amount: totalCost,
       symbol: order.symbol,
       orderId: order.orderId,
       timestamp: Date.now(),
@@ -221,21 +258,21 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     setPortfolio((prev) => {
       if (isBuy) {
-        if (order.totalCost > prev.buyingPower) return prev;
+        if (!Number.isFinite(totalCost) || totalCost > prev.buyingPower) return prev;
 
         const idx = prev.holdings.findIndex((h) => h.symbol === order.symbol);
         let holdings: PortfolioHoldingCore[];
         if (idx >= 0) {
           holdings = [...prev.holdings];
-          holdings[idx] = mergeHolding(prev.holdings[idx], order.quantity, order.price);
+          holdings[idx] = mergeHolding(prev.holdings[idx], quantity, price);
         } else {
           const stock = stockMap.get(order.symbol);
           holdings = [
             {
               symbol: order.symbol,
               name: order.companyName ?? stock?.name ?? order.symbol,
-              qty: order.quantity,
-              avgCost: order.price,
+              qty: quantity,
+              avgCost: price,
               chartPath: 'M0,12 L10,8 L20,14 L30,6 L40,10',
             },
             ...prev.holdings,
@@ -243,33 +280,36 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         }
 
         return {
-          buyingPower: prev.buyingPower - order.totalCost,
+          buyingPower: prev.buyingPower - totalCost,
           holdings,
           activities: prependActivity(prev.activities, activity),
         };
       }
 
       const existing = prev.holdings.find((h) => h.symbol === order.symbol);
-      if (!existing || existing.qty < order.quantity) return prev;
+      if (!existing || existing.qty < quantity) return prev;
 
       const holdings = prev.holdings.map((h) =>
         h.symbol === order.symbol
-          ? { ...h, qty: Math.max(0, h.qty - order.quantity) }
+          ? { ...h, qty: Math.max(0, h.qty - quantity) }
           : h
       );
 
       return {
-        buyingPower: prev.buyingPower + order.totalCost,
+        buyingPower: prev.buyingPower + totalCost,
         holdings,
         activities: prependActivity(prev.activities, activity),
       };
     });
+
+    setRecentTradeSymbols((prev) => [order.symbol, ...prev.filter((s) => s !== order.symbol)].slice(0, 20));
   }, []);
 
   return (
     <PortfolioContext.Provider
       value={{
         holdings,
+        recentTradeSymbols,
         summary,
         activities: portfolio.activities,
         isRefreshing,

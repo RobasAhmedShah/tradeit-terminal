@@ -79,8 +79,11 @@ export default function HomeScreen() {
       />
       {watchlist.length === 0 ? (
         <View className="mx-4 py-6 items-center bg-[#111214] border border-[#1e1e1e] rounded-xl mb-2">
-          <Text className="text-[#555] text-sm">No stocks in watchlist</Text>
-          <TouchableOpacity onPress={() => router.push('/markets?tab=watchlist')} className="mt-2">
+          <Ionicons name="star-outline" size={28} color="#444" />
+          <Text className="text-[#888] text-sm mt-2 text-center px-4">
+            Star stocks from Trade or any stock page — they appear here instantly.
+          </Text>
+          <TouchableOpacity onPress={() => router.push('/(tabs)/trade')} className="mt-3">
             <Text className="text-[#FF8A00] text-sm font-semibold">Browse Stocks →</Text>
           </TouchableOpacity>
         </View>

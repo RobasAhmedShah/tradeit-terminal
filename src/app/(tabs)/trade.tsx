@@ -10,6 +10,7 @@ import { AdvancedFilterChip } from '../../components/ui/AdvancedFilterChip';
 import { MarketTableHeader } from '../../components/ui/MarketTableHeader';
 import { StockRow } from '../../components/ui/StockRow';
 import { KSE_100_SYMBOLS, KSE_30_SYMBOLS, MOCK_MARKET_STOCKS } from '../../data/mockStocks';
+import { useWatchlist } from '../../context/WatchlistContext';
 import {
   getDefaultSortDirection,
   getTradeMarketList,
@@ -36,6 +37,7 @@ const SORT_ICONS: Partial<Record<SortField, 'bar-chart'>> = {
 
 export default function TradeScreen() {
   const router = useRouter();
+  const { isWatchlisted, toggleWatchlist } = useWatchlist();
   // Keep the TextInput responsive, but debounce the actual list filtering.
   const [draftQuery, setDraftQuery] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -172,7 +174,12 @@ export default function TradeScreen() {
         data={filteredStocks}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <StockRow stock={item} onPress={() => handleRowPress(item.symbol)} />
+          <StockRow
+            stock={item}
+            onPress={() => handleRowPress(item.symbol)}
+            isWatchlisted={isWatchlisted(item.symbol)}
+            onWatchlistPress={() => toggleWatchlist(item)}
+          />
         )}
         ListHeaderComponent={header}
         ListEmptyComponent={renderEmpty}

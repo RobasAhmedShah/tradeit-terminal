@@ -1,8 +1,5 @@
 import { FuturesOrderType } from '../data/mockFutures';
 
-export const MOCK_AVAILABLE_MARGIN = 111_331;
-export const MOCK_USED_MARGIN = 18_742;
-
 export function calcLotsFromMarginPercent(
   availableMargin: number,
   percent: number,

@@ -3,7 +3,6 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useRef,
   useState,
 } from 'react';
 import {
@@ -13,8 +12,6 @@ import {
   FuturesOrderPayload,
   FuturesPosition,
   FUTURES_CONTRACTS,
-  MOCK_FUTURES_HISTORY,
-  MOCK_FUTURES_POSITIONS,
   calcUnrealizedPnl,
 } from '../data/mockFutures';
 import { FUTURES_MARKET_TICK_MS, tickFuturesContracts } from '../hooks/useFuturesMarket';
@@ -23,6 +20,11 @@ import {
   loadFuturesMargin,
   saveFuturesMargin,
 } from '../utils/futuresMarginPrefs';
+import {
+  FuturesPortfolioState,
+  loadFuturesPortfolio,
+  saveFuturesPortfolio,
+} from '../utils/futuresPortfolioPrefs';
 
 interface FuturesContextType {
   contracts: FuturesContract[];
@@ -36,6 +38,7 @@ interface FuturesContextType {
   fulfillFuturesOrder: (order: FuturesOrderPayload, orderId: string, timestamp: string) => void;
   closePosition: (position: FuturesPosition) => void;
   cancelOpenOrder: (order: FuturesOpenOrder) => void;
+  fillOpenOrder: (orderId: string) => boolean;
   getPositionById: (id: string) => FuturesPosition | undefined;
   addFuturesMargin: (amount: number) => void;
 }
@@ -52,6 +55,7 @@ const FuturesContext = createContext<FuturesContextType>({
   fulfillFuturesOrder: () => {},
   closePosition: () => {},
   cancelOpenOrder: () => {},
+  fillOpenOrder: () => false,
   getPositionById: () => undefined,
   addFuturesMargin: () => {},
 });
@@ -130,15 +134,22 @@ export const FuturesProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [contracts, setContracts] = useState<FuturesContract[]>(FUTURES_CONTRACTS);
   const [margin, setMargin] = useState<FuturesMarginBalance>({ available: 0, used: 0 });
   const [marginLoaded, setMarginLoaded] = useState(false);
+  const [portfolioLoaded, setPortfolioLoaded] = useState(false);
   const [isMarketLive, setIsMarketLive] = useState(false);
-  const [positions, setPositions] = useState<FuturesPosition[]>(MOCK_FUTURES_POSITIONS);
+  const [positions, setPositions] = useState<FuturesPosition[]>([]);
   const [openOrders, setOpenOrders] = useState<FuturesOpenOrder[]>([]);
-  const [orderHistory, setOrderHistory] = useState<FuturesHistoryItem[]>(MOCK_FUTURES_HISTORY);
+  const [orderHistory, setOrderHistory] = useState<FuturesHistoryItem[]>([]);
 
   useEffect(() => {
     loadFuturesMargin().then((loaded) => {
       setMargin(loaded);
       setMarginLoaded(true);
+    });
+    loadFuturesPortfolio().then((portfolio) => {
+      setPositions(portfolio.positions);
+      setOpenOrders(portfolio.openOrders);
+      setOrderHistory(portfolio.orderHistory);
+      setPortfolioLoaded(true);
     });
   }, []);
 
@@ -146,6 +157,12 @@ export const FuturesProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (!marginLoaded) return;
     saveFuturesMargin(margin);
   }, [margin, marginLoaded]);
+
+  useEffect(() => {
+    if (!portfolioLoaded) return;
+    const state: FuturesPortfolioState = { positions, openOrders, orderHistory };
+    saveFuturesPortfolio(state);
+  }, [positions, openOrders, orderHistory, portfolioLoaded]);
 
   useEffect(() => {
     setIsMarketLive(true);
@@ -233,6 +250,7 @@ export const FuturesProvider: React.FC<{ children: React.ReactNode }> = ({ child
         requiredMargin: order.totalCost,
         status: 'Pending',
         createdTime: timestamp,
+        createdAt: Date.now(),
       };
       setOpenOrders((prev) => [openOrder, ...prev]);
     },
@@ -259,6 +277,70 @@ export const FuturesProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setOrderHistory((prev) => [buildCancelHistory(order), ...prev]);
   }, []);
 
+  const fillOpenOrder = useCallback(
+    (orderId: string): boolean => {
+      let filled = false;
+
+      setOpenOrders((prevOrders) => {
+        const order = prevOrders.find((o) => o.id === orderId);
+        if (!order) return prevOrders;
+
+        const contract = contracts.find((c) => c.symbol === order.symbol);
+        const markPrice = contract?.markPrice ?? order.price;
+        filled = true;
+
+        setPositions((prevPos) => {
+          const idx = prevPos.findIndex((p) => p.symbol === order.symbol && p.side === order.side);
+          if (idx >= 0) {
+            const updated = [...prevPos];
+            updated[idx] = mergePosition(prevPos[idx], order.price, order.quantity, markPrice);
+            return updated;
+          }
+
+          const { pnl, pnlPct } = calcUnrealizedPnl(
+            order.side,
+            order.price,
+            markPrice,
+            order.quantity
+          );
+          const newPosition: FuturesPosition = {
+            id: order.id,
+            side: order.side,
+            symbol: order.symbol,
+            expiry: order.expiry,
+            leverage: order.leverage,
+            sizeLots: order.quantity,
+            entryPrice: order.price,
+            markPrice,
+            unrealizedPnl: pnl,
+            unrealizedPnlPct: pnlPct,
+          };
+          return [newPosition, ...prevPos];
+        });
+
+        setOrderHistory((prev) => [
+          {
+            id: `fh-${Date.now()}`,
+            type: 'order_filled',
+            symbol: order.symbol,
+            side: order.side,
+            quantity: order.quantity,
+            price: order.price,
+            leverage: order.leverage,
+            orderType: order.orderType,
+            timestamp: new Date().toLocaleTimeString('en-US', { hour12: false }) + ' PKT',
+          },
+          ...prev,
+        ]);
+
+        return prevOrders.filter((o) => o.id !== orderId);
+      });
+
+      return filled;
+    },
+    [contracts]
+  );
+
   const getPositionById = useCallback(
     (id: string) => positions.find((p) => p.id === id),
     [positions]
@@ -278,6 +360,7 @@ export const FuturesProvider: React.FC<{ children: React.ReactNode }> = ({ child
         fulfillFuturesOrder,
         closePosition,
         cancelOpenOrder,
+        fillOpenOrder,
         getPositionById,
         addFuturesMargin,
       }}

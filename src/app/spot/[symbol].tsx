@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams } from 'expo-router';
 
 // Mock Data
-import { MOCK_MARKET_STOCKS, MOCK_WATCHLIST } from '../../data/mockStocks';
+import { MOCK_MARKET_STOCKS } from '../../data/mockStocks';
 
 // Components
 import { SpotTradingHeader } from '../../components/trading/SpotTradingHeader';
@@ -24,8 +24,7 @@ export default function SpotTradingScreen() {
   const [activeTab, setActiveTab] = useState('Chart');
 
   // Find stock in mock data
-  const stock = MOCK_MARKET_STOCKS.find((s) => s.symbol === symbol) 
-             || MOCK_WATCHLIST.find((s) => s.symbol === symbol);
+  const stock = MOCK_MARKET_STOCKS.find((s) => s.symbol === symbol);
 
   if (!stock) {
     return (
@@ -51,7 +50,7 @@ export default function SpotTradingScreen() {
         {activeTab === 'Chart' && (
           <>
             <View className="mb-3 px-3">
-              <CandlestickChartPlaceholder />
+              <CandlestickChartPlaceholder stock={stock} />
             </View>
             
             <View className="flex-row px-3 gap-2">

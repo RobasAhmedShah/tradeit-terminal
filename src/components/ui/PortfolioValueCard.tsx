@@ -112,10 +112,10 @@ export const PortfolioValueCard = () => {
               const selected = acc.id === selectedId;
               const balance =
                 acc.id === 'main'
-                  ? summary.totalValue + summary.buyingPower
+                  ? summary.totalValue
                   : acc.id === 'margin'
                     ? summary.buyingPower
-                    : 1_000_000;
+                    : 0;
               return (
                 <TouchableOpacity
                   key={acc.id}

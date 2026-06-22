@@ -6,6 +6,8 @@ import { Ionicons } from '@expo/vector-icons';
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing } from 'react-native-reanimated';
 import { useFutures } from '../../context/FuturesContext';
 import { usePortfolio } from '../../context/PortfolioContext';
+import { useOrders } from '../../context/OrdersContext';
+import { useNotifications } from '../../context/NotificationsContext';
 import { formatFuturesPrice, FuturesOrderPayload } from '../../data/mockFutures';
 
 const SPOT_STEPS = [
@@ -29,10 +31,13 @@ export default function OrderSuccessScreen() {
   const { data } = useLocalSearchParams<{ data: string }>();
   const { fulfillFuturesOrder } = useFutures();
   const { applySpotTrade } = usePortfolio();
+  const { addPendingOrder } = useOrders();
+  const { pushNotification } = useNotifications();
 
   const [isProcessing, setIsProcessing] = useState(true);
   const [activeStep, setActiveStep] = useState(0);
   const [orderFinalData, setOrderFinalData] = useState<Record<string, unknown> | null>(null);
+  const tradeAppliedRef = React.useRef(false);
 
   const parsedOrder = React.useMemo(() => {
     if (!data) return null;
@@ -58,6 +63,25 @@ export default function OrderSuccessScreen() {
       return () => subscription.remove();
     }, [isProcessing])
   );
+
+  // Apply market fills immediately so portfolio updates while the user can switch tabs.
+  useEffect(() => {
+    if (!parsedOrder || isFutures || tradeAppliedRef.current) return;
+
+    const orderType = String(parsedOrder.orderType ?? 'Market');
+    if (orderType === 'Limit') return;
+
+    tradeAppliedRef.current = true;
+    applySpotTrade({
+      symbol: String(parsedOrder.symbol),
+      companyName: String(parsedOrder.companyName ?? parsedOrder.symbol),
+      side: String(parsedOrder.side),
+      price: Number(parsedOrder.price),
+      quantity: Number(parsedOrder.quantity),
+      totalCost: Number(parsedOrder.totalCost),
+      orderType,
+    });
+  }, [parsedOrder, isFutures, applySpotTrade]);
 
   useEffect(() => {
     if (!isProcessing || !data) return;
@@ -110,16 +134,25 @@ export default function OrderSuccessScreen() {
           timestamp
         );
       } else if (parsedOrder) {
-        applySpotTrade({
-          symbol: parsedOrder.symbol,
-          companyName: parsedOrder.companyName,
-          side: parsedOrder.side,
-          price: parsedOrder.price,
-          quantity: parsedOrder.quantity,
-          totalCost: parsedOrder.totalCost,
-          orderId,
-          orderType: parsedOrder.orderType,
-        });
+        const orderType = String(parsedOrder.orderType ?? 'Market');
+        if (orderType === 'Limit') {
+          const created = addPendingOrder({
+            symbol: String(parsedOrder.symbol),
+            companyName: String(parsedOrder.companyName ?? parsedOrder.symbol),
+            side: parsedOrder.side === 'SELL' || parsedOrder.side === 'Sell' ? 'SELL' : 'BUY',
+            type: 'Limit',
+            quantity: Number(parsedOrder.quantity),
+            price: Number(parsedOrder.price),
+            totalCost: Number(parsedOrder.totalCost),
+          });
+          pushNotification({
+            type: 'order',
+            title: 'Order Submitted',
+            body: `${parsedOrder.side} ${parsedOrder.quantity} ${parsedOrder.symbol} @ Rs ${Number(parsedOrder.price).toFixed(2)} is pending on PSX.`,
+            symbol: String(parsedOrder.symbol),
+            orderId: created.id,
+          });
+        }
       }
 
       setOrderFinalData(finalData);
@@ -127,7 +160,7 @@ export default function OrderSuccessScreen() {
     }, 500);
 
     return () => clearInterval(interval);
-  }, [data, isProcessing, isFutures, parsedOrder, steps.length, fulfillFuturesOrder, applySpotTrade]);
+  }, [data, isProcessing, isFutures, parsedOrder, steps.length, fulfillFuturesOrder, addPendingOrder, pushNotification]);
 
   if (!data && !isProcessing) {
     return (

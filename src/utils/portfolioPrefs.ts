@@ -1,8 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { INITIAL_PORTFOLIO_HOLDINGS, PORTFOLIO_SUMMARY } from '../data/mockPortfolio';
-import { PortfolioActivity, SEED_ACTIVITIES } from '../data/portfolioActivity';
+import { PortfolioActivity } from '../data/portfolioActivity';
 
-const STORAGE_KEY = '@tradeit/portfolio_v3';
+const STORAGE_KEY = '@tradeit/portfolio_v4';
 
 export interface PortfolioHoldingCore {
   symbol: string;
@@ -19,15 +18,9 @@ export interface PortfolioPersistedState {
 }
 
 export const DEFAULT_PORTFOLIO_STATE: PortfolioPersistedState = {
-  buyingPower: PORTFOLIO_SUMMARY.buyingPower,
-  holdings: INITIAL_PORTFOLIO_HOLDINGS.map(({ symbol, name, qty, avgCost, chartPath }) => ({
-    symbol,
-    name,
-    qty,
-    avgCost,
-    chartPath,
-  })),
-  activities: SEED_ACTIVITIES,
+  buyingPower: 0,
+  holdings: [],
+  activities: [],
 };
 
 export async function loadPortfolioState(): Promise<PortfolioPersistedState> {
@@ -39,9 +32,9 @@ export async function loadPortfolioState(): Promise<PortfolioPersistedState> {
       buyingPower:
         typeof parsed.buyingPower === 'number' && parsed.buyingPower >= 0
           ? parsed.buyingPower
-          : DEFAULT_PORTFOLIO_STATE.buyingPower,
-      holdings: Array.isArray(parsed.holdings) ? parsed.holdings : DEFAULT_PORTFOLIO_STATE.holdings,
-      activities: Array.isArray(parsed.activities) ? parsed.activities : DEFAULT_PORTFOLIO_STATE.activities,
+          : 0,
+      holdings: Array.isArray(parsed.holdings) ? parsed.holdings : [],
+      activities: Array.isArray(parsed.activities) ? parsed.activities : [],
     };
   } catch {
     return DEFAULT_PORTFOLIO_STATE;

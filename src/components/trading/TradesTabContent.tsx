@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { MOCK_TRADES } from '../../data/mockTrades';
+import { buildTradesForStock } from '../../utils/tradeMarketDepth';
 import { Stock } from '../../types';
 
 interface TradesTabContentProps {
@@ -20,7 +21,7 @@ function formatVolume(vol?: number): string {
 }
 
 export const TradesTabContent: React.FC<TradesTabContentProps> = ({ stock }) => {
-  const allTrades = MOCK_TRADES[stock.symbol] || MOCK_TRADES['SAZEW'];
+  const allTrades = MOCK_TRADES[stock.symbol] ?? buildTradesForStock(stock);
   const [filter, setFilter] = useState<TradeFilter>('All');
 
   const filteredTrades = useMemo(() => {

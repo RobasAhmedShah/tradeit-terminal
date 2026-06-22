@@ -10,14 +10,19 @@ import { FuturesPortfolioSummaryCard } from '../../components/futures/FuturesPor
 import { usePortfolio } from '../../context/PortfolioContext';
 import { formatPortfolioRs } from '../../data/mockPortfolio';
 import { sortHoldings } from '../../utils/portfolioUi';
-import { PortfolioActivityList } from '../../components/portfolio/PortfolioActivityList';
 
 export default function PortfolioScreen() {
   const router = useRouter();
-  const { holdings, summary, activities, isRefreshing, lastRefreshedAt, refreshPortfolio } = usePortfolio();
+  const { holdings, summary, recentTradeSymbols, isRefreshing, lastRefreshedAt, refreshPortfolio } = usePortfolio();
 
-  const previewHoldings = useMemo(() => sortHoldings(holdings, 'value').slice(0, 3), [holdings]);
-  const recentActivity = useMemo(() => activities.slice(0, 2), [activities]);
+  const previewHoldings = useMemo(() => {
+    const byValue = sortHoldings(holdings, 'value');
+    const pinned = recentTradeSymbols
+      .map((sym) => holdings.find((h) => h.symbol === sym))
+      .filter((h): h is NonNullable<typeof h> => !!h);
+    const rest = byValue.filter((h) => !recentTradeSymbols.includes(h.symbol));
+    return [...pinned, ...rest].slice(0, 5);
+  }, [holdings, recentTradeSymbols]);
   const isPnlPositive = summary.todayPnl >= 0;
 
   const refreshedLabel = lastRefreshedAt
@@ -105,17 +110,6 @@ export default function PortfolioScreen() {
             </Text>
             <Text className="text-[#9CA3AF] text-[9px]">View holdings</Text>
           </TouchableOpacity>
-        </View>
-
-        <View className="mx-4 mb-4">
-          <View className="flex-row justify-between items-end mb-3">
-            <Text className="text-white text-sm font-semibold">Recent Activity</Text>
-            <TouchableOpacity onPress={() => router.push('/portfolio/activity')}>
-              <Text className="text-[#FF8A00] text-xs font-semibold">View all</Text>
-            </TouchableOpacity>
-          </View>
-
-          <PortfolioActivityList items={recentActivity} compact />
         </View>
 
         <View className="mx-4 mb-4">

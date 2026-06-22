@@ -20,8 +20,10 @@ export interface Order {
   remainingQty: number;
   price: number;
   avgPrice?: number;
+  totalCost?: number;
   status: OrderStatus;
   createdTime: string;
+  createdAt?: number;
   date: string;
   timeline: OrderTimelineEvent[];
 }

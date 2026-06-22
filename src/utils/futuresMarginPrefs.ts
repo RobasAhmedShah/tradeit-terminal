@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { MOCK_AVAILABLE_MARGIN, MOCK_USED_MARGIN } from './futuresOrderMath';
 
-const STORAGE_KEY = '@tradeit/futures_margin';
+const STORAGE_KEY = '@tradeit/futures_margin_v2';
 
 export interface FuturesMarginBalance {
   available: number;
@@ -9,8 +8,8 @@ export interface FuturesMarginBalance {
 }
 
 export const DEFAULT_FUTURES_MARGIN: FuturesMarginBalance = {
-  available: MOCK_AVAILABLE_MARGIN,
-  used: MOCK_USED_MARGIN,
+  available: 0,
+  used: 0,
 };
 
 export async function loadFuturesMargin(): Promise<FuturesMarginBalance> {
@@ -20,13 +19,8 @@ export async function loadFuturesMargin(): Promise<FuturesMarginBalance> {
     const parsed = JSON.parse(raw) as Partial<FuturesMarginBalance>;
     return {
       available:
-        typeof parsed.available === 'number' && parsed.available >= 0
-          ? parsed.available
-          : DEFAULT_FUTURES_MARGIN.available,
-      used:
-        typeof parsed.used === 'number' && parsed.used >= 0
-          ? parsed.used
-          : DEFAULT_FUTURES_MARGIN.used,
+        typeof parsed.available === 'number' && parsed.available >= 0 ? parsed.available : 0,
+      used: typeof parsed.used === 'number' && parsed.used >= 0 ? parsed.used : 0,
     };
   } catch {
     return DEFAULT_FUTURES_MARGIN;

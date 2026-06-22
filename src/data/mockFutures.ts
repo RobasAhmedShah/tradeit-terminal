@@ -60,6 +60,7 @@ export interface FuturesOpenOrder {
   requiredMargin: number;
   status: 'Pending';
   createdTime: string;
+  createdAt?: number;
 }
 
 export interface FuturesOrderPayload {

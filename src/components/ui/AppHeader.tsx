@@ -2,9 +2,11 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useNotifications } from '../../context/NotificationsContext';
 
 export const AppHeader = () => {
   const router = useRouter();
+  const { unreadCount } = useNotifications();
 
   return (
     <View className="flex-row items-center justify-between px-4 py-3 bg-[#050505]">
@@ -30,9 +32,13 @@ export const AppHeader = () => {
 
         <TouchableOpacity className="relative" onPress={() => router.push('/notifications')}>
           <Ionicons name="notifications-outline" size={24} color="#FFFFFF" />
-          <View className="absolute -top-1 -right-1 bg-[#FF8A00] rounded-full w-4 h-4 items-center justify-center border border-[#050505]">
-            <Text className="text-white text-[9px] font-bold">2</Text>
-          </View>
+          {unreadCount > 0 && (
+            <View className="absolute -top-1 -right-1 bg-[#FF8A00] rounded-full min-w-[16px] h-4 px-0.5 items-center justify-center border border-[#050505]">
+              <Text className="text-white text-[9px] font-bold">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </Text>
+            </View>
+          )}
         </TouchableOpacity>
       </View>
     </View>

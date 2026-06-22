@@ -3,10 +3,12 @@ import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { MOCK_ORDERS, Order } from '../../data/mockOrders';
+import { useOrders } from '../../context/OrdersContext';
+import { Order } from '../../data/mockOrders';
 
 export default function OrderHistoryScreen() {
   const router = useRouter();
+  const { orders } = useOrders();
   const [activeTab, setActiveTab] = useState('All');
 
   const filterOrders = (orders: Order[], tab: string) => {
@@ -23,7 +25,7 @@ export default function OrderHistoryScreen() {
     });
   };
 
-  const displayedOrders = filterOrders(MOCK_ORDERS, activeTab);
+  const displayedOrders = filterOrders(orders, activeTab);
 
   return (
     <SafeAreaView className="flex-1 bg-[#0d0d0d]">

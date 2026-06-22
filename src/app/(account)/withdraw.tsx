@@ -4,11 +4,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { usePortfolio } from '../../context/PortfolioContext';
+import { formatPortfolioRs } from '../../data/mockPortfolio';
 
 // ─── Mock Data ─────────────────────────────────────────────────────────────────
 const WITHDRAW_MOCK = {
-  totalBalance:    'PKR 15,896,666.00',
-  availableAmount: 'PKR 12,456,789.00',
   withdrawAmount:  25000,
   bank:            'Meezan Bank',
   accountNumber:   '**** **** **** 1234',
@@ -40,8 +39,11 @@ type Step = 1 | 2 | 3 | 4 | 5 | 6;
 
 export default function WithdrawScreen() {
   const router = useRouter();
-  const { withdrawCash } = usePortfolio();
+  const { withdrawCash, summary } = usePortfolio();
   const inputRefs = useRef<(TextInput | null)[]>([]);
+
+  const balanceLabel = `PKR ${formatPortfolioRs(summary.totalValue)}`;
+  const availableLabel = `PKR ${formatPortfolioRs(summary.buyingPower)}`;
 
   const [step, setStep]                               = useState<Step>(1);
   const [selectedMethod, setSelectedMethod]           = useState('bankTransfer');
@@ -182,11 +184,11 @@ export default function WithdrawScreen() {
       <View style={{ paddingHorizontal: 14, paddingTop: 16, paddingBottom: 14, borderBottomWidth: 0.5, borderBottomColor: '#1e1e1e', marginBottom: 14 }}>
         <Text style={{ color: '#555', fontSize: 11, fontWeight: '500', marginBottom: 4 }}>Total Balance</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Text style={{ color: '#fff', fontSize: 26, fontWeight: '700', letterSpacing: -0.5 }}>{WITHDRAW_MOCK.totalBalance}</Text>
+          <Text style={{ color: '#fff', fontSize: 26, fontWeight: '700', letterSpacing: -0.5 }}>{balanceLabel}</Text>
           <Ionicons name="eye-outline" size={16} color="#555" style={{ marginLeft: 8 }} />
         </View>
         <Text style={{ color: '#555', fontSize: 11, marginTop: 6 }}>Available for Withdrawal</Text>
-        <Text style={{ color: '#f97316', fontSize: 13, fontWeight: '600', marginTop: 2 }}>{WITHDRAW_MOCK.availableAmount}</Text>
+        <Text style={{ color: '#f97316', fontSize: 13, fontWeight: '600', marginTop: 2 }}>{availableLabel}</Text>
       </View>
 
       {/* Method Selection */}
@@ -291,7 +293,7 @@ export default function WithdrawScreen() {
       {/* Balance Row */}
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
         <Text style={{ color: '#555', fontSize: 12 }}>Available Balance</Text>
-        <Text style={{ color: '#22c55e', fontSize: 12, fontWeight: '600' }}>{WITHDRAW_MOCK.availableAmount}</Text>
+        <Text style={{ color: '#22c55e', fontSize: 12, fontWeight: '600' }}>{availableLabel}</Text>
       </View>
 
       {/* Amount Input */}

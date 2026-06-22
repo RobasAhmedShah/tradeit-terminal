@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { MOCK_ORDER_BOOK } from '../../data/mockOrderBook';
+import { MOCK_MARKET_STOCKS } from '../../data/mockStocks';
+import { buildOrderBookForStock } from '../../utils/tradeMarketDepth';
 
 interface OrderBookCardProps {
   symbol: string;
@@ -10,7 +12,8 @@ interface OrderBookCardProps {
 }
 
 export const OrderBookCard: React.FC<OrderBookCardProps> = ({ symbol, compact, maxRows }) => {
-  const data = MOCK_ORDER_BOOK[symbol] || MOCK_ORDER_BOOK['AABS'];
+  const stock = MOCK_MARKET_STOCKS.find((s) => s.symbol === symbol);
+  const data = MOCK_ORDER_BOOK[symbol] ?? (stock ? buildOrderBookForStock(stock) : MOCK_ORDER_BOOK['AABS']);
   const displayBids = compact ? data.bids.slice(0, maxRows || 6) : data.bids;
   const displayAsks = compact ? data.asks.slice(0, maxRows || 6) : data.asks;
 

@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { MOCK_ORDER_BOOK } from '../../data/mockOrderBook';
+import { buildOrderBookForStock } from '../../utils/tradeMarketDepth';
 import { OrderBookLevel, Stock } from '../../types';
 
 interface OrderBookTabContentProps {
@@ -56,7 +57,7 @@ function BookSide({
 }
 
 export const OrderBookTabContent: React.FC<OrderBookTabContentProps> = ({ stock }) => {
-  const data = MOCK_ORDER_BOOK[stock.symbol] || MOCK_ORDER_BOOK['SAZEW'];
+  const data = MOCK_ORDER_BOOK[stock.symbol] ?? buildOrderBookForStock(stock);
   const [depthIdx, setDepthIdx] = useState(1);
   const depth = DEPTH_OPTIONS[depthIdx];
 

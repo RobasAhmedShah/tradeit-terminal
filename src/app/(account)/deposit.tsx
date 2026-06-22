@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useFutures } from '../../context/FuturesContext';
 import { usePortfolio } from '../../context/PortfolioContext';
+import { formatPortfolioRs } from '../../data/mockPortfolio';
 import { formatFuturesPrice } from '../../data/mockFutures';
 
 // ─── Mock Data ─────────────────────────────────────────────────────────────────
@@ -48,7 +49,10 @@ type Step = 1 | 2 | 3 | 4 | 5 | 6;
 export default function DepositScreen() {
   const router = useRouter();
   const { addFuturesMargin, marginAvailable } = useFutures();
-  const { addCash } = usePortfolio();
+  const { addCash, summary } = usePortfolio();
+
+  const balanceLabel = `PKR ${formatPortfolioRs(summary.totalValue)}`;
+  const availableLabel = `PKR ${formatPortfolioRs(summary.buyingPower)}`;
 
   const [step, setStep]                           = useState<Step>(1);
   const [selectedMethod, setSelectedMethod]       = useState('bankTransfer');
@@ -186,11 +190,11 @@ export default function DepositScreen() {
       <View style={{ paddingHorizontal: 14, paddingTop: 16, paddingBottom: 14, borderBottomWidth: 0.5, borderBottomColor: '#1e1e1e', marginBottom: 14 }}>
         <Text style={{ color: '#555', fontSize: 11, fontWeight: '500', marginBottom: 4 }}>Total Balance</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          <Text style={{ color: '#fff', fontSize: 26, fontWeight: '700', letterSpacing: -0.5 }}>{DEPOSIT_MOCK.balance}</Text>
+          <Text style={{ color: '#fff', fontSize: 26, fontWeight: '700', letterSpacing: -0.5 }}>{balanceLabel}</Text>
           <Ionicons name="eye-outline" size={16} color="#555" />
         </View>
         <Text style={{ color: '#555', fontSize: 11, marginTop: 4 }}>Available for Deposit</Text>
-        <Text style={{ color: '#f97316', fontSize: 13, fontWeight: '600', marginTop: 2 }}>{DEPOSIT_MOCK.available}</Text>
+        <Text style={{ color: '#f97316', fontSize: 13, fontWeight: '600', marginTop: 2 }}>{availableLabel}</Text>
       </View>
 
       {/* Method Selection */}
@@ -304,7 +308,7 @@ export default function DepositScreen() {
           style={{ fontSize: 28, fontWeight: '700', color: '#fff' }}
         />
       </View>
-      <Text style={{ color: '#555', fontSize: 11, marginTop: 8 }}>Available Balance: {DEPOSIT_MOCK.available}</Text>
+      <Text style={{ color: '#555', fontSize: 11, marginTop: 8 }}>Available Balance: {availableLabel}</Text>
 
       {/* Quick Amounts */}
       <Text style={{ color: '#e0e0e0', fontSize: 12, fontWeight: '600', marginTop: 16, marginBottom: 8 }}>Quick Amounts</Text>

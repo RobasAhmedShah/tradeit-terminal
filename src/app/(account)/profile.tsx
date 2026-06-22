@@ -3,9 +3,11 @@ import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useNotifications } from '../../context/NotificationsContext';
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const { unreadCount } = useNotifications();
 
   const handleLogout = () => {
     Alert.alert('Log Out', 'Are you sure you want to log out?', [
@@ -48,9 +50,13 @@ export default function ProfileScreen() {
           <Ionicons name="headset-outline" size={20} color="#e0e0e0" style={{ marginRight: 12 }} />
           <TouchableOpacity className="relative" onPress={() => router.push('/notifications')}>
             <Ionicons name="notifications-outline" size={20} color="#e0e0e0" />
-            <View className="absolute -top-1 -right-1 w-[14px] h-[14px] bg-[#f97316] rounded-full items-center justify-center border border-[#0a0a0c]">
-              <Text className="text-white text-[8px] font-bold">3</Text>
-            </View>
+            {unreadCount > 0 && (
+              <View className="absolute -top-1 -right-1 min-w-[14px] h-[14px] px-0.5 bg-[#f97316] rounded-full items-center justify-center border border-[#0a0a0c]">
+                <Text className="text-white text-[8px] font-bold">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </Text>
+              </View>
+            )}
           </TouchableOpacity>
         </View>
       </View>

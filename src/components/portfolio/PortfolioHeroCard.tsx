@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, Modal } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Path, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { usePortfolio } from '../../context/PortfolioContext';
@@ -18,6 +19,7 @@ const SPARKLINE_UP = 'M0,60 C20,50 30,55 40,40 C50,25 60,35 70,20 C80,5 90,15 11
 const SPARKLINE_DOWN = 'M0,5 C20,15 30,10 40,25 C50,40 60,30 70,45 C80,60 90,50 110,65';
 
 export const PortfolioHeroCard: React.FC = () => {
+  const router = useRouter();
   const { summary, holdings, getStockBySymbol } = usePortfolio();
   const [activeRange, setActiveRange] = useState<PortfolioRange>('1D');
   const [isHidden, setIsHidden] = useState(false);
@@ -31,6 +33,7 @@ export const PortfolioHeroCard: React.FC = () => {
   );
 
   const isPositive = rangeStats.periodPnl >= 0;
+  const isEmpty = summary.totalValue === 0 && holdings.length === 0;
   const sparkPath = isPositive ? SPARKLINE_UP : SPARKLINE_DOWN;
   const sparkFill = `${sparkPath} L110,65 L0,65 Z`;
   const sparkColor = isPositive ? '#00C853' : '#FF3B30';
@@ -67,6 +70,19 @@ export const PortfolioHeroCard: React.FC = () => {
         <Text className="text-[#FF8A00] text-xs font-semibold mb-3 z-10 relative">
           {isHidden ? 'Cash hidden' : `Buying power: Rs ${formatPortfolioRs(summary.buyingPower)}`}
         </Text>
+
+        {!isHidden && isEmpty && (
+          <TouchableOpacity
+            onPress={() => router.push('/deposit')}
+            className="mb-3 z-10 relative flex-row items-center bg-[#FF8A00]/10 border border-[#FF8A00]/30 rounded-xl px-3 py-2.5"
+          >
+            <Ionicons name="arrow-down-circle-outline" size={18} color="#FF8A00" />
+            <Text className="text-[#FF8A00] text-xs font-semibold ml-2 flex-1">
+              Deposit funds to start trading
+            </Text>
+            <Ionicons name="chevron-forward" size={14} color="#FF8A00" />
+          </TouchableOpacity>
+        )}
 
         <View className="z-10 relative">
           {isHidden ? (

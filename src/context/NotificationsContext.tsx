@@ -1,6 +1,8 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import {
   AppNotification,
+  createNotificationId,
+  dedupeNotifications,
   formatNotifTime,
   loadNotifications,
   saveNotifications,
@@ -48,7 +50,7 @@ export const NotificationsProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     loadNotifications().then((items) => {
-      setNotifications(items);
+      setNotifications((prev) => dedupeNotifications([...prev, ...items]));
       setReady(true);
     });
   }, []);
@@ -61,7 +63,7 @@ export const NotificationsProvider: React.FC<{ children: React.ReactNode }> = ({
   const pushNotification = useCallback((input: PushNotificationInput) => {
     const createdAt = Date.now();
     const item: AppNotification = {
-      id: `notif-${createdAt}`,
+      id: createNotificationId(),
       type: input.type,
       title: input.title,
       body: input.body,
@@ -73,7 +75,7 @@ export const NotificationsProvider: React.FC<{ children: React.ReactNode }> = ({
       newsId: input.newsId,
       createdAt,
     };
-    setNotifications((prev) => [item, ...prev].slice(0, 80));
+    setNotifications((prev) => dedupeNotifications([item, ...prev]).slice(0, 80));
     return item;
   }, []);
 

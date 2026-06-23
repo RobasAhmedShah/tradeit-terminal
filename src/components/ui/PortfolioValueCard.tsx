@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Modal } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Polyline } from 'react-native-svg';
 import { usePortfolio } from '../../context/PortfolioContext';
@@ -14,6 +15,7 @@ const ACCOUNTS = [
 const SPARKLINE = [42, 39, 45, 38, 48, 44, 51, 47, 55, 50, 58, 62];
 
 export const PortfolioValueCard = () => {
+  const router = useRouter();
   const { summary } = usePortfolio();
   const [isHidden, setIsHidden] = useState(false);
   const [selectedId, setSelectedId] = useState('main');
@@ -21,6 +23,7 @@ export const PortfolioValueCard = () => {
 
   const account = ACCOUNTS.find((a) => a.id === selectedId)!;
   const isPositive = summary.todayPnl >= 0;
+  const isEmpty = summary.totalValue === 0;
 
   const W = 100;
   const H = 44;
@@ -58,6 +61,10 @@ export const PortfolioValueCard = () => {
 
             {isHidden ? (
               <Text className="text-[#555] text-xs">Balance hidden</Text>
+            ) : isEmpty ? (
+              <TouchableOpacity onPress={() => router.push('/deposit')} className="flex-row items-center">
+                <Text className="text-[#FF8A00] text-sm font-semibold">Deposit to get started →</Text>
+              </TouchableOpacity>
             ) : (
               <>
                 <Text className="text-[#9CA3AF] text-xs mb-1">Today's P/L</Text>

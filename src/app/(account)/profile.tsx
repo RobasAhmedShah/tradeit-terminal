@@ -4,10 +4,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useNotifications } from '../../context/NotificationsContext';
+import { usePortfolio } from '../../context/PortfolioContext';
+import { formatPortfolioRs } from '../../data/mockPortfolio';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { unreadCount } = useNotifications();
+  const { summary } = usePortfolio();
+
+  const returnPositive = summary.totalReturn >= 0;
 
   const handleLogout = () => {
     Alert.alert('Log Out', 'Are you sure you want to log out?', [
@@ -102,74 +107,118 @@ export default function ProfileScreen() {
           <View className="flex-row py-4 border-t border-[#1e1e1e]">
             <View className="flex-1 items-center border-r border-[#222] px-1">
               <Text className="text-[#666] text-[10px] mb-1.5">Total Equity</Text>
-              <Text className="text-white text-[13px] font-bold">PKR 104,973.92</Text>
+              <Text className="text-white text-[13px] font-bold">PKR {formatPortfolioRs(summary.totalValue)}</Text>
             </View>
             <View className="flex-1 items-center border-r border-[#222] px-1">
               <Text className="text-[#666] text-[10px] mb-1.5">Buying Power</Text>
-              <Text className="text-white text-[13px] font-bold">PKR 450,000.00</Text>
+              <Text className="text-white text-[13px] font-bold">PKR {formatPortfolioRs(summary.buyingPower)}</Text>
             </View>
             <View className="flex-1 items-center px-1">
               <Text className="text-[#666] text-[10px] mb-1.5">Total Return</Text>
-              <Text className="text-[#ef4444] text-[13px] font-bold">-5.71%</Text>
+              <Text className={`text-[13px] font-bold ${returnPositive ? 'text-[#22c55e]' : 'text-[#ef4444]'}`}>
+                {returnPositive ? '+' : ''}{summary.totalReturnPct}%
+              </Text>
             </View>
           </View>
         </View>
 
         {/* SECTION 3 - QUICK ACTIONS ROW */}
         <View className="mx-4 mb-6 flex-row justify-between bg-[#131316] rounded-xl py-5 px-2">
-          <TouchableOpacity className="flex-1 items-center flex-col">
+          <TouchableOpacity className="flex-1 items-center flex-col" onPress={() => router.push('/(tabs)/portfolio')}>
             <View className="w-12 h-12 rounded-full bg-[#1a1a1a] items-center justify-center mb-2 border border-[#222]">
               <Ionicons name="person-outline" size={20} color="#f97316" />
             </View>
             <Text className="text-[#888] text-[9px] text-center leading-3">Account{'\n'}Overview</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="flex-1 items-center flex-col">
-            <View className="w-12 h-12 rounded-full bg-[#1a1a1a] items-center justify-center mb-2 border border-[#222] relative">
-              <Ionicons name="shield-checkmark-outline" size={20} color="#f97316" />
-              <View className="absolute top-0 right-0 w-2.5 h-2.5 bg-[#22c55e] rounded-full border-2 border-[#131316]" />
-            </View>
-            <Text className="text-[#888] text-[9px] text-center leading-3">KYC{'\n'}Status</Text>
-          </TouchableOpacity>
-          <TouchableOpacity className="flex-1 items-center flex-col">
+          <TouchableOpacity className="flex-1 items-center flex-col" onPress={() => router.push('/deposit')}>
             <View className="w-12 h-12 rounded-full bg-[#1a1a1a] items-center justify-center mb-2 border border-[#222]">
               <Ionicons name="business-outline" size={20} color="#f97316" />
             </View>
-            <Text className="text-[#888] text-[9px] text-center leading-3">Bank{'\n'}Accounts</Text>
+            <Text className="text-[#888] text-[9px] text-center leading-3">Deposit{'\n'}Funds</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="flex-1 items-center flex-col">
+          <TouchableOpacity className="flex-1 items-center flex-col" onPress={() => router.push('/orders/open')}>
             <View className="w-12 h-12 rounded-full bg-[#1a1a1a] items-center justify-center mb-2 border border-[#222]">
-              <Ionicons name="shield-outline" size={20} color="#f97316" />
+              <Ionicons name="list-outline" size={20} color="#f97316" />
             </View>
-            <Text className="text-[#888] text-[9px] text-center leading-3">Security</Text>
+            <Text className="text-[#888] text-[9px] text-center leading-3">Open{'\n'}Orders</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="flex-1 items-center flex-col">
+          <TouchableOpacity className="flex-1 items-center flex-col" onPress={() => router.push('/alerts')}>
             <View className="w-12 h-12 rounded-full bg-[#1a1a1a] items-center justify-center mb-2 border border-[#222]">
-              <Ionicons name="document-text-outline" size={20} color="#f97316" />
+              <Ionicons name="alarm-outline" size={20} color="#f97316" />
             </View>
-            <Text className="text-[#888] text-[9px] text-center leading-3">Documents</Text>
+            <Text className="text-[#888] text-[9px] text-center leading-3">Price{'\n'}Alerts</Text>
+          </TouchableOpacity>
+          <TouchableOpacity className="flex-1 items-center flex-col" onPress={() => router.push('/notifications')}>
+            <View className="w-12 h-12 rounded-full bg-[#1a1a1a] items-center justify-center mb-2 border border-[#222] relative">
+              <Ionicons name="notifications-outline" size={20} color="#f97316" />
+            </View>
+            <Text className="text-[#888] text-[9px] text-center leading-3">Notifi{'\n'}cations</Text>
           </TouchableOpacity>
         </View>
 
         {/* SECTION 4 - MENU LIST */}
         <View className="mx-4 mb-4 bg-[#131316] rounded-xl overflow-hidden">
-          <MenuRow icon="person-outline" title="Account Information" sub="Personal details, address, CNIC" />
-          <MenuRow icon="briefcase-outline" title="Brokerage Accounts" sub="Manage your connected brokers" />
-          <MenuRow icon="link-outline" title="Linked Accounts" sub="Banks, eWallets & other accounts" />
-          <MenuRow icon="lock-closed-outline" title="Security Settings" sub="Password, 2FA, biometric" isSecurity={true} />
+          <MenuRow
+            icon="person-outline"
+            title="Account Information"
+            sub="Personal details, address, CNIC"
+            onPress={() => Alert.alert('Coming Soon', 'Account information will be available in a future update.')}
+          />
+          <MenuRow
+            icon="briefcase-outline"
+            title="Brokerage Accounts"
+            sub="Manage your connected brokers"
+            onPress={() => router.push('/(tabs)/portfolio')}
+          />
+          <MenuRow
+            icon="link-outline"
+            title="Linked Accounts"
+            sub="Banks, eWallets & other accounts"
+            onPress={() => router.push('/deposit')}
+          />
+          <MenuRow
+            icon="lock-closed-outline"
+            title="Security Settings"
+            sub="Password, 2FA, biometric"
+            isSecurity={true}
+            onPress={() => Alert.alert('Coming Soon', 'Security settings will be available in a future update.')}
+          />
           <MenuRow
             icon="alarm-outline"
             title="Price Alerts"
             sub="Create and manage stock price alerts"
             onPress={() => router.push('/alerts')}
           />
-          <MenuRow icon="notifications-outline" title="Notification Settings" sub="Price alerts, order updates, news" />
-          <MenuRow icon="options-outline" title="Preferences" sub="Theme, language, default market" hideBorder={true} />
+          <MenuRow
+            icon="notifications-outline"
+            title="Notification Settings"
+            sub="Price alerts, order updates, news"
+            onPress={() => router.push('/notifications')}
+          />
+          <MenuRow
+            icon="options-outline"
+            title="Preferences"
+            sub="Theme, language, default market"
+            hideBorder={true}
+            onPress={() => router.push('/(tabs)/trade')}
+          />
         </View>
 
         {/* SECTION 5 - SUPPORT LIST */}
         <View className="mx-4 mb-4 bg-[#131316] rounded-xl overflow-hidden">
-          <MenuRow icon="help-circle-outline" title="Help & Support" sub="FAQs, guides & customer support" />
-          <MenuRow icon="information-circle-outline" title="About TradeIt" sub="App info, terms & conditions" hideBorder={true} />
+          <MenuRow
+            icon="help-circle-outline"
+            title="Help & Support"
+            sub="FAQs, guides & customer support"
+            onPress={() => Alert.alert('Help & Support', 'Contact support@tradeit.app for assistance.')}
+          />
+          <MenuRow
+            icon="information-circle-outline"
+            title="About TradeIt"
+            sub="App info, terms & conditions"
+            hideBorder={true}
+            onPress={() => Alert.alert('TradeIt', 'TradeIt PSX demo app · v1.0')}
+          />
         </View>
 
         {/* SECTION 6 - LOG OUT BUTTON */}

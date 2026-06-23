@@ -32,13 +32,25 @@ const OrdersContext = createContext<OrdersContextType>({
   addPendingOrder: () => ({}) as Order,
 });
 
+function mergeStoredOrders(stored: Order[], inMemory: Order[]): Order[] {
+  const byId = new Map<string, Order>();
+  for (const order of stored) byId.set(order.id, order);
+  for (const order of inMemory) {
+    const existing = byId.get(order.id);
+    if (!existing || (order.createdAt ?? 0) >= (existing.createdAt ?? 0)) {
+      byId.set(order.id, order);
+    }
+  }
+  return [...byId.values()].sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
+}
+
 export const OrdersProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     loadOrders().then((data) => {
-      setOrders(data);
+      setOrders((prev) => mergeStoredOrders(data, prev));
       setReady(true);
     });
   }, []);

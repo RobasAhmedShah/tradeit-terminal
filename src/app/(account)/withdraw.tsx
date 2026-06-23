@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, TextInput, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -93,6 +93,7 @@ export default function WithdrawScreen() {
 
   const parsedAmount     = parseInt(amount, 10) || 0;
   const isAmountValid    = parsedAmount >= 1000;
+  const exceedsBalance   = parsedAmount > summary.buyingPower;
 
   useEffect(() => {
     if (step !== 6 || parsedAmount <= 0 || cashDebited) return;
@@ -313,6 +314,11 @@ export default function WithdrawScreen() {
         />
       </View>
       <Text style={{ color: '#555', fontSize: 11, marginTop: 8 }}>Minimum Withdrawal: PKR 1,000</Text>
+      {exceedsBalance && parsedAmount > 0 && (
+        <Text style={{ color: '#ef4444', fontSize: 11, marginTop: 6 }}>
+          Amount exceeds available balance ({availableLabel}).
+        </Text>
+      )}
       <Text style={{ color: '#555', fontSize: 11, marginTop: 2 }}>Daily Limit: PKR 500,000.00</Text>
 
       {/* Quick Amounts */}
@@ -344,7 +350,20 @@ export default function WithdrawScreen() {
         </TouchableOpacity>
       </View>
 
-      {renderContinueBtn(() => setStep(4), 'Continue', !isAmountValid)}
+      {renderContinueBtn(
+        () => {
+          if (exceedsBalance) {
+            Alert.alert(
+              'Insufficient balance',
+              `You can withdraw up to ${availableLabel} from your spot buying power.`
+            );
+            return;
+          }
+          setStep(4);
+        },
+        'Continue',
+        !isAmountValid || exceedsBalance
+      )}
     </ScrollView>
   );
 

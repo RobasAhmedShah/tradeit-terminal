@@ -4,7 +4,7 @@ import { usePortfolio } from '../../context/PortfolioContext';
 import { useNotifications } from '../../context/NotificationsContext';
 import { Order } from '../../data/mockOrders';
 
-const FILL_DELAY_MS = 5000;
+const FILL_DELAY_MS = 60_000;
 const POLL_MS = 2000;
 
 function estimateTotalCost(price: number, quantity: number): number {

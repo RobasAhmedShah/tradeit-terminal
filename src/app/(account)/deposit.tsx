@@ -227,7 +227,7 @@ export default function DepositScreen() {
       <View style={{ marginHorizontal: 14, marginTop: 6, backgroundColor: '#111111', borderRadius: 10, padding: 12, flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
         <Ionicons name="information-circle-outline" size={14} color="#555" style={{ marginTop: 1 }} />
         <Text style={{ color: '#555', fontSize: 11, lineHeight: 17, flex: 1 }}>
-          Deposits are usually processed within 10–30 minutes during working hours.
+          Every deposit adds PKR to your spot wallet (buying power). On the review step you can optionally credit the same amount to futures margin too.
         </Text>
       </View>
 

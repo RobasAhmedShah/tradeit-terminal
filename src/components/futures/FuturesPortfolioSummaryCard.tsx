@@ -7,7 +7,7 @@ import { formatFuturesPrice } from '../../data/mockFutures';
 
 export const FuturesPortfolioSummaryCard: React.FC = () => {
   const router = useRouter();
-  const { positions, marginAvailable, marginUsed, isMarketLive } = useFutures();
+  const { positions, openOrders, marginAvailable, marginUsed, isMarketLive } = useFutures();
 
   const totalUnrealizedPnl = useMemo(
     () => positions.reduce((sum, position) => sum + position.unrealizedPnl, 0),
@@ -15,6 +15,30 @@ export const FuturesPortfolioSummaryCard: React.FC = () => {
   );
 
   const isPositive = totalUnrealizedPnl >= 0;
+  const isEmpty = marginAvailable === 0 && marginUsed === 0 && positions.length === 0 && openOrders.length === 0;
+
+  if (isEmpty) {
+    return (
+      <TouchableOpacity
+        activeOpacity={0.9}
+        onPress={() => router.push('/deposit')}
+        className="mx-4 mb-4 bg-[#111214] border border-[#2A2B2F] rounded-2xl p-4"
+      >
+        <View className="flex-row items-center">
+          <View className="w-9 h-9 rounded-full bg-[#FF8A00]/15 items-center justify-center mr-2.5">
+            <Ionicons name="trending-up" size={18} color="#FF8A00" />
+          </View>
+          <View className="flex-1">
+            <Text className="text-white text-sm font-bold">Futures Margin</Text>
+            <Text className="text-[#9CA3AF] text-[11px] mt-0.5">
+              No futures balance yet. Deposit and enable futures credit.
+            </Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color="#FF8A00" />
+        </View>
+      </TouchableOpacity>
+    );
+  }
 
   return (
     <TouchableOpacity

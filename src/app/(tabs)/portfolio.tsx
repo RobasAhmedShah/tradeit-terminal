@@ -10,6 +10,7 @@ import { FuturesPortfolioSummaryCard } from '../../components/futures/FuturesPor
 import { usePortfolio } from '../../context/PortfolioContext';
 import { formatPortfolioRs } from '../../data/mockPortfolio';
 import { sortHoldings } from '../../utils/portfolioUi';
+import { OpenOrdersBanner } from '../../components/portfolio/OpenOrdersBanner';
 
 export default function PortfolioScreen() {
   const router = useRouter();
@@ -49,6 +50,8 @@ export default function PortfolioScreen() {
         <Text className="text-[#9CA3AF] text-[10px] text-center mt-1 mb-1">{refreshedLabel}</Text>
 
         <PortfolioHeroCard />
+
+        <OpenOrdersBanner />
 
         <FuturesPortfolioSummaryCard />
 

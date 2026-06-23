@@ -22,6 +22,7 @@ interface FuturesPortfolioSectionProps {
   positions: FuturesPosition[];
   openOrders: FuturesOpenOrder[];
   orderHistory: FuturesHistoryItem[];
+  marginAvailable?: number;
   onClosePosition: (position: FuturesPosition) => void;
   onCancelOrder: (order: FuturesOpenOrder) => void;
 }
@@ -82,6 +83,7 @@ export const FuturesPortfolioSection: React.FC<FuturesPortfolioSectionProps> = (
   positions,
   openOrders,
   orderHistory,
+  marginAvailable = 0,
   onClosePosition,
   onCancelOrder,
 }) => {
@@ -141,6 +143,11 @@ export const FuturesPortfolioSection: React.FC<FuturesPortfolioSectionProps> = (
         (positions.length === 0 ? (
           <View className="bg-[#111214] border border-[#2A2B2F] rounded-xl p-6 items-center">
             <Text className="text-[#9CA3AF] text-sm">No open positions</Text>
+            {marginAvailable === 0 && openOrders.length === 0 && (
+              <TouchableOpacity onPress={() => router.push('/deposit')} className="mt-3">
+                <Text className="text-[#FF8A00] text-sm font-semibold">Add futures margin →</Text>
+              </TouchableOpacity>
+            )}
           </View>
         ) : (
           positions.slice(0, previewLimit).map((position) => (

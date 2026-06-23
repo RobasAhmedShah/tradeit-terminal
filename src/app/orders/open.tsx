@@ -130,6 +130,13 @@ export default function OpenOrdersScreen() {
             );
           })
         )}
+        <TouchableOpacity
+          onPress={() => router.push('/alerts')}
+          className="mx-4 mb-6 mt-2 py-3 flex-row items-center justify-center border border-[#2a2a2a] rounded-xl"
+        >
+          <Ionicons name="alarm-outline" size={16} color="#FF8A00" style={{ marginRight: 8 }} />
+          <Text className="text-[#FF8A00] text-sm font-semibold">Manage price alerts</Text>
+        </TouchableOpacity>
         <View className="h-10" />
       </ScrollView>
     </SafeAreaView>

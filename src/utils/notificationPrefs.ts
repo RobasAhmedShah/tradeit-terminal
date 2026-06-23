@@ -18,6 +18,22 @@ export interface AppNotification {
 
 const STORAGE_KEY = '@tradeit/notifications_v1';
 
+let notificationSeq = 0;
+
+export function createNotificationId(): string {
+  notificationSeq += 1;
+  return `notif-${Date.now()}-${notificationSeq}`;
+}
+
+export function dedupeNotifications(items: AppNotification[]): AppNotification[] {
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    if (seen.has(item.id)) return false;
+    seen.add(item.id);
+    return true;
+  });
+}
+
 export const SEED_NOTIFICATIONS: AppNotification[] = [
   {
     id: 'n1',
@@ -96,7 +112,7 @@ export async function loadNotifications(): Promise<AppNotification[]> {
     const raw = await AsyncStorage.getItem(STORAGE_KEY);
     if (!raw) return SEED_NOTIFICATIONS;
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : SEED_NOTIFICATIONS;
+    return dedupeNotifications(Array.isArray(parsed) ? parsed : SEED_NOTIFICATIONS);
   } catch {
     return SEED_NOTIFICATIONS;
   }

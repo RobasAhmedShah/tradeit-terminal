@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
@@ -14,7 +14,7 @@ interface BuySellPanelProps {
 
 export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice }) => {
   const router = useRouter();
-  const { summary } = usePortfolio();
+  const { summary, getHolding } = usePortfolio();
   const [side, setSide] = useState<'buy' | 'sell'>('buy');
   const [orderType, setOrderType] = useState('Market');
   const [price, setPrice] = useState(currentPrice.toString());
@@ -37,6 +37,29 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice
   const totalCharges = (brokerage + fed + secp).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   const handleCtaPress = () => {
+    if (q <= 0 || p <= 0) {
+      Alert.alert('Invalid order', 'Enter a valid price and quantity.');
+      return;
+    }
+
+    const holding = getHolding(symbol);
+
+    if (!isBuy) {
+      if (!holding || holding.qty < q) {
+        Alert.alert(
+          'Insufficient shares',
+          `You only own ${holding?.qty?.toFixed(0) ?? 0} shares of ${symbol}.`
+        );
+        return;
+      }
+    } else if (totalCost > buyingPower) {
+      Alert.alert(
+        'Insufficient buying power',
+        `You need Rs ${formatPortfolioRs(totalCost)} but only have Rs ${formatPortfolioRs(buyingPower)} available. Deposit funds first.`
+      );
+      return;
+    }
+
     const stock = MOCK_MARKET_STOCKS.find((s) => s.symbol === symbol);
 
     const jsorderParams = {
@@ -77,13 +100,16 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice
       </View>
 
       <View className="flex-row justify-between items-center mb-3">
-        <View className="flex-row gap-3">
+        <View className="flex-row gap-2">
           {['Limit', 'Market', 'Stop Limit'].map((type) => (
-            <TouchableOpacity key={type} onPress={() => setOrderType(type)}>
+            <TouchableOpacity
+              key={type}
+              onPress={() => setOrderType(type)}
+              className={`px-2 py-1 rounded-md ${orderType === type ? 'bg-[#18191C] border border-[#2A2B2F]' : ''}`}
+            >
               <Text className={`text-[10px] font-semibold ${orderType === type ? mainColorText : 'text-[#9CA3AF]'}`}>
                 {type}
               </Text>
-              {orderType === type && <View className={`h-0.5 mt-1 ${mainColor}`} />}
             </TouchableOpacity>
           ))}
         </View>
@@ -132,9 +158,13 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice
 
       <View className="space-y-1.5 mb-3">
         <View className="flex-row justify-between items-center">
-          <Text className="text-[#9CA3AF] text-[9px]">Buying Power</Text>
+          <Text className="text-[#9CA3AF] text-[9px]">
+            {isBuy ? 'Buying Power' : 'Shares Owned'}
+          </Text>
           <Text className="text-[#FF8A00] text-[11px] font-semibold">
-            Rs {formatPortfolioRs(buyingPower)}
+            {isBuy
+              ? `Rs ${formatPortfolioRs(buyingPower)}`
+              : `${getHolding(symbol)?.qty?.toFixed(0) ?? 0} shares`}
           </Text>
         </View>
       </View>

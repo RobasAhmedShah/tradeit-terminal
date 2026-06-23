@@ -9,6 +9,9 @@ import {
   FuturesSide,
 } from '../../data/mockFutures';
 import { usePortfolio } from '../../context/PortfolioContext';
+import { useOrders } from '../../context/OrdersContext';
+import { useNotifications } from '../../context/NotificationsContext';
+import { isPendingSpotOrderType } from '../../utils/spotOrderTypes';
 
 type RowProps = { label: string; value: string; valueColor?: string };
 
@@ -241,6 +244,8 @@ function SpotOrderReview({
 }) {
   const router = useRouter();
   const { summary } = usePortfolio();
+  const { addPendingOrder } = useOrders();
+  const { pushNotification } = useNotifications();
 
   const symbol = String(data.symbol ?? '---');
   const companyName = String(data.companyName ?? '---');
@@ -266,6 +271,30 @@ function SpotOrderReview({
   const afterOrder = isBuy ? availableBalance - totalCost : availableBalance + totalCost;
 
   const handleConfirm = () => {
+    if (isPendingSpotOrderType(orderType)) {
+      const created = addPendingOrder({
+        symbol,
+        companyName,
+        side: isBuy ? 'BUY' : 'SELL',
+        type: orderType === 'Stop Limit' ? 'Stop Limit' : 'Limit',
+        quantity,
+        price,
+        totalCost,
+      });
+
+      pushNotification({
+        type: 'order',
+        title: 'Order Submitted',
+        body: `${side} ${quantity} ${symbol} @ Rs ${price.toFixed(2)} is pending on PSX.`,
+        symbol,
+        orderId: created.id,
+      });
+
+      const payload = { ...data, pendingOrderId: created.id };
+      router.replace({ pathname: '/order-success', params: { data: JSON.stringify(payload) } });
+      return;
+    }
+
     router.replace({ pathname: '/order-success', params: { data: rawData } });
   };
 

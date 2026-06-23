@@ -9,6 +9,7 @@ import { usePortfolio } from '../../context/PortfolioContext';
 import { useOrders } from '../../context/OrdersContext';
 import { useNotifications } from '../../context/NotificationsContext';
 import { formatFuturesPrice, FuturesOrderPayload } from '../../data/mockFutures';
+import { isPendingSpotOrderType } from '../../utils/spotOrderTypes';
 
 const SPOT_STEPS = [
   'Order validated',
@@ -38,6 +39,7 @@ export default function OrderSuccessScreen() {
   const [activeStep, setActiveStep] = useState(0);
   const [orderFinalData, setOrderFinalData] = useState<Record<string, unknown> | null>(null);
   const tradeAppliedRef = React.useRef(false);
+  const pendingOrderRef = React.useRef<string | null>(null);
 
   const parsedOrder = React.useMemo(() => {
     if (!data) return null;
@@ -69,7 +71,7 @@ export default function OrderSuccessScreen() {
     if (!parsedOrder || isFutures || tradeAppliedRef.current) return;
 
     const orderType = String(parsedOrder.orderType ?? 'Market');
-    if (orderType === 'Limit') return;
+    if (isPendingSpotOrderType(orderType)) return;
 
     tradeAppliedRef.current = true;
     applySpotTrade({
@@ -82,6 +84,38 @@ export default function OrderSuccessScreen() {
       orderType,
     });
   }, [parsedOrder, isFutures, applySpotTrade]);
+
+  // Fallback if a limit order was not registered on the review screen.
+  useEffect(() => {
+    if (!parsedOrder || isFutures || pendingOrderRef.current) return;
+
+    const orderType = String(parsedOrder.orderType ?? 'Market');
+    if (!isPendingSpotOrderType(orderType)) return;
+
+    if (parsedOrder.pendingOrderId) {
+      pendingOrderRef.current = String(parsedOrder.pendingOrderId);
+      return;
+    }
+
+    const created = addPendingOrder({
+      symbol: String(parsedOrder.symbol),
+      companyName: String(parsedOrder.companyName ?? parsedOrder.symbol),
+      side: parsedOrder.side === 'SELL' || parsedOrder.side === 'Sell' ? 'SELL' : 'BUY',
+      type: orderType === 'Stop Limit' ? 'Stop Limit' : 'Limit',
+      quantity: Number(parsedOrder.quantity),
+      price: Number(parsedOrder.price),
+      totalCost: Number(parsedOrder.totalCost),
+    });
+    pendingOrderRef.current = created.id;
+
+    pushNotification({
+      type: 'order',
+      title: 'Order Submitted',
+      body: `${parsedOrder.side} ${parsedOrder.quantity} ${parsedOrder.symbol} @ Rs ${Number(parsedOrder.price).toFixed(2)} is pending on PSX.`,
+      symbol: String(parsedOrder.symbol),
+      orderId: created.id,
+    });
+  }, [parsedOrder, isFutures, addPendingOrder, pushNotification]);
 
   useEffect(() => {
     if (!isProcessing || !data) return;
@@ -105,7 +139,7 @@ export default function OrderSuccessScreen() {
         ? `#FUT-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.floor(1000 + Math.random() * 9000)}`
         : `#PSX-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.floor(1000 + Math.random() * 9000)}`;
       const timestamp = new Date().toLocaleTimeString('en-US', { hour12: false }) + ' PKT';
-      const status = parsedOrder?.orderType === 'Limit' ? 'Pending fill' : 'Executed';
+      const status = isPendingSpotOrderType(parsedOrder?.orderType) ? 'Pending fill' : 'Executed';
 
       const finalData = {
         ...parsedOrder,
@@ -133,26 +167,17 @@ export default function OrderSuccessScreen() {
           orderId,
           timestamp
         );
-      } else if (parsedOrder) {
-        const orderType = String(parsedOrder.orderType ?? 'Market');
-        if (orderType === 'Limit') {
-          const created = addPendingOrder({
-            symbol: String(parsedOrder.symbol),
-            companyName: String(parsedOrder.companyName ?? parsedOrder.symbol),
-            side: parsedOrder.side === 'SELL' || parsedOrder.side === 'Sell' ? 'SELL' : 'BUY',
-            type: 'Limit',
-            quantity: Number(parsedOrder.quantity),
-            price: Number(parsedOrder.price),
-            totalCost: Number(parsedOrder.totalCost),
-          });
+        if (String(parsedOrder.orderType ?? 'Market') === 'Limit') {
           pushNotification({
             type: 'order',
-            title: 'Order Submitted',
-            body: `${parsedOrder.side} ${parsedOrder.quantity} ${parsedOrder.symbol} @ Rs ${Number(parsedOrder.price).toFixed(2)} is pending on PSX.`,
+            title: 'Futures Order Pending',
+            body: `${parsedOrder.futuresSide} ${parsedOrder.quantity} ${parsedOrder.symbol} limit is queued. Expect fill in ~5 seconds.`,
             symbol: String(parsedOrder.symbol),
-            orderId: created.id,
+            orderId,
           });
         }
+      } else if (parsedOrder) {
+        // Limit orders are registered on mount; market fills were applied above.
       }
 
       setOrderFinalData(finalData);
@@ -160,7 +185,7 @@ export default function OrderSuccessScreen() {
     }, 500);
 
     return () => clearInterval(interval);
-  }, [data, isProcessing, isFutures, parsedOrder, steps.length, fulfillFuturesOrder, addPendingOrder, pushNotification]);
+  }, [data, isProcessing, isFutures, parsedOrder, steps.length, fulfillFuturesOrder, pushNotification]);
 
   if (!data && !isProcessing) {
     return (
@@ -348,6 +373,7 @@ function SpotSuccessReceipt({
   const sym = String(order?.symbol ?? '');
   const isBuy = side === 'BUY';
   const typeColor = isBuy ? 'text-[#4ade80]' : 'text-[#ef4444]';
+  const isLimitPending = isPendingSpotOrderType(orderType) || String(status).toLowerCase().includes('pending');
 
   const Row = ({ label, value, valueClass = 'text-white' }: { label: string; value: string; valueClass?: string }) => (
     <View className="flex-row justify-between py-3">
@@ -393,7 +419,7 @@ function SpotSuccessReceipt({
         </View>
 
         <View className="gap-3 mb-6">
-          {isBuy && sym ? (
+          {isBuy && sym && !isLimitPending ? (
             <TouchableOpacity
               onPress={() => router.push(`/portfolio/holding/${sym}`)}
               className="items-center py-4 rounded-xl bg-[#FF8A00]"
@@ -401,12 +427,14 @@ function SpotSuccessReceipt({
               <Text className="text-black font-bold">View Holding</Text>
             </TouchableOpacity>
           ) : null}
-          <TouchableOpacity
-            onPress={() => router.push('/portfolio/activity')}
-            className="items-center py-4 rounded-xl border border-[#2A2B2F] bg-[#111214]"
-          >
-            <Text className="text-white font-semibold">View Activity</Text>
-          </TouchableOpacity>
+          {isLimitPending ? (
+            <TouchableOpacity
+              onPress={() => router.push('/orders/open')}
+              className="items-center py-4 rounded-xl bg-[#FF8A00]"
+            >
+              <Text className="text-black font-bold">View Open Orders</Text>
+            </TouchableOpacity>
+          ) : null}
           <TouchableOpacity
             onPress={() => router.push('/(tabs)/portfolio')}
             className="items-center py-4 rounded-xl border border-[#FF8A00]/40 bg-[#111214]"

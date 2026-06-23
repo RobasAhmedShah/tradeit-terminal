@@ -180,6 +180,7 @@ export default function FuturesScreen() {
           positions={positions}
           openOrders={openOrders}
           orderHistory={orderHistory}
+          marginAvailable={marginAvailable}
           onClosePosition={(position) =>
             router.push({
               pathname: '/futures/close-review',

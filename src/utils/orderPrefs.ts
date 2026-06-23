@@ -1,16 +1,16 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { MOCK_ORDERS, Order } from '../data/mockOrders';
+import { Order } from '../data/mockOrders';
 
-const STORAGE_KEY = '@tradeit/spot_orders_v1';
+const STORAGE_KEY = '@tradeit/spot_orders_v2';
 
 export async function loadOrders(): Promise<Order[]> {
   try {
     const raw = await AsyncStorage.getItem(STORAGE_KEY);
-    if (!raw) return MOCK_ORDERS;
+    if (!raw) return [];
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : MOCK_ORDERS;
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
-    return MOCK_ORDERS;
+    return [];
   }
 }
 

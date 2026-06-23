@@ -7,6 +7,7 @@ export default function AccountLayout() {
       <Stack.Screen name="deposit" />
       <Stack.Screen name="withdraw" />
       <Stack.Screen name="notifications" />
+      <Stack.Screen name="notification-settings" />
     </Stack>
   );
 }

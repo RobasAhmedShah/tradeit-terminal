@@ -130,11 +130,19 @@ export default function ProfileScreen() {
             </View>
             <Text className="text-[#888] text-[9px] text-center leading-3">Account{'\n'}Overview</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="flex-1 items-center flex-col" onPress={() => router.push('/deposit')}>
+          <TouchableOpacity
+            className="flex-1 items-center flex-col"
+            onPress={() =>
+              Alert.alert(
+                'KYC Verified',
+                'Your identity has been verified. You have full access to spot and futures trading on TradeIt.'
+              )
+            }
+          >
             <View className="w-12 h-12 rounded-full bg-[#1a1a1a] items-center justify-center mb-2 border border-[#222]">
-              <Ionicons name="business-outline" size={20} color="#f97316" />
+              <Ionicons name="shield-checkmark" size={20} color="#f97316" />
             </View>
-            <Text className="text-[#888] text-[9px] text-center leading-3">Deposit{'\n'}Funds</Text>
+            <Text className="text-[#888] text-[9px] text-center leading-3">KYC{'\n'}Verified</Text>
           </TouchableOpacity>
           <TouchableOpacity className="flex-1 items-center flex-col" onPress={() => router.push('/orders/open')}>
             <View className="w-12 h-12 rounded-full bg-[#1a1a1a] items-center justify-center mb-2 border border-[#222]">
@@ -193,7 +201,7 @@ export default function ProfileScreen() {
             icon="notifications-outline"
             title="Notification Settings"
             sub="Price alerts, order updates, news"
-            onPress={() => router.push('/notifications')}
+            onPress={() => router.push('/notification-settings')}
           />
           <MenuRow
             icon="options-outline"

@@ -41,6 +41,7 @@ interface FuturesContextType {
   fillOpenOrder: (orderId: string) => boolean;
   getPositionById: (id: string) => FuturesPosition | undefined;
   addFuturesMargin: (amount: number) => void;
+  transferMarginToSpot: (amount: number) => boolean;
 }
 
 const FuturesContext = createContext<FuturesContextType>({
@@ -58,6 +59,7 @@ const FuturesContext = createContext<FuturesContextType>({
   fillOpenOrder: () => false,
   getPositionById: () => undefined,
   addFuturesMargin: () => {},
+  transferMarginToSpot: () => false,
 });
 
 function mergePosition(
@@ -187,6 +189,17 @@ export const FuturesProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const addFuturesMargin = useCallback((amount: number) => {
     if (amount <= 0) return;
     setMargin((prev) => ({ ...prev, available: prev.available + amount }));
+  }, []);
+
+  const transferMarginToSpot = useCallback((amount: number): boolean => {
+    if (amount <= 0) return false;
+    let ok = false;
+    setMargin((prev) => {
+      if (prev.available < amount) return prev;
+      ok = true;
+      return { ...prev, available: prev.available - amount };
+    });
+    return ok;
   }, []);
 
   const fulfillFuturesOrder = useCallback(
@@ -363,6 +376,7 @@ export const FuturesProvider: React.FC<{ children: React.ReactNode }> = ({ child
         fillOpenOrder,
         getPositionById,
         addFuturesMargin,
+        transferMarginToSpot,
       }}
     >
       {children}

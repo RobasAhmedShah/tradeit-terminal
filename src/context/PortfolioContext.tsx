@@ -10,7 +10,7 @@ import { MOCK_MARKET_STOCKS } from '../data/mockStocks';
 import { PortfolioHolding, PortfolioSummary } from '../data/mockPortfolio';
 import { PortfolioActivity } from '../data/portfolioActivity';
 import { Stock } from '../types';
-import { tickStockPrice } from '../utils/marketsHub';
+import { useMarketPrices } from './MarketPricesContext';
 import {
   DEFAULT_PORTFOLIO_STATE,
   loadPortfolioState,
@@ -89,9 +89,12 @@ interface PortfolioContextType {
   activities: PortfolioActivity[];
   isRefreshing: boolean;
   lastRefreshedAt: number | null;
+  ready: boolean;
   applySpotTrade: (order: SpotOrderPayload) => void;
   addCash: (amount: number) => void;
   withdrawCash: (amount: number) => void;
+  transferCashToFutures: (amount: number) => boolean;
+  receiveTransferFromFutures: (amount: number) => void;
   refreshPortfolio: () => Promise<void>;
   getStockBySymbol: (symbol: string) => Stock | undefined;
   getHolding: (symbol: string) => PortfolioHolding | undefined;
@@ -113,9 +116,12 @@ const PortfolioContext = createContext<PortfolioContextType>({
   activities: [],
   isRefreshing: false,
   lastRefreshedAt: null,
+  ready: false,
   applySpotTrade: () => {},
   addCash: () => {},
   withdrawCash: () => {},
+  transferCashToFutures: () => false,
+  receiveTransferFromFutures: () => {},
   refreshPortfolio: async () => {},
   getStockBySymbol: () => undefined,
   getHolding: () => undefined,
@@ -124,8 +130,8 @@ const PortfolioContext = createContext<PortfolioContextType>({
 const stockMap = new Map(MOCK_MARKET_STOCKS.map((s) => [s.symbol, s]));
 
 export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { getStock, lastTickAt } = useMarketPrices();
   const [portfolio, setPortfolio] = useState<PortfolioPersistedState>(DEFAULT_PORTFOLIO_STATE);
-  const [livePrices, setLivePrices] = useState<Record<string, Stock>>({});
   const [recentTradeSymbols, setRecentTradeSymbols] = useState<string[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -143,35 +149,12 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     savePortfolioState(portfolio);
   }, [portfolio, loaded]);
 
-  const holdingSymbols = useMemo(
-    () => portfolio.holdings.filter((h) => h.qty > 0).map((h) => h.symbol),
-    [portfolio.holdings]
-  );
-
-  useEffect(() => {
-    if (holdingSymbols.length === 0) return;
-
-    const tick = () => {
-      setLivePrices((prev) => {
-        const next = { ...prev };
-        for (const sym of holdingSymbols) {
-          const base = next[sym] ?? stockMap.get(sym);
-          if (base) next[sym] = tickStockPrice(base);
-        }
-        return next;
-      });
-    };
-
-    const id = setInterval(tick, 3500);
-    return () => clearInterval(id);
-  }, [holdingSymbols]);
-
   const holdings = useMemo(
     () =>
       portfolio.holdings
         .filter((h) => h.qty > 0)
-        .map((core) => toDisplayHolding(core, livePrices[core.symbol] ?? stockMap.get(core.symbol))),
-    [portfolio.holdings, livePrices]
+        .map((core) => toDisplayHolding(core, getStock(core.symbol) ?? stockMap.get(core.symbol))),
+    [portfolio.holdings, getStock, lastTickAt]
   );
 
   const summary = useMemo(
@@ -179,7 +162,10 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     [holdings, portfolio.buyingPower]
   );
 
-  const getStockBySymbol = useCallback((symbol: string) => stockMap.get(symbol), []);
+  const getStockBySymbol = useCallback(
+    (symbol: string) => getStock(symbol) ?? stockMap.get(symbol),
+    [getStock]
+  );
 
   const getHolding = useCallback(
     (symbol: string) => holdings.find((h) => h.symbol === symbol),
@@ -232,6 +218,48 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         activities: prependActivity(prev.activities, activity),
       };
     });
+  }, []);
+
+  const transferCashToFutures = useCallback((amount: number): boolean => {
+    if (amount <= 0) return false;
+    let ok = false;
+    setPortfolio((prev) => {
+      if (prev.buyingPower < amount) return prev;
+      ok = true;
+      const activity: PortfolioActivity = {
+        id: `act-xf-${Date.now()}`,
+        type: 'transfer',
+        title: 'Transfer to Futures',
+        subtitle: 'Spot → Futures margin',
+        amount,
+        timestamp: Date.now(),
+        status: 'completed',
+      };
+      return {
+        ...prev,
+        buyingPower: prev.buyingPower - amount,
+        activities: prependActivity(prev.activities, activity),
+      };
+    });
+    return ok;
+  }, []);
+
+  const receiveTransferFromFutures = useCallback((amount: number) => {
+    if (amount <= 0) return;
+    const activity: PortfolioActivity = {
+      id: `act-xf-in-${Date.now()}`,
+      type: 'transfer',
+      title: 'Transfer from Futures',
+      subtitle: 'Futures margin → Spot',
+      amount,
+      timestamp: Date.now(),
+      status: 'completed',
+    };
+    setPortfolio((prev) => ({
+      ...prev,
+      buyingPower: prev.buyingPower + amount,
+      activities: prependActivity(prev.activities, activity),
+    }));
   }, []);
 
   const applySpotTrade = useCallback((order: SpotOrderPayload) => {
@@ -314,9 +342,12 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         activities: portfolio.activities,
         isRefreshing,
         lastRefreshedAt,
+        ready: loaded,
         applySpotTrade,
         addCash,
         withdrawCash,
+        transferCashToFutures,
+        receiveTransferFromFutures,
         refreshPortfolio,
         getStockBySymbol,
         getHolding,

@@ -188,7 +188,7 @@ export default function WithdrawScreen() {
           <Text style={{ color: '#fff', fontSize: 26, fontWeight: '700', letterSpacing: -0.5 }}>{balanceLabel}</Text>
           <Ionicons name="eye-outline" size={16} color="#555" style={{ marginLeft: 8 }} />
         </View>
-        <Text style={{ color: '#555', fontSize: 11, marginTop: 6 }}>Available for Withdrawal</Text>
+        <Text style={{ color: '#555', fontSize: 11, marginTop: 6 }}>Spot wallet · available to withdraw</Text>
         <Text style={{ color: '#f97316', fontSize: 13, fontWeight: '600', marginTop: 2 }}>{availableLabel}</Text>
       </View>
 
@@ -222,7 +222,7 @@ export default function WithdrawScreen() {
       <View style={{ marginHorizontal: 14, marginTop: 6, backgroundColor: '#111111', borderRadius: 10, padding: 12, flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
         <Ionicons name="information-circle-outline" size={14} color="#555" style={{ marginTop: 1 }} />
         <Text style={{ color: '#555', fontSize: 11, lineHeight: 17, flex: 1 }}>
-          Withdrawals are usually processed within 24 hours during working days.
+          Withdrawals are sent from your Spot wallet only. Transfer funds from Futures to Spot first if needed. Usually processed within 24 hours on working days.
         </Text>
       </View>
 
@@ -374,6 +374,12 @@ export default function WithdrawScreen() {
       <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600', marginTop: 4, marginBottom: 14 }}>Review Withdrawal Details</Text>
 
       <View style={{ backgroundColor: '#161616', borderRadius: 12, padding: 14 }}>
+        {/* Source wallet */}
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: '#1e1e1e' }}>
+          <Text style={{ color: '#555', fontSize: 12, flex: 1 }}>From</Text>
+          <Text style={{ color: '#fff', fontSize: 12, fontWeight: '600' }}>Spot Wallet</Text>
+        </View>
+
         {/* Withdrawal Method */}
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: '#1e1e1e' }}>
           <Text style={{ color: '#555', fontSize: 12, flex: 1 }}>Withdrawal Method</Text>

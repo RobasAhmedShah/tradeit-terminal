@@ -2,10 +2,11 @@ import { useEffect, useRef } from 'react';
 import { useOrders } from '../../context/OrdersContext';
 import { usePortfolio } from '../../context/PortfolioContext';
 import { useNotifications } from '../../context/NotificationsContext';
+import { useMarketPrices } from '../../context/MarketPricesContext';
 import { Order } from '../../data/mockOrders';
+import { shouldFillSpotLimitOrder, shouldTriggerStopLimit } from '../../utils/spotOrderFill';
 
-const FILL_DELAY_MS = 60_000;
-const POLL_MS = 2000;
+const POLL_MS = 1500;
 
 function estimateTotalCost(price: number, quantity: number): number {
   const tradeValue = price * quantity;
@@ -29,12 +30,14 @@ function toSpotPayload(order: Order) {
 }
 
 /**
- * Simulates exchange fills for pending limit orders, then updates portfolio holdings.
+ * Fills pending spot limit orders when the live mock price crosses the limit.
+ * Stop-limit orders trigger on stop price first, then fill on limit.
  */
 export function OrderFillMonitor() {
-  const { orders, ready, executeOrder } = useOrders();
+  const { orders, ready, executeOrder, markStopTriggered } = useOrders();
   const { applySpotTrade } = usePortfolio();
   const { pushNotification } = useNotifications();
+  const { getStock, lastTickAt } = useMarketPrices();
   const fillingRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
@@ -44,9 +47,25 @@ export function OrderFillMonitor() {
       const now = Date.now();
 
       for (const order of orders) {
-        if (order.status !== 'Pending' || !order.createdAt) continue;
-        if (now - order.createdAt < FILL_DELAY_MS) continue;
+        if (order.status !== 'Pending') continue;
         if (fillingRef.current.has(order.id)) continue;
+
+        const marketPrice = getStock(order.symbol)?.price;
+        if (marketPrice == null) continue;
+
+        if (shouldTriggerStopLimit(order, marketPrice, now)) {
+          markStopTriggered(order.id);
+          pushNotification({
+            type: 'order',
+            title: 'Stop Triggered',
+            body: `${order.side} stop-limit on ${order.symbol} activated at Rs ${marketPrice.toFixed(2)}. Limit leg is now live.`,
+            symbol: order.symbol,
+            orderId: order.id,
+          });
+          continue;
+        }
+
+        if (!shouldFillSpotLimitOrder(order, marketPrice, now)) continue;
 
         fillingRef.current.add(order.id);
         const filled = executeOrder(order.id);
@@ -68,7 +87,7 @@ export function OrderFillMonitor() {
     }, POLL_MS);
 
     return () => clearInterval(interval);
-  }, [orders, ready, executeOrder, applySpotTrade, pushNotification]);
+  }, [orders, ready, executeOrder, markStopTriggered, applySpotTrade, pushNotification, getStock, lastTickAt]);
 
   return null;
 }

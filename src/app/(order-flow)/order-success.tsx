@@ -429,7 +429,7 @@ function SpotSuccessReceipt({
           ) : null}
           {isLimitPending ? (
             <TouchableOpacity
-              onPress={() => router.push('/orders/open')}
+              onPress={() => router.push('/orders')}
               className="items-center py-4 rounded-xl bg-[#FF8A00]"
             >
               <Text className="text-black font-bold">View Open Orders</Text>

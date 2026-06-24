@@ -3,8 +3,10 @@ import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { Swipeable } from 'react-native-gesture-handler';
 import { useNotifications } from '../../context/NotificationsContext';
 import { AppNotification, AppNotificationType } from '../../utils/notificationPrefs';
+import { hapticLight } from '../../utils/haptics';
 
 type NotifCategory = 'All' | 'Orders' | 'Alerts' | 'News';
 
@@ -15,9 +17,78 @@ const ICON_MAP: Record<AppNotificationType, { icon: keyof typeof Ionicons.glyphM
   system: { icon: 'shield-checkmark-outline', color: '#4ade80', bg: '#0a1f0a' },
 };
 
+function NotificationSwipeRow({
+  notif,
+  onOpen,
+  onDelete,
+}: {
+  notif: AppNotification;
+  onOpen: () => void;
+  onDelete: () => void;
+}) {
+  const { icon, color, bg } = ICON_MAP[notif.type];
+
+  const renderDeleteAction = () => (
+    <TouchableOpacity
+      onPress={() => {
+        hapticLight();
+        onDelete();
+      }}
+      activeOpacity={0.85}
+      className="bg-[#200006] w-[88px] items-center justify-center h-full"
+    >
+      <Ionicons name="trash-outline" size={22} color="#FF3B30" />
+      <Text className="text-[#FF3B30] text-[10px] mt-1 font-semibold">Delete</Text>
+    </TouchableOpacity>
+  );
+
+  return (
+    <Swipeable
+      renderRightActions={renderDeleteAction}
+      overshootRight={false}
+      friction={2}
+      rightThreshold={40}
+      onSwipeableOpen={(direction) => {
+        if (direction === 'left') {
+          hapticLight();
+          onDelete();
+        }
+      }}
+    >
+      <TouchableOpacity
+        onPress={onOpen}
+        activeOpacity={0.7}
+        className={`flex-row px-4 py-4 border-b border-[#111] bg-[#050505] ${!notif.isRead ? 'bg-[#0d0d0f]' : ''}`}
+      >
+        <View
+          className="w-10 h-10 rounded-full items-center justify-center mr-3 mt-0.5 flex-shrink-0"
+          style={{ backgroundColor: bg }}
+        >
+          <Ionicons name={icon} size={20} color={color} />
+        </View>
+
+        <View className="flex-1">
+          <View className="flex-row items-center justify-between mb-1">
+            <Text className="text-white text-[13px] font-bold flex-1 mr-2" numberOfLines={1}>
+              {notif.title}
+              {notif.symbol ? <Text className="text-[#f97316]"> · {notif.symbol}</Text> : null}
+            </Text>
+            <Text className="text-[#555] text-[11px]">{notif.time}</Text>
+          </View>
+          <Text className="text-[#888] text-[12px] leading-5">{notif.body}</Text>
+        </View>
+
+        {!notif.isRead && (
+          <View className="w-2 h-2 rounded-full bg-[#f97316] mt-1.5 ml-2 flex-shrink-0" />
+        )}
+      </TouchableOpacity>
+    </Swipeable>
+  );
+}
+
 export default function NotificationsScreen() {
   const router = useRouter();
-  const { notifications, unreadCount, markRead, markAllRead } = useNotifications();
+  const { notifications, unreadCount, markRead, markAllRead, removeNotification } = useNotifications();
   const [activeTab, setActiveTab] = useState<NotifCategory>('All');
 
   const filtered = notifications.filter((n) => {
@@ -32,7 +103,7 @@ export default function NotificationsScreen() {
 
     if (notif.type === 'order') {
       if (notif.orderId) router.push(`/orders/${notif.orderId}`);
-      else router.push('/orders/open');
+      else router.push('/orders');
       return;
     }
 
@@ -95,40 +166,19 @@ export default function NotificationsScreen() {
           <View className="items-center py-20">
             <Ionicons name="notifications-off-outline" size={48} color="#333" />
             <Text className="text-[#555] text-base mt-4">No notifications here</Text>
+            <Text className="text-[#444] text-xs mt-2 px-8 text-center">
+              Swipe any notification right to left to delete it
+            </Text>
           </View>
         ) : (
-          filtered.map((notif) => {
-            const { icon, color, bg } = ICON_MAP[notif.type];
-            return (
-              <TouchableOpacity
-                key={notif.id}
-                onPress={() => handleOpen(notif)}
-                className={`flex-row px-4 py-4 border-b border-[#111] ${!notif.isRead ? 'bg-[#0d0d0f]' : ''}`}
-              >
-                <View
-                  className="w-10 h-10 rounded-full items-center justify-center mr-3 mt-0.5 flex-shrink-0"
-                  style={{ backgroundColor: bg }}
-                >
-                  <Ionicons name={icon} size={20} color={color} />
-                </View>
-
-                <View className="flex-1">
-                  <View className="flex-row items-center justify-between mb-1">
-                    <Text className="text-white text-[13px] font-bold flex-1 mr-2" numberOfLines={1}>
-                      {notif.title}
-                      {notif.symbol ? <Text className="text-[#f97316]"> · {notif.symbol}</Text> : null}
-                    </Text>
-                    <Text className="text-[#555] text-[11px]">{notif.time}</Text>
-                  </View>
-                  <Text className="text-[#888] text-[12px] leading-5">{notif.body}</Text>
-                </View>
-
-                {!notif.isRead && (
-                  <View className="w-2 h-2 rounded-full bg-[#f97316] mt-1.5 ml-2 flex-shrink-0" />
-                )}
-              </TouchableOpacity>
-            );
-          })
+          filtered.map((notif) => (
+            <NotificationSwipeRow
+              key={notif.id}
+              notif={notif}
+              onOpen={() => handleOpen(notif)}
+              onDelete={() => removeNotification(notif.id)}
+            />
+          ))
         )}
         <View className="h-10" />
       </ScrollView>

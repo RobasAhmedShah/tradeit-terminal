@@ -21,7 +21,7 @@ export const FuturesPortfolioSummaryCard: React.FC = () => {
     return (
       <TouchableOpacity
         activeOpacity={0.9}
-        onPress={() => router.push('/deposit')}
+        onPress={() => router.push('/transfer')}
         className="mx-4 mb-4 bg-[#111214] border border-[#2A2B2F] rounded-2xl p-4"
       >
         <View className="flex-row items-center">
@@ -31,7 +31,7 @@ export const FuturesPortfolioSummaryCard: React.FC = () => {
           <View className="flex-1">
             <Text className="text-white text-sm font-bold">Futures Margin</Text>
             <Text className="text-[#9CA3AF] text-[11px] mt-0.5">
-              No futures balance yet. Deposit and enable futures credit.
+              No futures balance yet. Transfer from Spot to fund margin.
             </Text>
           </View>
           <Ionicons name="chevron-forward" size={18} color="#FF8A00" />

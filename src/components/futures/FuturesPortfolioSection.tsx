@@ -144,8 +144,8 @@ export const FuturesPortfolioSection: React.FC<FuturesPortfolioSectionProps> = (
           <View className="bg-[#111214] border border-[#2A2B2F] rounded-xl p-6 items-center">
             <Text className="text-[#9CA3AF] text-sm">No open positions</Text>
             {marginAvailable === 0 && openOrders.length === 0 && (
-              <TouchableOpacity onPress={() => router.push('/deposit')} className="mt-3">
-                <Text className="text-[#FF8A00] text-sm font-semibold">Add futures margin →</Text>
+              <TouchableOpacity onPress={() => router.push('/transfer')} className="mt-3">
+                <Text className="text-[#FF8A00] text-sm font-semibold">Transfer from Spot →</Text>
               </TouchableOpacity>
             )}
           </View>

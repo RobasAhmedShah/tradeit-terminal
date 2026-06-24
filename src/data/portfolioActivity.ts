@@ -1,4 +1,4 @@
-export type ActivityType = 'deposit' | 'withdraw' | 'buy' | 'sell' | 'order_pending';
+export type ActivityType = 'deposit' | 'withdraw' | 'buy' | 'sell' | 'order_pending' | 'transfer';
 
 export interface PortfolioActivity {
   id: string;
@@ -35,7 +35,10 @@ export function activityIcon(type: ActivityType): { name: string; color: string 
     case 'sell':
       return { name: 'trending-down', color: '#FF3B30' };
     case 'order_pending':
-    default:
       return { name: 'time', color: '#FF8A00' };
+    case 'transfer':
+      return { name: 'swap-horizontal', color: '#FF8A00' };
+    default:
+      return { name: 'ellipse', color: '#9CA3AF' };
   }
 }

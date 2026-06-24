@@ -1,12 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { MOCK_ORDER_BOOK } from '../../data/mockOrderBook';
 import { buildOrderBookForStock } from '../../utils/tradeMarketDepth';
 import { OrderBookLevel, Stock } from '../../types';
 
 interface OrderBookTabContentProps {
   stock: Stock;
+  selectedPrice?: number | null;
+  onPricePress?: (price: number, side: 'bid' | 'ask') => void;
 }
 
 const DEPTH_OPTIONS = ['5', '10', '15'] as const;
@@ -20,10 +21,14 @@ function BookSide({
   levels,
   side,
   maxQty,
+  selectedPrice,
+  onPricePress,
 }: {
   levels: OrderBookLevel[];
   side: 'bid' | 'ask';
   maxQty: number;
+  selectedPrice?: number | null;
+  onPricePress?: (price: number, side: 'bid' | 'ask') => void;
 }) {
   const priceColor = side === 'bid' ? 'text-[#00C853]' : 'text-[#FF3B30]';
   const barColor = side === 'bid' ? '#00C853' : '#FF3B30';
@@ -32,8 +37,9 @@ function BookSide({
     <View className="flex-1">
       {levels.map((level, i) => {
         const pct = depthPercent(level.qty, maxQty);
-        return (
-          <View key={`${side}-${i}`} className="flex-row items-center py-[5px] relative overflow-hidden">
+        const selected = selectedPrice != null && Math.abs(selectedPrice - level.price) < 0.001;
+        const row = (
+          <View className={`flex-row items-center py-[5px] relative overflow-hidden ${selected ? 'bg-[#FF8A00]/10 rounded' : ''}`}>
             <View
               className="absolute top-0 bottom-0"
               style={{
@@ -51,13 +57,27 @@ function BookSide({
             </Text>
           </View>
         );
+
+        if (!onPricePress) {
+          return <View key={`${side}-${i}`}>{row}</View>;
+        }
+
+        return (
+          <TouchableOpacity key={`${side}-${i}`} activeOpacity={0.7} onPress={() => onPricePress(level.price, side)}>
+            {row}
+          </TouchableOpacity>
+        );
       })}
     </View>
   );
 }
 
-export const OrderBookTabContent: React.FC<OrderBookTabContentProps> = ({ stock }) => {
-  const data = MOCK_ORDER_BOOK[stock.symbol] ?? buildOrderBookForStock(stock);
+export const OrderBookTabContent: React.FC<OrderBookTabContentProps> = ({
+  stock,
+  selectedPrice,
+  onPricePress,
+}) => {
+  const data = useMemo(() => buildOrderBookForStock(stock), [stock]);
   const [depthIdx, setDepthIdx] = useState(1);
   const depth = DEPTH_OPTIONS[depthIdx];
 
@@ -124,10 +144,10 @@ export const OrderBookTabContent: React.FC<OrderBookTabContentProps> = ({ stock 
 
         <View className="flex-row">
           <View className="flex-1 pr-3 border-r border-[#2A2B2F]">
-            <BookSide levels={visibleBids} side="bid" maxQty={maxBidQty} />
+            <BookSide levels={visibleBids} side="bid" maxQty={maxBidQty} selectedPrice={selectedPrice} onPricePress={onPricePress} />
           </View>
           <View className="flex-1 pl-3">
-            <BookSide levels={visibleAsks} side="ask" maxQty={maxAskQty} />
+            <BookSide levels={visibleAsks} side="ask" maxQty={maxAskQty} selectedPrice={selectedPrice} onPricePress={onPricePress} />
           </View>
         </View>
       </View>

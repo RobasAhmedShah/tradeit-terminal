@@ -9,6 +9,7 @@ export default function TabLayout() {
         headerShown: false,
         tabBarActiveTintColor: COLORS.primary,
         tabBarInactiveTintColor: COLORS.muted,
+        sceneStyle: { backgroundColor: COLORS.background },
         tabBarStyle: {
           backgroundColor: COLORS.card,
           borderTopColor: COLORS.border,

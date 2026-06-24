@@ -11,10 +11,11 @@ import { usePortfolio } from '../../context/PortfolioContext';
 import { formatPortfolioRs } from '../../data/mockPortfolio';
 import { sortHoldings } from '../../utils/portfolioUi';
 import { OpenOrdersBanner } from '../../components/portfolio/OpenOrdersBanner';
+import { PortfolioSkeleton } from '../../components/ui/ScreenSkeletons';
 
 export default function PortfolioScreen() {
   const router = useRouter();
-  const { holdings, summary, recentTradeSymbols, isRefreshing, lastRefreshedAt, refreshPortfolio } = usePortfolio();
+  const { holdings, summary, recentTradeSymbols, isRefreshing, lastRefreshedAt, refreshPortfolio, ready } = usePortfolio();
 
   const previewHoldings = useMemo(() => {
     const byValue = sortHoldings(holdings, 'value');
@@ -47,6 +48,10 @@ export default function PortfolioScreen() {
           />
         }
       >
+        {!ready ? (
+          <PortfolioSkeleton />
+        ) : (
+        <>
         <Text className="text-[#9CA3AF] text-[10px] text-center mt-1 mb-1">{refreshedLabel}</Text>
 
         <PortfolioHeroCard />
@@ -79,6 +84,19 @@ export default function PortfolioScreen() {
             <View className="flex-1">
               <Text className="text-white font-bold text-[13px] mb-0.5">Withdraw</Text>
               <Text className="text-[#9CA3AF] text-[9px]">Withdraw to your bank</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => router.push('/transfer')}
+            className="flex-1 bg-[#111214] rounded-xl p-3 flex-row items-center border border-[#2A2B2F]"
+          >
+            <View className="w-8 h-8 rounded-lg items-center justify-center mr-3 bg-[#18191C]">
+              <Ionicons name="swap-horizontal-outline" size={18} color="#FF8A00" />
+            </View>
+            <View className="flex-1">
+              <Text className="text-white font-bold text-[13px] mb-0.5">Transfer</Text>
+              <Text className="text-[#9CA3AF] text-[9px]">Spot ↔ futures margin</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -158,6 +176,8 @@ export default function PortfolioScreen() {
             </>
           )}
         </View>
+        </>
+        )}
       </ScrollView>
     </SafeAreaView>
   );

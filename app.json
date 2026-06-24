@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "scheme": "tradit2.0",
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/image.png"
     },
     "experiments": {
       "tsconfigPaths": true
@@ -14,23 +14,29 @@
       "expo-router"
     ],
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "icon": "./assets/image.png",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#050505",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/image.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#050505"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "backgroundColor": "#050505"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/image.png",
+        "backgroundColor": "#050505"
+      },
+      "backgroundColor": "#050505",
+      "navigationBar": {
+        "backgroundColor": "#050505"
       }
     }
   }

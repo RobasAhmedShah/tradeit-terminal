@@ -14,6 +14,7 @@ interface OrdersContextType {
   cancelOrder: (id: string) => void;
   updateOrder: (id: string, patch: UpdateOrderPatch) => void;
   executeOrder: (id: string) => Order | null;
+  markStopTriggered: (id: string) => void;
   addPendingOrder: (
     input: Omit<Order, 'id' | 'timeline' | 'date' | 'createdTime' | 'status' | 'filledQty' | 'remainingQty' | 'createdAt'> & {
       status?: OrderStatus;
@@ -29,6 +30,7 @@ const OrdersContext = createContext<OrdersContextType>({
   cancelOrder: () => {},
   updateOrder: () => {},
   executeOrder: () => null,
+  markStopTriggered: () => {},
   addPendingOrder: () => ({}) as Order,
 });
 
@@ -127,6 +129,28 @@ export const OrdersProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return executed;
   }, []);
 
+  const markStopTriggered = useCallback((id: string) => {
+    setOrders((prev) =>
+      prev.map((o) => {
+        if (o.id !== id || o.stopTriggered || o.type !== 'Stop Limit') return o;
+        const timeStr = new Date().toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+          second: '2-digit',
+        });
+        return {
+          ...o,
+          stopTriggered: true,
+          timeline: [
+            ...o.timeline.filter((t) => !t.isActive),
+            { title: 'Stop Triggered', time: timeStr, isCompleted: true, isActive: true },
+            { title: 'Fully Executed', isCompleted: false },
+          ],
+        };
+      })
+    );
+  }, []);
+
   const addPendingOrder = useCallback(
     (
       input: Omit<Order, 'id' | 'timeline' | 'date' | 'createdTime' | 'status' | 'filledQty' | 'remainingQty' | 'createdAt'> & {
@@ -136,6 +160,7 @@ export const OrdersProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     ) => {
       const id = createOrderId();
       const now = new Date();
+      const isStopLimit = input.type === 'Stop Limit' && input.stopPrice != null;
       const order: Order = {
         ...input,
         id,
@@ -143,15 +168,23 @@ export const OrdersProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         filledQty: 0,
         remainingQty: input.quantity,
         totalCost: input.totalCost,
+        stopTriggered: isStopLimit ? false : undefined,
         createdAt: Date.now(),
         createdTime: now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
         date: now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-        timeline: [
+        timeline: isStopLimit
+          ? [
+              { title: 'Created', time: now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit' }), isCompleted: true },
+              { title: 'Submitted', time: now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit' }), isCompleted: true },
+              { title: 'Awaiting Stop Trigger', time: now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit' }), isCompleted: true, isActive: true },
+              { title: 'Fully Executed', isCompleted: false },
+            ]
+          : [
           { title: 'Created', time: now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit' }), isCompleted: true },
           { title: 'Submitted', time: now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit' }), isCompleted: true },
           { title: 'Exchange Accepted', time: now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit' }), isCompleted: true, isActive: true },
-          { title: 'Fully Executed', isCompleted: false },
-        ],
+            { title: 'Fully Executed', isCompleted: false },
+          ],
       };
       setOrders((prev) => [order, ...prev]);
       return order;
@@ -160,7 +193,7 @@ export const OrdersProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   );
 
   return (
-    <OrdersContext.Provider value={{ orders, ready, getOrder, cancelOrder, updateOrder, executeOrder, addPendingOrder }}>
+    <OrdersContext.Provider value={{ orders, ready, getOrder, cancelOrder, updateOrder, executeOrder, markStopTriggered, addPendingOrder }}>
       {children}
     </OrdersContext.Provider>
   );

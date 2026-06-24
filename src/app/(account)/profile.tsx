@@ -5,10 +5,12 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useNotifications } from '../../context/NotificationsContext';
 import { usePortfolio } from '../../context/PortfolioContext';
+import { useAuth } from '../../context/AuthContext';
 import { formatPortfolioRs } from '../../data/mockPortfolio';
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const { session, logout } = useAuth();
   const { unreadCount } = useNotifications();
   const { summary } = usePortfolio();
 
@@ -17,7 +19,14 @@ export default function ProfileScreen() {
   const handleLogout = () => {
     Alert.alert('Log Out', 'Are you sure you want to log out?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Log Out', style: 'destructive' }
+      {
+        text: 'Log Out',
+        style: 'destructive',
+        onPress: async () => {
+          await logout();
+          router.replace('/login');
+        },
+      },
     ]);
   };
 
@@ -81,15 +90,15 @@ export default function ProfileScreen() {
 
             <View className="flex-1 ml-4 justify-center py-1">
               <View className="flex-row items-center">
-                <Text className="text-white text-[16px] font-bold">Guest Trader</Text>
+                <Text className="text-white text-[16px] font-bold">{session?.displayName ?? 'Guest Trader'}</Text>
                 <View className="flex-row items-center bg-[#f97316]/10 rounded-full px-2 py-0.5 ml-2">
                   <Ionicons name="checkmark-circle" size={10} color="#f97316" style={{ marginRight: 3 }} />
                   <Text className="text-[#f97316] text-[9px] font-bold">Verified</Text>
                 </View>
               </View>
-              <Text className="text-[#888] text-[12px] mt-1">guesttrader@email.com</Text>
+              <Text className="text-[#888] text-[12px] mt-1">{session?.email ?? 'guesttrader@email.com'}</Text>
               <View className="flex-row items-center mt-1">
-                <Text className="text-[#666] text-[11px]">Client ID: TID12345678</Text>
+                <Text className="text-[#666] text-[11px]">Client ID: {session?.clientId ?? 'TID12345678'}</Text>
                 <Ionicons name="copy-outline" size={12} color="#666" style={{ marginLeft: 6 }} />
               </View>
               <View className="self-start flex-row items-center bg-[#2d1b4e]/40 rounded-full px-2.5 py-1 mt-2">
@@ -144,7 +153,13 @@ export default function ProfileScreen() {
             </View>
             <Text className="text-[#888] text-[9px] text-center leading-3">KYC{'\n'}Verified</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="flex-1 items-center flex-col" onPress={() => router.push('/orders/open')}>
+          <TouchableOpacity className="flex-1 items-center flex-col" onPress={() => router.push('/transfer')}>
+            <View className="w-12 h-12 rounded-full bg-[#1a1a1a] items-center justify-center mb-2 border border-[#222]">
+              <Ionicons name="swap-horizontal-outline" size={20} color="#f97316" />
+            </View>
+            <Text className="text-[#888] text-[9px] text-center leading-3">Transfer</Text>
+          </TouchableOpacity>
+          <TouchableOpacity className="flex-1 items-center flex-col" onPress={() => router.push('/orders')}>
             <View className="w-12 h-12 rounded-full bg-[#1a1a1a] items-center justify-center mb-2 border border-[#222]">
               <Ionicons name="list-outline" size={20} color="#f97316" />
             </View>

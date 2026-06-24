@@ -18,15 +18,8 @@ export function OpenOrdersBanner() {
   const total = spotPending + futuresPending;
 
   const handlePress = () => {
-    if (spotPending > 0) {
-      router.push('/orders/open');
-      return;
-    }
-    if (futuresPending > 0) {
-      router.push({ pathname: '/futures/positions', params: { tab: 'open_orders' } });
-      return;
-    }
-    router.push('/orders/open');
+    const tab = futuresPending > 0 && spotPending === 0 ? 'futures' : 'spot';
+    router.push({ pathname: '/orders', params: { tab } });
   };
 
   if (total === 0) {

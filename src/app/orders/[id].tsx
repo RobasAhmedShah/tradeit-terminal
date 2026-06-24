@@ -83,7 +83,13 @@ export default function OrderDetailsScreen() {
           <Row label="Quantity" value={order.quantity.toLocaleString()} />
           <Row label="Filled" value={order.filledQty.toLocaleString()} valueClass="text-[#4ade80]" />
           <Row label="Remaining" value={order.remainingQty.toLocaleString()} />
-          <Row label="Limit Price" value={`Rs ${order.price.toFixed(2)}`} />
+          {order.type === 'Stop Limit' && order.stopPrice != null && (
+            <Row label="Stop Price" value={`Rs ${order.stopPrice.toFixed(2)}`} />
+          )}
+          <Row
+            label={order.type === 'Stop Limit' ? 'Limit Price' : 'Limit Price'}
+            value={`Rs ${order.price.toFixed(2)}`}
+          />
           {order.avgPrice != null && <Row label="Avg Price" value={`Rs ${order.avgPrice.toFixed(2)}`} />}
           <Row label="Status" value={order.status} />
           <Row label="Created" value={`${order.date} · ${order.createdTime}`} />

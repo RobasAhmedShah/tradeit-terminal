@@ -1,14 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Switch } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import {
-  DEFAULT_NOTIFICATION_SETTINGS,
-  loadNotificationSettings,
-  NotificationSettings,
-  saveNotificationSettings,
-} from '../../utils/notificationSettingsPrefs';
+import { useNotifications } from '../../context/NotificationsContext';
+import { NotificationSettings } from '../../utils/notificationSettingsPrefs';
 
 type SettingKey = keyof NotificationSettings;
 
@@ -41,22 +37,10 @@ const ROWS: { key: SettingKey; title: string; sub: string; icon: keyof typeof Io
 
 export default function NotificationSettingsScreen() {
   const router = useRouter();
-  const [settings, setSettings] = useState<NotificationSettings>(DEFAULT_NOTIFICATION_SETTINGS);
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    loadNotificationSettings().then((data) => {
-      setSettings(data);
-      setReady(true);
-    });
-  }, []);
+  const { settings, updateSettings, ready } = useNotifications();
 
   const updateSetting = (key: SettingKey, value: boolean) => {
-    setSettings((prev) => {
-      const next = { ...prev, [key]: value };
-      if (ready) saveNotificationSettings(next);
-      return next;
-    });
+    updateSettings({ ...settings, [key]: value });
   };
 
   return (
@@ -100,7 +84,7 @@ export default function NotificationSettingsScreen() {
 
         <TouchableOpacity
           onPress={() => router.push('/notifications')}
-          className="mx-4 flex-row items-center justify-between bg-[#131316] rounded-xl px-4 py-4 mb-6"
+          className="mx-4 flex-row items-center justify-between bg-[#131316] rounded-xl px-4 py-4 mb-4"
         >
           <View className="flex-row items-center flex-1">
             <Ionicons name="notifications-outline" size={20} color="#888" style={{ marginRight: 12 }} />
@@ -111,6 +95,10 @@ export default function NotificationSettingsScreen() {
           </View>
           <Ionicons name="chevron-forward" size={16} color="#444" />
         </TouchableOpacity>
+
+        <Text className="text-[#555] text-[11px] px-6 pb-8 leading-5 text-center">
+          Toggles control which alerts appear in your in-app notification inbox. Device push will be added when the backend is connected.
+        </Text>
       </ScrollView>
     </SafeAreaView>
   );

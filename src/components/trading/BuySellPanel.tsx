@@ -1,24 +1,56 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
-import { MOCK_MARKET_STOCKS } from '../../data/mockStocks';
 import { usePortfolio } from '../../context/PortfolioContext';
+import { useMarketPrices } from '../../context/MarketPricesContext';
 import { formatPortfolioRs } from '../../data/mockPortfolio';
 
 interface BuySellPanelProps {
   symbol: string;
   currentPrice: number;
+  bookPriceFill?: number | null;
+  onBookPriceFillConsumed?: () => void;
 }
 
-export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice }) => {
+export const BuySellPanel: React.FC<BuySellPanelProps> = ({
+  symbol,
+  currentPrice,
+  bookPriceFill,
+  onBookPriceFillConsumed,
+}) => {
   const router = useRouter();
   const { summary, getHolding } = usePortfolio();
+  const { getStock } = useMarketPrices();
   const [side, setSide] = useState<'buy' | 'sell'>('buy');
   const [orderType, setOrderType] = useState('Market');
   const [price, setPrice] = useState(currentPrice.toString());
+  const [stopPrice, setStopPrice] = useState('');
   const [qty, setQty] = useState('10');
+  const [priceHintVisible, setPriceHintVisible] = useState(false);
+  const [priceFieldHighlight, setPriceFieldHighlight] = useState(false);
+
+  useEffect(() => {
+    if (orderType === 'Market') {
+      setPrice(currentPrice.toFixed(2));
+    }
+  }, [currentPrice, orderType]);
+
+  useEffect(() => {
+    if (bookPriceFill == null) return;
+    setOrderType('Limit');
+    setPrice(bookPriceFill.toFixed(2));
+    setPriceHintVisible(true);
+    setPriceFieldHighlight(true);
+    onBookPriceFillConsumed?.();
+    const hintTimer = setTimeout(() => setPriceHintVisible(false), 2500);
+    const highlightTimer = setTimeout(() => setPriceFieldHighlight(false), 900);
+    return () => {
+      clearTimeout(hintTimer);
+      clearTimeout(highlightTimer);
+    };
+  }, [bookPriceFill, onBookPriceFillConsumed]);
 
   const isBuy = side === 'buy';
   const mainColor = isBuy ? 'bg-[#00C853]' : 'bg-[#FF3B30]';
@@ -36,7 +68,60 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice
   const estimatedCost = totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const totalCharges = (brokerage + fed + secp).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+  const adjustPrice = (delta: number, field: 'price' | 'stop' = 'price') => {
+    const tick = currentPrice >= 1000 ? 0.5 : currentPrice >= 100 ? 0.25 : 0.05;
+    const base = parseFloat((field === 'stop' ? stopPrice : price) || '0') || currentPrice;
+    const next = Math.max(tick, base + delta * tick);
+    const formatted = next.toFixed(2);
+    if (field === 'stop') setStopPrice(formatted);
+    else {
+      setPrice(formatted);
+      if (orderType === 'Market') setOrderType('Limit');
+    }
+  };
+
+  const initStopLimitDefaults = (nextSide: 'buy' | 'sell') => {
+    const stop =
+      nextSide === 'buy'
+        ? (currentPrice * 1.02).toFixed(2)
+        : (currentPrice * 0.98).toFixed(2);
+    const limit =
+      nextSide === 'buy'
+        ? (currentPrice * 1.025).toFixed(2)
+        : (currentPrice * 0.975).toFixed(2);
+    setStopPrice(stop);
+    setPrice(limit);
+  };
+
   const handleCtaPress = () => {
+    const stop = parseFloat(stopPrice || '0');
+
+    if (orderType === 'Stop Limit') {
+      if (!Number.isFinite(stop) || stop <= 0) {
+        Alert.alert('Invalid stop price', 'Enter a valid stop (trigger) price.');
+        return;
+      }
+      if (isBuy) {
+        if (stop <= currentPrice) {
+          Alert.alert('Invalid stop price', 'Buy stop must be above the current market price.');
+          return;
+        }
+        if (p < stop) {
+          Alert.alert('Invalid limit price', 'Buy limit should be at or above the stop price.');
+          return;
+        }
+      } else {
+        if (stop >= currentPrice) {
+          Alert.alert('Invalid stop price', 'Sell stop must be below the current market price.');
+          return;
+        }
+        if (p > stop) {
+          Alert.alert('Invalid limit price', 'Sell limit should be at or below the stop price.');
+          return;
+        }
+      }
+    }
+
     if (q <= 0 || p <= 0) {
       Alert.alert('Invalid order', 'Enter a valid price and quantity.');
       return;
@@ -60,7 +145,7 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice
       return;
     }
 
-    const stock = MOCK_MARKET_STOCKS.find((s) => s.symbol === symbol);
+    const stock = getStock(symbol);
 
     const jsorderParams = {
       symbol,
@@ -68,6 +153,7 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice
       side: isBuy ? 'BUY' : 'SELL',
       orderType,
       price: p,
+      stopPrice: orderType === 'Stop Limit' ? stop : undefined,
       quantity: q,
       brokerage,
       fed,
@@ -104,7 +190,14 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice
           {['Limit', 'Market', 'Stop Limit'].map((type) => (
             <TouchableOpacity
               key={type}
-              onPress={() => setOrderType(type)}
+              onPress={() => {
+                setOrderType(type);
+                if (type === 'Market') {
+                  setPrice(currentPrice.toFixed(2));
+                } else if (type === 'Stop Limit') {
+                  initStopLimitDefaults(side);
+                }
+              }}
               className={`px-2 py-1 rounded-md ${orderType === type ? 'bg-[#18191C] border border-[#2A2B2F]' : ''}`}
             >
               <Text className={`text-[10px] font-semibold ${orderType === type ? mainColorText : 'text-[#9CA3AF]'}`}>
@@ -116,10 +209,52 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice
         <Ionicons name="information-circle-outline" size={12} color="#9CA3AF" />
       </View>
 
+      {orderType === 'Stop Limit' && (
+        <View className="mb-2">
+          <Text className="text-[#9CA3AF] text-[9px] mb-1">Stop Price (trigger)</Text>
+          <View className="bg-[#18191C] border border-[#2A2B2F] rounded-lg flex-row items-center h-10">
+            <TouchableOpacity
+              onPress={() => adjustPrice(-1, 'stop')}
+              className="px-3 h-full justify-center border-r border-[#2A2B2F]"
+            >
+              <Ionicons name="remove" size={14} color="#9CA3AF" />
+            </TouchableOpacity>
+            <View className="flex-1 items-center justify-center">
+              <TextInput
+                value={stopPrice}
+                onChangeText={setStopPrice}
+                keyboardType="numeric"
+                className="text-white font-bold text-sm text-center w-full"
+              />
+            </View>
+            <TouchableOpacity
+              onPress={() => adjustPrice(1, 'stop')}
+              className="px-3 h-full justify-center border-l border-[#2A2B2F]"
+            >
+              <Ionicons name="add" size={14} color="#9CA3AF" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
       <View className="mb-2">
-        <Text className="text-[#9CA3AF] text-[9px] mb-1">Price (PKR)</Text>
-        <View className="bg-[#18191C] border border-[#2A2B2F] rounded-lg flex-row items-center h-10">
-          <TouchableOpacity className="px-3 h-full justify-center border-r border-[#2A2B2F]">
+        <View className="flex-row items-center justify-between mb-1">
+          <Text className="text-[#9CA3AF] text-[9px]">
+            {orderType === 'Stop Limit' ? 'Limit Price (order)' : 'Price (PKR)'}
+          </Text>
+          {priceHintVisible ? (
+            <Text className="text-[#FF8A00] text-[9px] font-semibold">Price from order book</Text>
+          ) : null}
+        </View>
+        <View
+          className={`bg-[#18191C] border rounded-lg flex-row items-center h-10 ${
+            priceFieldHighlight ? 'border-[#FF8A00]' : 'border-[#2A2B2F]'
+          }`}
+        >
+          <TouchableOpacity
+            onPress={() => adjustPrice(-1, 'price')}
+            className="px-3 h-full justify-center border-r border-[#2A2B2F]"
+          >
             <Ionicons name="remove" size={14} color="#9CA3AF" />
           </TouchableOpacity>
           <View className="flex-1 items-center justify-center">
@@ -127,10 +262,14 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice
               value={price}
               onChangeText={setPrice}
               keyboardType="numeric"
+              editable={orderType !== 'Market'}
               className="text-white font-bold text-sm text-center w-full"
             />
           </View>
-          <TouchableOpacity className="px-3 h-full justify-center border-l border-[#2A2B2F]">
+          <TouchableOpacity
+            onPress={() => adjustPrice(1, 'price')}
+            className="px-3 h-full justify-center border-l border-[#2A2B2F]"
+          >
             <Ionicons name="add" size={14} color="#9CA3AF" />
           </TouchableOpacity>
         </View>
@@ -139,7 +278,10 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice
       <View className="mb-3">
         <Text className="text-[#9CA3AF] text-[9px] mb-1">Qty (Shares)</Text>
         <View className="bg-[#18191C] border border-[#2A2B2F] rounded-lg flex-row items-center h-10">
-          <TouchableOpacity className="px-3 h-full justify-center border-r border-[#2A2B2F]">
+          <TouchableOpacity
+            onPress={() => setQty(String(Math.max(1, q - 1)))}
+            className="px-3 h-full justify-center border-r border-[#2A2B2F]"
+          >
             <Ionicons name="remove" size={14} color="#9CA3AF" />
           </TouchableOpacity>
           <View className="flex-1 items-center justify-center">
@@ -150,7 +292,10 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ symbol, currentPrice
               className="text-white font-bold text-sm text-center w-full"
             />
           </View>
-          <TouchableOpacity className="px-3 h-full justify-center border-l border-[#2A2B2F]">
+          <TouchableOpacity
+            onPress={() => setQty(String(q + 1))}
+            className="px-3 h-full justify-center border-l border-[#2A2B2F]"
+          >
             <Ionicons name="add" size={14} color="#9CA3AF" />
           </TouchableOpacity>
         </View>

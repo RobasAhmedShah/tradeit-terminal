@@ -3,10 +3,8 @@ import { View, Text, TouchableOpacity, ScrollView, TextInput } from 'react-nativ
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useFutures } from '../../context/FuturesContext';
 import { usePortfolio } from '../../context/PortfolioContext';
 import { formatPortfolioRs } from '../../data/mockPortfolio';
-import { formatFuturesPrice } from '../../data/mockFutures';
 
 // ─── Mock Data ─────────────────────────────────────────────────────────────────
 const DEPOSIT_MOCK = {
@@ -48,7 +46,6 @@ type Step = 1 | 2 | 3 | 4 | 5 | 6;
 
 export default function DepositScreen() {
   const router = useRouter();
-  const { addFuturesMargin, marginAvailable } = useFutures();
   const { addCash, summary } = usePortfolio();
 
   const balanceLabel = `PKR ${formatPortfolioRs(summary.totalValue)}`;
@@ -59,9 +56,7 @@ export default function DepositScreen() {
   const [selectedBank, setSelectedBank]           = useState('meezan');
   const [amount, setAmount]                       = useState('');
   const [selectedQuickAmount, setSelectedQuickAmount] = useState<number | null>(null);
-  const [creditToFutures, setCreditToFutures]     = useState(false);
   const [timeLeft, setTimeLeft]                   = useState(30 * 60);
-  const [marginCredited, setMarginCredited]       = useState(false);
   const [cashCredited, setCashCredited]           = useState(false);
 
   const parsedAmount    = parseInt(amount, 10) || 0;
@@ -87,18 +82,11 @@ export default function DepositScreen() {
   useEffect(() => {
     if (step !== 6 || parsedAmount <= 0) return;
 
-    // Always add to buying power (main wallet)
     if (!cashCredited) {
       addCash(parsedAmount);
       setCashCredited(true);
     }
-
-    // Optionally also credit futures margin
-    if (creditToFutures && !marginCredited) {
-      addFuturesMargin(parsedAmount);
-      setMarginCredited(true);
-    }
-  }, [step, creditToFutures, parsedAmount, marginCredited, cashCredited, addFuturesMargin, addCash]);
+  }, [step, parsedAmount, cashCredited, addCash]);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60).toString().padStart(2, '0');
@@ -193,7 +181,7 @@ export default function DepositScreen() {
           <Text style={{ color: '#fff', fontSize: 26, fontWeight: '700', letterSpacing: -0.5 }}>{balanceLabel}</Text>
           <Ionicons name="eye-outline" size={16} color="#555" />
         </View>
-        <Text style={{ color: '#555', fontSize: 11, marginTop: 4 }}>Available for Deposit</Text>
+        <Text style={{ color: '#555', fontSize: 11, marginTop: 4 }}>Spot wallet · buying power</Text>
         <Text style={{ color: '#f97316', fontSize: 13, fontWeight: '600', marginTop: 2 }}>{availableLabel}</Text>
       </View>
 
@@ -227,7 +215,7 @@ export default function DepositScreen() {
       <View style={{ marginHorizontal: 14, marginTop: 6, backgroundColor: '#111111', borderRadius: 10, padding: 12, flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
         <Ionicons name="information-circle-outline" size={14} color="#555" style={{ marginTop: 1 }} />
         <Text style={{ color: '#555', fontSize: 11, lineHeight: 17, flex: 1 }}>
-          Every deposit adds PKR to your spot wallet (buying power). On the review step you can optionally credit the same amount to futures margin too.
+          Deposits are credited to your Spot wallet (buying power). To trade futures, transfer funds from Spot to Futures after your deposit clears.
         </Text>
       </View>
 
@@ -355,6 +343,16 @@ export default function DepositScreen() {
       <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600', marginTop: 4, marginBottom: 14 }}>Review Deposit Details</Text>
 
       <View style={{ backgroundColor: '#161616', borderRadius: 12, padding: 14 }}>
+        {/* Destination wallet */}
+        <Text style={{ color: '#555', fontSize: 10, fontWeight: '500', textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 8 }}>Destination</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+          <Ionicons name="wallet-outline" size={18} color="#f97316" />
+          <Text style={{ color: '#fff', fontSize: 13, fontWeight: '600' }}>Spot Wallet</Text>
+        </View>
+        <Text style={{ color: '#666', fontSize: 11, marginBottom: 12 }}>Funds will be added to spot buying power only.</Text>
+
+        <View style={{ height: 0.5, backgroundColor: '#1e1e1e', marginBottom: 12 }} />
+
         {/* Method */}
         <Text style={{ color: '#555', fontSize: 10, fontWeight: '500', textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 8 }}>Deposit Method</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
@@ -392,66 +390,6 @@ export default function DepositScreen() {
           </View>
         ))}
       </View>
-
-      {/* Futures margin allocation */}
-      <TouchableOpacity
-        onPress={() => setCreditToFutures((v) => !v)}
-        style={{
-          marginTop: 12,
-          backgroundColor: creditToFutures ? '#1A0E00' : '#161616',
-          borderRadius: 12,
-          padding: 14,
-          borderWidth: 1.5,
-          borderColor: creditToFutures ? '#FF8A00' : '#1e1e1e',
-          flexDirection: 'row',
-          alignItems: 'center',
-        }}
-      >
-        <View
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 10,
-            backgroundColor: creditToFutures ? '#FF8A0020' : '#111',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginRight: 12,
-          }}
-        >
-          <Ionicons name="pulse" size={20} color={creditToFutures ? '#FF8A00' : '#555'} />
-        </View>
-        <View style={{ flex: 1 }}>
-          <Text style={{ color: '#fff', fontSize: 13, fontWeight: '600' }}>
-            Also credit to Futures Margin
-          </Text>
-          <Text style={{ color: '#888', fontSize: 11, marginTop: 3 }}>
-            Buying power always increases. Turn this on to also add futures margin.
-          </Text>
-        </View>
-        <View
-          style={{
-            width: 22,
-            height: 22,
-            borderRadius: 6,
-            borderWidth: 2,
-            borderColor: creditToFutures ? '#FF8A00' : '#333',
-            backgroundColor: creditToFutures ? '#FF8A00' : 'transparent',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          {creditToFutures && <Ionicons name="checkmark" size={14} color="#000" />}
-        </View>
-      </TouchableOpacity>
-
-      {creditToFutures && parsedAmount > 0 && (
-        <View style={{ marginTop: 8, backgroundColor: '#111214', borderRadius: 10, padding: 12, borderWidth: 1, borderColor: '#2A2B2F' }}>
-          <Text style={{ color: '#9CA3AF', fontSize: 11 }}>
-            PKR {parsedAmount.toLocaleString()} will also go to futures margin (avail.{' '}
-            {formatFuturesPrice(marginAvailable)}).
-          </Text>
-        </View>
-      )}
 
       {/* Warning */}
       <View style={{ marginTop: 12, backgroundColor: '#111111', borderRadius: 8, padding: 10, flexDirection: 'row', gap: 8 }}>
@@ -601,32 +539,44 @@ export default function DepositScreen() {
         <Ionicons name="information-circle-outline" size={14} color="#555" style={{ marginTop: 1 }} />
         <Text style={{ color: '#555', fontSize: 11, flex: 1 }}>
           {cashCredited
-            ? `PKR ${parsedAmount.toLocaleString()} added to your buying power.${
-                creditToFutures && marginCredited
-                  ? ' Futures margin was also credited.'
-                  : ''
-              }`
-            : 'Your funds will be added to your wallet once the payment is verified.'}
+            ? `PKR ${parsedAmount.toLocaleString()} added to your Spot wallet. Use Transfer to move funds to Futures margin.`
+            : 'Your funds will be added to your Spot wallet once the payment is verified.'}
         </Text>
       </View>
 
       {/* Action Buttons */}
       <View style={{ marginTop: 20 }}>
-        {creditToFutures && marginCredited && (
+        {cashCredited && (
           <TouchableOpacity
-            onPress={() => router.push('/(tabs)/futures')}
+            onPress={() => router.push('/transfer')}
             style={{ backgroundColor: '#FF8A00', borderRadius: 100, paddingVertical: 15, marginBottom: 10 }}
           >
             <Text style={{ color: '#000', fontSize: 15, fontWeight: '700', textAlign: 'center' }}>
-              Trade Futures
+              Transfer to Futures
             </Text>
           </TouchableOpacity>
         )}
         <TouchableOpacity
           onPress={() => router.push('/(tabs)/portfolio')}
-          style={{ backgroundColor: creditToFutures && marginCredited ? 'transparent' : '#f97316', borderWidth: creditToFutures && marginCredited ? 1.5 : 0, borderColor: '#f97316', borderRadius: 100, paddingVertical: 15, marginBottom: 10 }}
+          style={{
+            backgroundColor: cashCredited ? 'transparent' : '#f97316',
+            borderWidth: cashCredited ? 1.5 : 0,
+            borderColor: '#f97316',
+            borderRadius: 100,
+            paddingVertical: 15,
+            marginBottom: 10,
+          }}
         >
-          <Text style={{ color: creditToFutures && marginCredited ? '#f97316' : '#fff', fontSize: 15, fontWeight: '700', textAlign: 'center' }}>View Portfolio</Text>
+          <Text
+            style={{
+              color: cashCredited ? '#f97316' : '#fff',
+              fontSize: 15,
+              fontWeight: '700',
+              textAlign: 'center',
+            }}
+          >
+            View Portfolio
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => router.push('/(tabs)/home')}

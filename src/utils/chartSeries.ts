@@ -38,20 +38,33 @@ export function generateLineSeries(stock: Stock, points = 24): ChartPoint[] {
   });
 }
 
-export function generateCandles(stock: Stock, count = 20): CandlePoint[] {
+export type ChartTimeframe = '1m' | '15m' | '1H' | '4H' | '1D';
+
+const TIMEFRAME_CONFIG: Record<ChartTimeframe, { count: number; step: number; span: number }> = {
+  '1m': { count: 28, step: 10, span: 0.12 },
+  '15m': { count: 22, step: 12, span: 0.22 },
+  '1H': { count: 20, step: 13, span: 0.38 },
+  '4H': { count: 18, step: 14, span: 0.58 },
+  '1D': { count: 16, step: 15, span: 1 },
+};
+
+export function generateCandles(stock: Stock, timeframe: ChartTimeframe = '1D'): CandlePoint[] {
   const seed = hashSymbol(stock.symbol);
+  const { count, step, span } = TIMEFRAME_CONFIG[timeframe];
   const tick = stock.price >= 1000 ? 0.5 : 0.25;
-  let close = stock.open ?? stock.price * 0.985;
+  const moveScale = Math.max(tick, stock.price * 0.001 * span);
+  let close = stock.open ?? stock.price * (1 - 0.015 * span);
 
   return Array.from({ length: count }, (_, i) => {
     const dir = ((seed + i * 7) % 10) > 4 ? 1 : -1;
     const open = close;
-    const move = tick * (2 + ((seed + i) % 6));
+    const move = moveScale * (1.2 + ((seed + i) % 5));
     close = Math.max(tick, open + dir * move);
+    if (i === count - 1) close = stock.price;
     const high = Math.max(open, close) + tick * (((seed + i) % 3) + 1);
     const low = Math.min(open, close) - tick * (((seed + i + 2) % 3) + 1);
     return {
-      x: 10 + i * 14,
+      x: 8 + i * step,
       open,
       high,
       low,

@@ -20,6 +20,7 @@ import {
   SortField,
 } from '../../utils/tradeMarket';
 import { loadTradeMarketPrefs, saveTradeMarketPrefs } from '../../utils/tradeMarketPrefs';
+import { TradeListSkeleton } from '../../components/ui/ScreenSkeletons';
 
 const FILTER_META: Record<MarketFilter, { isShariah?: boolean }> = {
   All: {},
@@ -170,6 +171,9 @@ export default function TradeScreen() {
 
       <TradeSearchBar value={draftQuery} onChangeText={setDraftQuery} />
 
+      {!prefsLoaded ? (
+        <TradeListSkeleton />
+      ) : (
       <FlatList
         data={filteredStocks}
         keyExtractor={(item) => item.id}
@@ -189,6 +193,7 @@ export default function TradeScreen() {
         // Keep layout stable while typing so the TextInput doesn't lose focus
         contentContainerStyle={{ paddingBottom: 24 }}
       />
+      )}
     </SafeAreaView>
   );
 }

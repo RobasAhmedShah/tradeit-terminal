@@ -252,6 +252,7 @@ function SpotOrderReview({
   const side = String(data.side ?? 'BUY');
   const orderType = String(data.orderType ?? 'Limit');
   const price = Number(data.price ?? 0);
+  const stopPrice = Number(data.stopPrice ?? 0);
   const quantity = Number(data.quantity ?? 0);
   const validity = String(data.validity ?? 'Day');
   const brokerage = Number(data.brokerage ?? 0);
@@ -279,6 +280,7 @@ function SpotOrderReview({
         type: orderType === 'Stop Limit' ? 'Stop Limit' : 'Limit',
         quantity,
         price,
+        stopPrice: orderType === 'Stop Limit' ? stopPrice : undefined,
         totalCost,
       });
 
@@ -357,7 +359,13 @@ function SpotOrderReview({
           <DetailRow label="Order Side" value={sideDisplay} valueColor={sideColor} />
           <DetailRow label="Quantity" value={`${quantity.toLocaleString()} Shares`} />
           <DetailRow label="Order Type" value={orderType} />
-          <DetailRow label="Limit Price" value={`Rs ${price.toFixed(2)}`} />
+          {orderType === 'Stop Limit' && (
+            <DetailRow label="Stop Price" value={`Rs ${stopPrice.toFixed(2)}`} />
+          )}
+          <DetailRow
+            label={orderType === 'Stop Limit' ? 'Limit Price' : 'Limit Price'}
+            value={`Rs ${price.toFixed(2)}`}
+          />
           <View className="flex-row justify-between pt-3">
             <Text className="text-[#9CA3AF] text-sm font-semibold">Validity</Text>
             <Text className="text-white text-sm font-semibold">{validity}</Text>

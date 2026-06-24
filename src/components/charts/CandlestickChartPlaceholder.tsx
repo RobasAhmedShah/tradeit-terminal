@@ -1,13 +1,15 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
 import Svg, { Line, Rect, G } from 'react-native-svg';
 import { Ionicons } from '@expo/vector-icons';
 import { Stock } from '../../types';
-import { generateCandles } from '../../utils/chartSeries';
+import { ChartTimeframe, generateCandles } from '../../utils/chartSeries';
 
 interface CandlestickChartPlaceholderProps {
   stock: Stock;
 }
+
+const TIMEFRAMES: ChartTimeframe[] = ['1m', '15m', '1H', '4H', '1D'];
 
 export const CandlestickChartPlaceholder: React.FC<CandlestickChartPlaceholderProps> = ({ stock }) => {
   const screenWidth = Dimensions.get('window').width;
@@ -16,8 +18,8 @@ export const CandlestickChartPlaceholder: React.FC<CandlestickChartPlaceholderPr
   const priceAxisWidth = 45;
   const mainWidth = chartWidth - priceAxisWidth;
 
-  const timeframes = ['1m', '15m', '1H', '4H', '1D', 'More'];
-  const candles = useMemo(() => generateCandles(stock, 18), [stock.symbol, stock.price]);
+  const [timeframe, setTimeframe] = useState<ChartTimeframe>('1D');
+  const candles = useMemo(() => generateCandles(stock, timeframe), [stock.symbol, stock.price, timeframe]);
 
   const prices = candles.flatMap((c) => [c.high, c.low]);
   const maxP = Math.max(...prices, stock.price);
@@ -40,11 +42,14 @@ export const CandlestickChartPlaceholder: React.FC<CandlestickChartPlaceholderPr
     <View className="bg-[#111214] rounded-xl border border-[#2A2B2F] overflow-hidden">
       <View className="flex-row items-center justify-between px-3 py-2 border-b border-[#2A2B2F]">
         <View className="flex-row items-center">
-          {timeframes.map((tf) => (
-            <TouchableOpacity key={tf} className={`mr-4 ${tf === '1D' ? 'border-b-2 border-[#FF8A00] pb-1' : ''}`}>
-              <Text className={`text-[11px] font-semibold ${tf === '1D' ? 'text-[#FF8A00]' : 'text-[#9CA3AF]'}`}>{tf}</Text>
-            </TouchableOpacity>
-          ))}
+          {TIMEFRAMES.map((tf) => {
+            const active = timeframe === tf;
+            return (
+              <TouchableOpacity key={tf} onPress={() => setTimeframe(tf)} className={`mr-3 ${active ? 'border-b-2 border-[#FF8A00] pb-1' : ''}`}>
+                <Text className={`text-[11px] font-semibold ${active ? 'text-[#FF8A00]' : 'text-[#9CA3AF]'}`}>{tf}</Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
         <View className="flex-row items-center">
           <Ionicons name="options-outline" size={16} color="#9CA3AF" />
@@ -52,7 +57,7 @@ export const CandlestickChartPlaceholder: React.FC<CandlestickChartPlaceholderPr
       </View>
 
       <View className="flex-row items-center px-3 py-2 flex-wrap">
-        <Text className="text-[#9CA3AF] text-[10px] mr-2">{stock.symbol} • 1D • PSX</Text>
+        <Text className="text-[#9CA3AF] text-[10px] mr-2">{stock.symbol} • {timeframe} • PSX</Text>
         <Text className="text-[#00C853] text-[10px] mr-2">O {(stock.open ?? stock.price).toFixed(2)}</Text>
         <Text className="text-[#00C853] text-[10px] mr-2">H {(stock.high ?? stock.price).toFixed(2)}</Text>
         <Text className="text-[#FF3B30] text-[10px] mr-2">L {(stock.low ?? stock.price).toFixed(2)}</Text>

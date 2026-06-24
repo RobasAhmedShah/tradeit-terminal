@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
@@ -9,7 +9,7 @@ export const QuickActionGrid = () => {
   const actions = [
     { id: 'deposit',  icon: 'cash-outline',           label: 'Deposit',  onPress: () => router.push('/deposit'), highlight: false },
     { id: 'withdraw', icon: 'arrow-up-circle-outline', label: 'Withdraw', onPress: () => router.push('/withdraw'), highlight: false },
-    { id: 'transfer', icon: 'swap-horizontal-outline', label: 'Transfer', onPress: () => Alert.alert('Transfer',  'Transfer flow coming soon.'), highlight: false },
+    { id: 'transfer', icon: 'swap-horizontal-outline', label: 'Transfer', onPress: () => router.push('/transfer'), highlight: false },
     { id: 'trade',    icon: 'stats-chart',             label: 'Trade',    onPress: () => router.push('/(tabs)/trade'), highlight: true },
   ];
 

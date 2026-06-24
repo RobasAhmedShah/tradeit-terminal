@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MOCK_MARKET_STOCKS } from '../../data/mockStocks';
 import { useWatchlist } from '../../context/WatchlistContext';
+import { useMarketStock } from '../../context/MarketPricesContext';
 import { StockDetailHeader } from '../../components/stock/StockDetailHeader';
 import { StockPriceHeader } from '../../components/stock/StockPriceHeader';
 import { StockLineChartPlaceholder } from '../../components/charts/StockLineChartPlaceholder';
@@ -25,7 +26,9 @@ export default function StockDetailScreen() {
 
   const [activeTab, setActiveTab] = useState<StockDetailTab>('Overview');
 
-  const stock = MOCK_MARKET_STOCKS.find((s) => s.symbol === symbol);
+  const staticStock = MOCK_MARKET_STOCKS.find((s) => s.symbol === symbol);
+  const liveStock = useMarketStock(symbol);
+  const stock = liveStock ?? staticStock;
 
   if (!stock) {
     return (

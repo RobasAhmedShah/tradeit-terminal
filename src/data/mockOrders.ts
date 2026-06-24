@@ -19,6 +19,8 @@ export interface Order {
   filledQty: number;
   remainingQty: number;
   price: number;
+  stopPrice?: number;
+  stopTriggered?: boolean;
   avgPrice?: number;
   totalCost?: number;
   status: OrderStatus;

@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MOCK_MARKET_STOCKS } from '../../data/mockStocks';
 import { useWatchlist } from '../../context/WatchlistContext';
 import { useMarketStock } from '../../context/MarketPricesContext';
+import { useAlertSheet } from '../../context/AlertSheetContext';
 import { StockDetailHeader } from '../../components/stock/StockDetailHeader';
 import { StockPriceHeader } from '../../components/stock/StockPriceHeader';
 import { StockLineChartPlaceholder } from '../../components/charts/StockLineChartPlaceholder';
@@ -16,13 +17,12 @@ import { StockNewsList } from '../../components/stock/StockNewsList';
 import { StockStickyActions } from '../../components/stock/StockStickyActions';
 import { StockFinancialsTab } from '../../components/stock/StockFinancialsTab';
 import { StockAnalysisTab } from '../../components/stock/StockAnalysisTab';
-import { OrderBookTabContent } from '../../components/trading/OrderBookTabContent';
-import { TradesTabContent } from '../../components/trading/TradesTabContent';
 
 export default function StockDetailScreen() {
   const { symbol } = useLocalSearchParams<{ symbol: string }>();
   const router = useRouter();
   const { isWatchlisted, toggleWatchlist } = useWatchlist();
+  const { openAlert } = useAlertSheet();
 
   const [activeTab, setActiveTab] = useState<StockDetailTab>('Overview');
 
@@ -47,7 +47,7 @@ export default function StockDetailScreen() {
   };
 
   const handleAlertPress = () => {
-    router.push({ pathname: '/alerts/create', params: { symbol: stock.symbol } });
+    openAlert(stock.symbol);
   };
 
   const showChartSection = activeTab === 'Overview';
@@ -84,10 +84,6 @@ export default function StockDetailScreen() {
             <StockNewsList stock={stock} />
           </>
         )}
-
-        {activeTab === 'Order Book' && <OrderBookTabContent stock={stock} />}
-
-        {activeTab === 'Trades' && <TradesTabContent stock={stock} />}
 
         {activeTab === 'Financials' && <StockFinancialsTab stock={stock} />}
 

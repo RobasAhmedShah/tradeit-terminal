@@ -3,8 +3,6 @@ import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 
 export const STOCK_DETAIL_TABS = [
   'Overview',
-  'Order Book',
-  'Trades',
   'Financials',
   'News',
   'Analysis',

@@ -7,12 +7,12 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { usePriceAlerts } from '../../context/PriceAlertsContext';
+import { useAppAlert } from '../../context/AppAlertContext';
 import { MOCK_MARKET_STOCKS } from '../../data/mockStocks';
 import { PriceAlertCondition } from '../../utils/priceAlertPrefs';
 import { hapticLight, hapticSelection } from '../../utils/haptics';
@@ -21,6 +21,7 @@ export default function CreatePriceAlertScreen() {
   const router = useRouter();
   const { symbol: symbolParam, id: editId } = useLocalSearchParams<{ symbol?: string; id?: string }>();
   const { alerts, addAlert, updateAlert, removeAlert } = usePriceAlerts();
+  const { showAlert } = useAppAlert();
 
   const existing = editId ? alerts.find((a) => a.id === editId) : undefined;
   const prefilledStock = useMemo(() => {
@@ -50,7 +51,7 @@ export default function CreatePriceAlertScreen() {
 
   const handleSave = () => {
     if (!stock || targetPrice <= 0) {
-      Alert.alert('Invalid alert', 'Enter a valid symbol and target price.');
+      showAlert('Invalid alert', 'Enter a valid symbol and target price.', undefined, { tone: 'warning' });
       return;
     }
 
@@ -73,17 +74,22 @@ export default function CreatePriceAlertScreen() {
 
   const handleDelete = () => {
     if (!existing) return;
-    Alert.alert('Delete Alert', `Remove alert for ${existing.symbol}?`, [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: () => {
-          removeAlert(existing.id);
-          router.back();
+    showAlert(
+      'Delete Alert',
+      `Remove alert for ${existing.symbol}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            removeAlert(existing.id);
+            router.back();
+          },
         },
-      },
-    ]);
+      ],
+      { tone: 'warning' }
+    );
   };
 
   return (

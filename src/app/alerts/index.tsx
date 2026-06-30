@@ -1,11 +1,14 @@
 import React, { useMemo } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { usePriceAlerts } from '../../context/PriceAlertsContext';
+import { useAppAlert } from '../../context/AppAlertContext';
+import { useAlertSheet } from '../../context/AlertSheetContext';
 import { MOCK_MARKET_STOCKS } from '../../data/mockStocks';
 import { hapticLight } from '../../utils/haptics';
+import { CompactEmptyState } from '../../components/ui/CompactEmptyState';
 
 function conditionLabel(condition: 'above' | 'below', price: number): string {
   return condition === 'above' ? `Above Rs ${price.toFixed(2)}` : `Below Rs ${price.toFixed(2)}`;
@@ -14,6 +17,8 @@ function conditionLabel(condition: 'above' | 'below', price: number): string {
 export default function PriceAlertsScreen() {
   const router = useRouter();
   const { alerts, toggleAlert, removeAlert } = usePriceAlerts();
+  const { showAlert } = useAppAlert();
+  const { openAlert } = useAlertSheet();
 
   const sorted = useMemo(
     () => [...alerts].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
@@ -23,17 +28,22 @@ export default function PriceAlertsScreen() {
   const activeCount = alerts.filter((a) => a.isActive).length;
 
   const handleDelete = (id: string, symbol: string) => {
-    Alert.alert('Delete Alert', `Remove price alert for ${symbol}?`, [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: () => {
-          hapticLight();
-          removeAlert(id);
+    showAlert(
+      'Delete Alert',
+      `Remove price alert for ${symbol}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            hapticLight();
+            removeAlert(id);
+          },
         },
-      },
-    ]);
+      ],
+      { tone: 'warning' }
+    );
   };
 
   return (
@@ -44,7 +54,7 @@ export default function PriceAlertsScreen() {
         </TouchableOpacity>
         <Text className="flex-1 text-center text-white text-[17px] font-bold">Price Alerts</Text>
         <TouchableOpacity
-          onPress={() => router.push('/alerts/create')}
+          onPress={() => openAlert()}
           className="w-10 items-end"
         >
           <Ionicons name="add" size={26} color="#FF8A00" />
@@ -59,21 +69,13 @@ export default function PriceAlertsScreen() {
 
       <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 32 }}>
         {sorted.length === 0 ? (
-          <View className="items-center py-16 px-6">
-            <View className="w-14 h-14 rounded-full bg-[#111214] border border-[#2A2B2F] items-center justify-center mb-4">
-              <Ionicons name="notifications-outline" size={28} color="#555" />
-            </View>
-            <Text className="text-white text-base font-semibold mb-2">No price alerts yet</Text>
-            <Text className="text-[#666] text-[13px] text-center leading-5 mb-6">
-              Get notified when a stock crosses your target price.
-            </Text>
-            <TouchableOpacity
-              onPress={() => router.push('/alerts/create')}
-              className="bg-[#FF8A00] px-6 py-3 rounded-xl"
-            >
-              <Text className="text-black font-bold text-sm">Create Alert</Text>
-            </TouchableOpacity>
-          </View>
+          <CompactEmptyState
+            icon="notifications-outline"
+            title="No price alerts yet"
+            message="Get notified when a stock crosses your target price."
+            actionLabel="Create Alert"
+            onAction={() => openAlert()}
+          />
         ) : (
           sorted.map((alert) => {
             const stock = MOCK_MARKET_STOCKS.find((s) => s.symbol === alert.symbol);

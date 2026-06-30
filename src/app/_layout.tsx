@@ -8,6 +8,9 @@ import { COLORS } from '../constants/theme';
 import { WatchlistProvider } from '../context/WatchlistContext';
 import { MarketPricesProvider } from '../context/MarketPricesContext';
 import { AuthProvider } from '../context/AuthContext';
+import { AppAlertProvider } from '../context/AppAlertContext';
+import { TransferSheetProvider } from '../context/TransferSheetContext';
+import { AlertSheetProvider } from '../context/AlertSheetContext';
 import { PortfolioProvider } from '../context/PortfolioContext';
 import { FuturesProvider } from '../context/FuturesContext';
 import { PriceAlertsProvider } from '../context/PriceAlertsContext';
@@ -42,14 +45,17 @@ export default function RootLayout() {
     <ThemeProvider value={MyTheme}>
       <GestureHandlerRootView style={{ flex: 1, backgroundColor: COLORS.background }}>
       <SafeAreaProvider>
+        <AppAlertProvider>
         <MarketPricesProvider>
         <AuthProvider>
         <WatchlistProvider>
           <PortfolioProvider>
             <FuturesProvider>
             <PriceAlertsProvider>
+            <AlertSheetProvider>
             <NotificationsProvider>
             <OrdersProvider>
+            <TransferSheetProvider>
             <PriceAlertMonitor />
             <OrderFillMonitor />
             <FuturesOrderFillMonitor />
@@ -71,8 +77,6 @@ export default function RootLayout() {
               <Stack.Screen name="orders/history" />
               <Stack.Screen name="orders/[id]" />
               <Stack.Screen name="orders/edit/[id]" />
-              <Stack.Screen name="(order-flow)/order-review" />
-              <Stack.Screen name="(order-flow)/order-success" />
               <Stack.Screen name="portfolio/holdings" />
               <Stack.Screen name="portfolio/activity" />
               <Stack.Screen name="portfolio/holding/[symbol]" />
@@ -82,14 +86,17 @@ export default function RootLayout() {
               <Stack.Screen name="futures/close-success" />
               <Stack.Screen name="news/[id]" />
             </Stack>
+            </TransferSheetProvider>
             </OrdersProvider>
             </NotificationsProvider>
+            </AlertSheetProvider>
             </PriceAlertsProvider>
           </FuturesProvider>
           </PortfolioProvider>
         </WatchlistProvider>
         </AuthProvider>
         </MarketPricesProvider>
+        </AppAlertProvider>
       </SafeAreaProvider>
       </GestureHandlerRootView>
     </ThemeProvider>

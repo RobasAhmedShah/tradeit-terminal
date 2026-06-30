@@ -20,7 +20,7 @@ export const SpotTradingHeader = () => {
       <View className="flex-row items-center">
         <TouchableOpacity className="p-2 relative">
           <Ionicons name="notifications-outline" size={24} color="#9CA3AF" />
-          <View className="absolute top-2 right-2 bg-red-500 w-3.5 h-3.5 rounded-full items-center justify-center border border-[#050505]">
+          <View className="absolute top-2 right-2 bg-red-500 w-3.5 h-3.5 rounded-full items-center justify-center border border-[#0E1014]">
             <Text className="text-white text-[8px] font-bold">1</Text>
           </View>
         </TouchableOpacity>

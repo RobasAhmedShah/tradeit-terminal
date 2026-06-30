@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, ScrollView, Alert } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppHeader } from '../../components/ui/AppHeader';
@@ -14,6 +14,7 @@ import { FuturesPortfolioSection } from '../../components/futures/FuturesPortfol
 import { FuturesLeverageModal } from '../../components/futures/FuturesLeverageModal';
 import { FuturesContractSelectorModal } from '../../components/futures/FuturesContractSelectorModal';
 import { useFutures } from '../../context/FuturesContext';
+import { useAppAlert } from '../../context/AppAlertContext';
 import {
   DEFAULT_FUTURES_CONTRACT,
   FuturesContract,
@@ -43,6 +44,7 @@ export default function FuturesScreen() {
     getContractBySymbol,
     cancelOpenOrder,
   } = useFutures();
+  const { showAlert } = useAppAlert();
 
   const [activeTab, setActiveTab] = useState<FuturesTab>('chart');
   const [selectedSymbol, setSelectedSymbol] = useState(DEFAULT_FUTURES_CONTRACT.symbol);
@@ -188,13 +190,14 @@ export default function FuturesScreen() {
             })
           }
           onCancelOrder={(order) =>
-            Alert.alert(
+            showAlert(
               'Cancel Order',
               `Cancel ${order.side} ${order.quantity} lots on ${order.symbol}?`,
               [
                 { text: 'Keep', style: 'cancel' },
                 { text: 'Cancel Order', style: 'destructive', onPress: () => cancelOpenOrder(order) },
-              ]
+              ],
+              { tone: 'warning' }
             )
           }
         />

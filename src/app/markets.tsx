@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useWatchlist } from '../context/WatchlistContext';
+import { useAlertSheet } from '../context/AlertSheetContext';
 import { MOCK_TOP_GAINERS, MOCK_TOP_LOSERS } from '../data/mockStocks';
 import { Stock } from '../types';
 import {
@@ -53,6 +54,7 @@ const MOVER_SEGMENTS: { id: MoverSegment; label: string }[] = [
 
 export default function MarketsScreen() {
   const router = useRouter();
+  const { openAlert } = useAlertSheet();
   const params = useLocalSearchParams<{ tab?: string; type?: string; category?: string }>();
   const { watchlist, toggleWatchlist } = useWatchlist();
 
@@ -187,9 +189,7 @@ export default function MarketsScreen() {
             stock={item}
             pulse={pulseTick > 0}
             onRemove={() => toggleWatchlist(item)}
-            onAlert={() =>
-              router.push({ pathname: '/alerts/create', params: { symbol: item.symbol } })
-            }
+            onAlert={() => openAlert(item.symbol)}
           />
         )}
         refreshControl={

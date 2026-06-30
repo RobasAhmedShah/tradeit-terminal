@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 import {
   FuturesContract,
   FuturesMarginMode,
@@ -14,6 +13,7 @@ import {
   calcLotsFromMarginPercent,
   calcMarginUsageRatio,
 } from '../../utils/futuresOrderMath';
+import { FuturesOrderSheet, FuturesOrderInput } from './FuturesOrderSheet';
 
 const SLIDER_STEPS = [0, 25, 50, 75, 100] as const;
 
@@ -40,13 +40,14 @@ export const FuturesOrderPanel: React.FC<FuturesOrderPanelProps> = ({
   bookPriceFill,
   onBookPriceFillConsumed,
 }) => {
-  const router = useRouter();
   const [orderType, setOrderType] = useState<FuturesOrderType>('Market');
   const [limitPrice, setLimitPrice] = useState(formatFuturesPrice(contract.markPrice));
   const [quantity, setQuantity] = useState('1');
   const [sliderValue, setSliderValue] = useState(0);
   const [priceHintVisible, setPriceHintVisible] = useState(false);
   const [priceFieldHighlight, setPriceFieldHighlight] = useState(false);
+  const [sheetOrder, setSheetOrder] = useState<FuturesOrderInput | null>(null);
+  const [sheetVisible, setSheetVisible] = useState(false);
 
   useEffect(() => {
     setLimitPrice(formatFuturesPrice(contract.markPrice));
@@ -114,34 +115,23 @@ export const FuturesOrderPanel: React.FC<FuturesOrderPanelProps> = ({
 
   const submitOrder = (side: FuturesSide) => {
     if (qty <= 0) return;
-    const isLong = side === 'Long';
-    router.push({
-      pathname: '/order-review',
-      params: {
-        data: JSON.stringify({
-          symbol: contract.symbol,
-          companyName: contract.name,
-          side: isLong ? 'BUY' : 'SELL',
-          orderType,
-          price,
-          quantity: qty,
-          validity: 'GTC',
-          brokerage: 0,
-          fed: 0,
-          secp: 0,
-          totalCost: summary.requiredMargin,
-          availableBalance: availableMargin,
-          currentMarketPrice: contract.markPrice,
-          priceChange: contract.changeValue,
-          priceChangePct: contract.changePercent,
-          productType: 'FUTURES',
-          futuresSide: side,
-          leverage,
-          marginMode,
-          expiry: contract.expiry,
-        }),
-      },
+    setSheetOrder({
+      symbol: contract.symbol,
+      companyName: contract.name,
+      futuresSide: side,
+      orderType,
+      price,
+      quantity: qty,
+      leverage,
+      marginMode,
+      totalCost: summary.requiredMargin,
+      availableBalance: availableMargin,
+      currentMarketPrice: contract.markPrice,
+      priceChange: contract.changeValue,
+      priceChangePct: contract.changePercent,
+      expiry: contract.expiry,
     });
+    setSheetVisible(true);
   };
 
   return (
@@ -330,6 +320,12 @@ export const FuturesOrderPanel: React.FC<FuturesOrderPanelProps> = ({
           </Text>
         </View>
       </View>
+
+      <FuturesOrderSheet
+        visible={sheetVisible}
+        order={sheetOrder}
+        onClose={() => setSheetVisible(false)}
+      />
     </View>
   );
 };

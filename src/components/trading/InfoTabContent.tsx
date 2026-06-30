@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Stock } from '../../types';
 import { useWatchlist } from '../../context/WatchlistContext';
+import { useAlertSheet } from '../../context/AlertSheetContext';
 import { hapticLight } from '../../utils/haptics';
 
 interface InfoTabContentProps {
@@ -81,6 +82,7 @@ function ActionRow({
 
 export const InfoTabContent: React.FC<InfoTabContentProps> = ({ stock }) => {
   const router = useRouter();
+  const { openAlert } = useAlertSheet();
   const { isWatchlisted, toggleWatchlist } = useWatchlist();
   const watchlisted = isWatchlisted(stock.symbol);
 
@@ -191,7 +193,7 @@ export const InfoTabContent: React.FC<InfoTabContentProps> = ({ stock }) => {
           <ActionRow
             icon="notifications-outline"
             label="Set Price Alert"
-            onPress={() => router.push({ pathname: '/alerts/create', params: { symbol: stock.symbol } })}
+            onPress={() => openAlert(stock.symbol)}
           />
           <ActionRow
             icon="list-outline"

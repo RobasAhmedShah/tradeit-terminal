@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 
 import { usePortfolio } from '../../context/PortfolioContext';
 import { useMarketPrices } from '../../context/MarketPricesContext';
+import { useAppAlert } from '../../context/AppAlertContext';
 import { formatPortfolioRs } from '../../data/mockPortfolio';
+import { SpotOrderSheet, SpotOrderInput } from './SpotOrderSheet';
 
 interface BuySellPanelProps {
   symbol: string;
@@ -20,9 +21,9 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({
   bookPriceFill,
   onBookPriceFillConsumed,
 }) => {
-  const router = useRouter();
   const { summary, getHolding } = usePortfolio();
   const { getStock } = useMarketPrices();
+  const { showAlert } = useAppAlert();
   const [side, setSide] = useState<'buy' | 'sell'>('buy');
   const [orderType, setOrderType] = useState('Market');
   const [price, setPrice] = useState(currentPrice.toString());
@@ -30,6 +31,8 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({
   const [qty, setQty] = useState('10');
   const [priceHintVisible, setPriceHintVisible] = useState(false);
   const [priceFieldHighlight, setPriceFieldHighlight] = useState(false);
+  const [sheetOrder, setSheetOrder] = useState<SpotOrderInput | null>(null);
+  const [sheetVisible, setSheetVisible] = useState(false);
 
   useEffect(() => {
     if (orderType === 'Market') {
@@ -98,32 +101,32 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({
 
     if (orderType === 'Stop Limit') {
       if (!Number.isFinite(stop) || stop <= 0) {
-        Alert.alert('Invalid stop price', 'Enter a valid stop (trigger) price.');
+        showAlert('Invalid stop price', 'Enter a valid stop (trigger) price.', undefined, { tone: 'warning' });
         return;
       }
       if (isBuy) {
         if (stop <= currentPrice) {
-          Alert.alert('Invalid stop price', 'Buy stop must be above the current market price.');
+          showAlert('Invalid stop price', 'Buy stop must be above the current market price.', undefined, { tone: 'warning' });
           return;
         }
         if (p < stop) {
-          Alert.alert('Invalid limit price', 'Buy limit should be at or above the stop price.');
+          showAlert('Invalid limit price', 'Buy limit should be at or above the stop price.', undefined, { tone: 'warning' });
           return;
         }
       } else {
         if (stop >= currentPrice) {
-          Alert.alert('Invalid stop price', 'Sell stop must be below the current market price.');
+          showAlert('Invalid stop price', 'Sell stop must be below the current market price.', undefined, { tone: 'warning' });
           return;
         }
         if (p > stop) {
-          Alert.alert('Invalid limit price', 'Sell limit should be at or below the stop price.');
+          showAlert('Invalid limit price', 'Sell limit should be at or below the stop price.', undefined, { tone: 'warning' });
           return;
         }
       }
     }
 
     if (q <= 0 || p <= 0) {
-      Alert.alert('Invalid order', 'Enter a valid price and quantity.');
+      showAlert('Invalid order', 'Enter a valid price and quantity.', undefined, { tone: 'warning' });
       return;
     }
 
@@ -131,23 +134,27 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({
 
     if (!isBuy) {
       if (!holding || holding.qty < q) {
-        Alert.alert(
+        showAlert(
           'Insufficient shares',
-          `You only own ${holding?.qty?.toFixed(0) ?? 0} shares of ${symbol}.`
+          `You only own ${holding?.qty?.toFixed(0) ?? 0} shares of ${symbol}.`,
+          undefined,
+          { tone: 'warning' }
         );
         return;
       }
     } else if (totalCost > buyingPower) {
-      Alert.alert(
+      showAlert(
         'Insufficient buying power',
-        `You need Rs ${formatPortfolioRs(totalCost)} but only have Rs ${formatPortfolioRs(buyingPower)} available. Deposit funds first.`
+        `You need Rs ${formatPortfolioRs(totalCost)} but only have Rs ${formatPortfolioRs(buyingPower)} available. Deposit funds first.`,
+        undefined,
+        { tone: 'warning' }
       );
       return;
     }
 
     const stock = getStock(symbol);
 
-    const jsorderParams = {
+    setSheetOrder({
       symbol,
       companyName: stock?.name || '',
       side: isBuy ? 'BUY' : 'SELL',
@@ -160,12 +167,9 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({
       secp,
       totalCost,
       availableBalance: buyingPower,
-    };
-
-    router.push({
-      pathname: '/order-review',
-      params: { data: JSON.stringify(jsorderParams) },
+      currentMarketPrice: currentPrice,
     });
+    setSheetVisible(true);
   };
 
   return (
@@ -333,6 +337,12 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({
           {isBuy ? 'Buy' : 'Sell'} {symbol}
         </Text>
       </TouchableOpacity>
+
+      <SpotOrderSheet
+        visible={sheetVisible}
+        order={sheetOrder}
+        onClose={() => setSheetVisible(false)}
+      />
     </View>
   );
 };

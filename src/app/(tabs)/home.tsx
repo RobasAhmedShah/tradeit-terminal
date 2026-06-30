@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FlatList, View, Text, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import { FlatList, View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -14,8 +14,6 @@ import { NewsCard }           from '../../components/ui/NewsCard';
 import { useWatchlist }       from '../../context/WatchlistContext';
 import { MOCK_TOP_GAINERS, MOCK_TOP_LOSERS } from '../../data/mockStocks';
 import { MOCK_NEWS, NEWS_CATEGORIES, NewsCategory, NewsPost } from '../../data/mockNews';
-
-const SCREEN_H = Dimensions.get('window').height;
 
 /* ─── list item types ─────────────────────────────────────── */
 type ListItem =
@@ -208,7 +206,7 @@ export default function HomeScreen() {
         renderItem={renderItem}
         stickyHeaderIndices={[1]}
         showsVerticalScrollIndicator={false}
-        ListFooterComponent={<View style={{ height: SCREEN_H }} />}
+        contentContainerStyle={{ paddingBottom: 32 }}
         removeClippedSubviews={false}
       />
     </SafeAreaView>

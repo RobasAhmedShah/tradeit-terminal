@@ -7,6 +7,7 @@ import { Swipeable } from 'react-native-gesture-handler';
 import { useNotifications } from '../../context/NotificationsContext';
 import { AppNotification, AppNotificationType } from '../../utils/notificationPrefs';
 import { hapticLight } from '../../utils/haptics';
+import { CompactEmptyState } from '../../components/ui/CompactEmptyState';
 
 type NotifCategory = 'All' | 'Orders' | 'Alerts' | 'News';
 
@@ -163,13 +164,11 @@ export default function NotificationsScreen() {
 
       <ScrollView className="flex-1 pt-2" showsVerticalScrollIndicator={false}>
         {filtered.length === 0 ? (
-          <View className="items-center py-20">
-            <Ionicons name="notifications-off-outline" size={48} color="#333" />
-            <Text className="text-[#555] text-base mt-4">No notifications here</Text>
-            <Text className="text-[#444] text-xs mt-2 px-8 text-center">
-              Swipe any notification right to left to delete it
-            </Text>
-          </View>
+          <CompactEmptyState
+            icon="notifications-off-outline"
+            title="No notifications here"
+            message="Swipe any notification right to left to delete it."
+          />
         ) : (
           filtered.map((notif) => (
             <NotificationSwipeRow

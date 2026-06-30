@@ -1,34 +1,74 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useNotifications } from '../../context/NotificationsContext';
 import { usePortfolio } from '../../context/PortfolioContext';
 import { useAuth } from '../../context/AuthContext';
+import { useTransferSheet } from '../../context/TransferSheetContext';
+import { useAppAlert } from '../../context/AppAlertContext';
 import { formatPortfolioRs } from '../../data/mockPortfolio';
+import { NotificationSettingsSheet } from '../../components/settings/NotificationSettingsSheet';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { session, logout } = useAuth();
+  const { openTransfer } = useTransferSheet();
+  const { showAlert } = useAppAlert();
   const { unreadCount } = useNotifications();
   const { summary } = usePortfolio();
+  const [notifSettingsVisible, setNotifSettingsVisible] = useState(false);
 
   const returnPositive = summary.totalReturn >= 0;
 
   const handleLogout = () => {
-    Alert.alert('Log Out', 'Are you sure you want to log out?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Log Out',
-        style: 'destructive',
-        onPress: async () => {
-          await logout();
-          router.replace('/login');
+    showAlert(
+      'Log Out',
+      'Are you sure you want to log out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Log Out',
+          style: 'destructive',
+          onPress: async () => {
+            await logout();
+            router.replace('/login');
+          },
         },
-      },
-    ]);
+      ],
+      { tone: 'warning' }
+    );
   };
+
+  const quickActions: {
+    icon: keyof typeof Ionicons.glyphMap;
+    label: string;
+    onPress: () => void;
+    badge?: number;
+  }[] = [
+    { icon: 'person-outline', label: 'Account', onPress: () => router.push('/(tabs)/portfolio') },
+    {
+      icon: 'shield-checkmark',
+      label: 'KYC Verified',
+      onPress: () =>
+        showAlert(
+          'KYC Verified',
+          'Your identity has been verified. You have full access to spot and futures trading on TradeIt.',
+          undefined,
+          { tone: 'success' }
+        ),
+    },
+    { icon: 'swap-horizontal-outline', label: 'Transfer', onPress: () => openTransfer() },
+    { icon: 'list-outline', label: 'Open Orders', onPress: () => router.push('/orders') },
+    { icon: 'alarm-outline', label: 'Price Alerts', onPress: () => router.push('/alerts') },
+    {
+      icon: 'notifications-outline',
+      label: 'Notifications',
+      onPress: () => router.push('/notifications'),
+      badge: unreadCount,
+    },
+  ];
 
   const MenuRow = ({ icon, title, sub, isSecurity, hideBorder, onPress }: any) => (
     <TouchableOpacity
@@ -51,7 +91,7 @@ export default function ProfileScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0a0a0c]">
+    <SafeAreaView className="flex-1 bg-[#050505]">
       {/* NAV BAR */}
       <View className="flex-row items-center justify-between px-4 py-3">
         <TouchableOpacity onPress={() => router.back()} className="w-10">
@@ -65,7 +105,7 @@ export default function ProfileScreen() {
           <TouchableOpacity className="relative" onPress={() => router.push('/notifications')}>
             <Ionicons name="notifications-outline" size={20} color="#e0e0e0" />
             {unreadCount > 0 && (
-              <View className="absolute -top-1 -right-1 min-w-[14px] h-[14px] px-0.5 bg-[#f97316] rounded-full items-center justify-center border border-[#0a0a0c]">
+              <View className="absolute -top-1 -right-1 min-w-[14px] h-[14px] px-0.5 bg-[#f97316] rounded-full items-center justify-center border border-[#050505]">
                 <Text className="text-white text-[8px] font-bold">
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </Text>
@@ -131,62 +171,32 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* SECTION 3 - QUICK ACTIONS ROW */}
-        <View className="mx-4 mb-6 flex-row justify-between bg-[#131316] rounded-xl py-5 px-2">
-          <TouchableOpacity className="flex-1 items-center flex-col" onPress={() => router.push('/(tabs)/portfolio')}>
-            <View className="w-12 h-12 rounded-full bg-[#1a1a1a] items-center justify-center mb-2 border border-[#222]">
-              <Ionicons name="person-outline" size={20} color="#f97316" />
-            </View>
-            <Text className="text-[#888] text-[9px] text-center leading-3">Account{'\n'}Overview</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            className="flex-1 items-center flex-col"
-            onPress={() =>
-              Alert.alert(
-                'KYC Verified',
-                'Your identity has been verified. You have full access to spot and futures trading on TradeIt.'
-              )
-            }
-          >
-            <View className="w-12 h-12 rounded-full bg-[#1a1a1a] items-center justify-center mb-2 border border-[#222]">
-              <Ionicons name="shield-checkmark" size={20} color="#f97316" />
-            </View>
-            <Text className="text-[#888] text-[9px] text-center leading-3">KYC{'\n'}Verified</Text>
-          </TouchableOpacity>
-          <TouchableOpacity className="flex-1 items-center flex-col" onPress={() => router.push('/transfer')}>
-            <View className="w-12 h-12 rounded-full bg-[#1a1a1a] items-center justify-center mb-2 border border-[#222]">
-              <Ionicons name="swap-horizontal-outline" size={20} color="#f97316" />
-            </View>
-            <Text className="text-[#888] text-[9px] text-center leading-3">Transfer</Text>
-          </TouchableOpacity>
-          <TouchableOpacity className="flex-1 items-center flex-col" onPress={() => router.push('/orders')}>
-            <View className="w-12 h-12 rounded-full bg-[#1a1a1a] items-center justify-center mb-2 border border-[#222]">
-              <Ionicons name="list-outline" size={20} color="#f97316" />
-            </View>
-            <Text className="text-[#888] text-[9px] text-center leading-3">Open{'\n'}Orders</Text>
-          </TouchableOpacity>
-          <TouchableOpacity className="flex-1 items-center flex-col" onPress={() => router.push('/alerts')}>
-            <View className="w-12 h-12 rounded-full bg-[#1a1a1a] items-center justify-center mb-2 border border-[#222]">
-              <Ionicons name="alarm-outline" size={20} color="#f97316" />
-            </View>
-            <Text className="text-[#888] text-[9px] text-center leading-3">Price{'\n'}Alerts</Text>
-          </TouchableOpacity>
-          <TouchableOpacity className="flex-1 items-center flex-col" onPress={() => router.push('/notifications')}>
-            <View className="w-12 h-12 rounded-full bg-[#1a1a1a] items-center justify-center mb-2 border border-[#222] relative">
-              <Ionicons name="notifications-outline" size={20} color="#f97316" />
-            </View>
-            <Text className="text-[#888] text-[9px] text-center leading-3">Notifi{'\n'}cations</Text>
-          </TouchableOpacity>
+        {/* SECTION 3 - QUICK ACTIONS GRID (2 x 3) */}
+        <View className="mx-4 mb-6 flex-row flex-wrap bg-[#131316] rounded-xl py-3">
+          {quickActions.map((action) => (
+            <TouchableOpacity
+              key={action.label}
+              className="w-1/3 items-center py-3"
+              activeOpacity={0.7}
+              onPress={action.onPress}
+            >
+              <View className="w-12 h-12 rounded-full bg-[#1a1a1a] items-center justify-center mb-2 border border-[#222] relative">
+                <Ionicons name={action.icon} size={20} color="#f97316" />
+                {action.badge && action.badge > 0 ? (
+                  <View className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 bg-[#f97316] rounded-full items-center justify-center border border-[#131316]">
+                    <Text className="text-white text-[8px] font-bold">
+                      {action.badge > 9 ? '9+' : action.badge}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
+              <Text className="text-[#aaa] text-[11px] text-center">{action.label}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
 
         {/* SECTION 4 - MENU LIST */}
         <View className="mx-4 mb-4 bg-[#131316] rounded-xl overflow-hidden">
-          <MenuRow
-            icon="person-outline"
-            title="Account Information"
-            sub="Personal details, address, CNIC"
-            onPress={() => Alert.alert('Coming Soon', 'Account information will be available in a future update.')}
-          />
           <MenuRow
             icon="briefcase-outline"
             title="Brokerage Accounts"
@@ -200,13 +210,6 @@ export default function ProfileScreen() {
             onPress={() => router.push('/deposit')}
           />
           <MenuRow
-            icon="lock-closed-outline"
-            title="Security Settings"
-            sub="Password, 2FA, biometric"
-            isSecurity={true}
-            onPress={() => Alert.alert('Coming Soon', 'Security settings will be available in a future update.')}
-          />
-          <MenuRow
             icon="alarm-outline"
             title="Price Alerts"
             sub="Create and manage stock price alerts"
@@ -216,7 +219,7 @@ export default function ProfileScreen() {
             icon="notifications-outline"
             title="Notification Settings"
             sub="Price alerts, order updates, news"
-            onPress={() => router.push('/notification-settings')}
+            onPress={() => setNotifSettingsVisible(true)}
           />
           <MenuRow
             icon="options-outline"
@@ -233,14 +236,14 @@ export default function ProfileScreen() {
             icon="help-circle-outline"
             title="Help & Support"
             sub="FAQs, guides & customer support"
-            onPress={() => Alert.alert('Help & Support', 'Contact support@tradeit.app for assistance.')}
+            onPress={() => showAlert('Help & Support', 'Contact support@tradeit.app for assistance.')}
           />
           <MenuRow
             icon="information-circle-outline"
             title="About TradeIt"
             sub="App info, terms & conditions"
             hideBorder={true}
-            onPress={() => Alert.alert('TradeIt', 'TradeIt PSX demo app · v1.0')}
+            onPress={() => showAlert('TradeIt', 'TradeIt PSX demo app · v1.0')}
           />
         </View>
 
@@ -254,6 +257,11 @@ export default function ProfileScreen() {
         </TouchableOpacity>
 
       </ScrollView>
+
+      <NotificationSettingsSheet
+        visible={notifSettingsVisible}
+        onClose={() => setNotifSettingsVisible(false)}
+      />
     </SafeAreaView>
   );
 }

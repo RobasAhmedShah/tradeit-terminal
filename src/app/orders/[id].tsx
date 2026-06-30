@@ -1,21 +1,23 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useOrders } from '../../context/OrdersContext';
+import { useAppAlert } from '../../context/AppAlertContext';
 import { OrderType } from '../../data/mockOrders';
 
 export default function OrderDetailsScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { getOrder, cancelOrder } = useOrders();
+  const { showAlert } = useAppAlert();
 
   const order = id ? getOrder(id) : undefined;
 
   if (!order) {
     return (
-      <SafeAreaView className="flex-1 bg-[#0d0d0d] justify-center items-center">
+      <SafeAreaView className="flex-1 bg-[#050505] justify-center items-center">
         <Text className="text-white text-lg">Order not found.</Text>
         <TouchableOpacity onPress={() => router.back()} className="mt-4 px-6 py-2 bg-[#f97316] rounded-xl">
           <Text className="text-white font-bold">Go Back</Text>
@@ -34,17 +36,22 @@ export default function OrderDetailsScreen() {
   };
 
   const handleCancel = () => {
-    Alert.alert('Cancel Order', `Are you sure you want to cancel order ${order.id}?`, [
-      { text: 'No', style: 'cancel' },
-      {
-        text: 'Yes, Cancel',
-        style: 'destructive',
-        onPress: () => {
-          cancelOrder(order.id);
-          router.back();
+    showAlert(
+      'Cancel Order',
+      `Are you sure you want to cancel order ${order.id}?`,
+      [
+        { text: 'No', style: 'cancel' },
+        {
+          text: 'Yes, Cancel',
+          style: 'destructive',
+          onPress: () => {
+            cancelOrder(order.id);
+            router.back();
+          },
         },
-      },
-    ]);
+      ],
+      { tone: 'warning' }
+    );
   };
 
   const Row = ({ label, value, valueClass = 'text-white' }: { label: string; value: string | number; valueClass?: string }) => (
@@ -55,7 +62,7 @@ export default function OrderDetailsScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0d0d0d]">
+    <SafeAreaView className="flex-1 bg-[#050505]">
       <View className="flex-row items-center px-4 py-3 border-b border-[#1e1e1e]">
         <TouchableOpacity onPress={() => router.back()} className="w-10">
           <Ionicons name="arrow-back" size={24} color="white" />

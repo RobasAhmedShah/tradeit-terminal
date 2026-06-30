@@ -8,6 +8,7 @@ import { PortfolioHeroCard } from '../../components/portfolio/PortfolioHeroCard'
 import { HoldingRow, HoldingsEmptyState } from '../../components/portfolio/HoldingRow';
 import { FuturesPortfolioSummaryCard } from '../../components/futures/FuturesPortfolioSummaryCard';
 import { usePortfolio } from '../../context/PortfolioContext';
+import { useTransferSheet } from '../../context/TransferSheetContext';
 import { formatPortfolioRs } from '../../data/mockPortfolio';
 import { sortHoldings } from '../../utils/portfolioUi';
 import { OpenOrdersBanner } from '../../components/portfolio/OpenOrdersBanner';
@@ -15,6 +16,7 @@ import { PortfolioSkeleton } from '../../components/ui/ScreenSkeletons';
 
 export default function PortfolioScreen() {
   const router = useRouter();
+  const { openTransfer } = useTransferSheet();
   const { holdings, summary, recentTradeSymbols, isRefreshing, lastRefreshedAt, refreshPortfolio, ready } = usePortfolio();
 
   const previewHoldings = useMemo(() => {
@@ -60,44 +62,47 @@ export default function PortfolioScreen() {
 
         <FuturesPortfolioSummaryCard />
 
-        <View className="flex-row mx-4 mb-4 gap-2">
-          <TouchableOpacity
-            onPress={() => router.push('/deposit')}
-            className="flex-1 bg-[#111214] rounded-xl p-3 flex-row items-center border border-[#2A2B2F]"
-          >
-            <View className="w-8 h-8 rounded-lg items-center justify-center mr-3 bg-[#18191C]">
-              <Ionicons name="arrow-down-outline" size={18} color="#FF8A00" />
-            </View>
-            <View className="flex-1">
-              <Text className="text-white font-bold text-[13px] mb-0.5">Deposit</Text>
-              <Text className="text-[#9CA3AF] text-[9px]">Add funds to your account</Text>
-            </View>
-          </TouchableOpacity>
+        <View className="mx-4 mb-3">
+          <View className="flex-row gap-2 mb-2">
+            <TouchableOpacity
+              onPress={() => router.push('/deposit')}
+              className="flex-1 bg-[#111214] rounded-xl p-3.5 flex-row items-center border border-[#2A2B2F]"
+            >
+              <View className="w-9 h-9 rounded-lg items-center justify-center mr-3 bg-[#18191C]">
+                <Ionicons name="arrow-down-outline" size={18} color="#FF8A00" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-white font-bold text-[13px]">Deposit</Text>
+                <Text className="text-[#9CA3AF] text-[10px]">Add to Spot wallet</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => router.push('/withdraw')}
+              className="flex-1 bg-[#111214] rounded-xl p-3.5 flex-row items-center border border-[#2A2B2F]"
+            >
+              <View className="w-9 h-9 rounded-lg items-center justify-center mr-3 bg-[#18191C]">
+                <Ionicons name="arrow-up-outline" size={18} color="#FF8A00" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-white font-bold text-[13px]">Withdraw</Text>
+                <Text className="text-[#9CA3AF] text-[10px]">To your bank</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
 
           <TouchableOpacity
-            onPress={() => router.push('/withdraw')}
-            className="flex-1 bg-[#111214] rounded-xl p-3 flex-row items-center border border-[#2A2B2F]"
+            onPress={() => openTransfer()}
+            className="bg-[#111214] rounded-xl p-3.5 flex-row items-center border border-[#2A2B2F]"
           >
-            <View className="w-8 h-8 rounded-lg items-center justify-center mr-3 bg-[#18191C]">
-              <Ionicons name="arrow-up-outline" size={18} color="#FF8A00" />
-            </View>
-            <View className="flex-1">
-              <Text className="text-white font-bold text-[13px] mb-0.5">Withdraw</Text>
-              <Text className="text-[#9CA3AF] text-[9px]">Withdraw to your bank</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => router.push('/transfer')}
-            className="flex-1 bg-[#111214] rounded-xl p-3 flex-row items-center border border-[#2A2B2F]"
-          >
-            <View className="w-8 h-8 rounded-lg items-center justify-center mr-3 bg-[#18191C]">
+            <View className="w-9 h-9 rounded-lg items-center justify-center mr-3 bg-[#18191C]">
               <Ionicons name="swap-horizontal-outline" size={18} color="#FF8A00" />
             </View>
             <View className="flex-1">
-              <Text className="text-white font-bold text-[13px] mb-0.5">Transfer</Text>
-              <Text className="text-[#9CA3AF] text-[9px]">Spot ↔ futures margin</Text>
+              <Text className="text-white font-bold text-[13px]">Transfer</Text>
+              <Text className="text-[#9CA3AF] text-[10px]">Move funds Spot ↔ Futures</Text>
             </View>
+            <Ionicons name="chevron-forward" size={16} color="#666" />
           </TouchableOpacity>
         </View>
 

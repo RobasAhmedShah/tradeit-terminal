@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTransferSheet } from '../../context/TransferSheetContext';
 import { Ionicons } from '@expo/vector-icons';
 import {
   FuturesHistoryItem,
@@ -88,6 +89,7 @@ export const FuturesPortfolioSection: React.FC<FuturesPortfolioSectionProps> = (
   onCancelOrder,
 }) => {
   const router = useRouter();
+  const { openTransfer } = useTransferSheet();
   const [activeTab, setActiveTab] = useState<FuturesPortfolioTab>('positions');
 
   const counts: Record<FuturesPortfolioTab, number> = {
@@ -98,10 +100,10 @@ export const FuturesPortfolioSection: React.FC<FuturesPortfolioSectionProps> = (
 
   const viewAllRoute =
     activeTab === 'positions'
-      ? '/futures/positions'
+      ? '/orders?tab=futures&view=positions'
       : activeTab === 'open_orders'
-        ? '/futures/positions?tab=open_orders'
-        : '/futures/positions?tab=history';
+        ? '/orders?tab=futures&view=open'
+        : '/orders?tab=futures&view=history';
 
   const previewLimit = 2;
 
@@ -144,7 +146,7 @@ export const FuturesPortfolioSection: React.FC<FuturesPortfolioSectionProps> = (
           <View className="bg-[#111214] border border-[#2A2B2F] rounded-xl p-6 items-center">
             <Text className="text-[#9CA3AF] text-sm">No open positions</Text>
             {marginAvailable === 0 && openOrders.length === 0 && (
-              <TouchableOpacity onPress={() => router.push('/transfer')} className="mt-3">
+              <TouchableOpacity onPress={() => openTransfer()} className="mt-3">
                 <Text className="text-[#FF8A00] text-sm font-semibold">Transfer from Spot →</Text>
               </TouchableOpacity>
             )}

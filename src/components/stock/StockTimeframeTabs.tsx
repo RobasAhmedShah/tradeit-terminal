@@ -16,7 +16,7 @@ export const StockTimeframeTabs = () => {
             onPress={() => setActiveFrame(tf)}
             className={`w-11 h-8 items-center justify-center rounded-full ${isActive ? 'bg-[#FF8A00] border border-[#FF8A00]' : 'border border-transparent'}`}
           >
-            <Text className={`text-xs font-semibold ${isActive ? 'text-[#050505]' : 'text-[#9CA3AF]'}`}>
+            <Text className={`text-xs font-semibold ${isActive ? 'text-[#0E1014]' : 'text-[#9CA3AF]'}`}>
               {tf}
             </Text>
           </TouchableOpacity>

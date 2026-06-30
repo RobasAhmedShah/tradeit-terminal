@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { usePortfolio } from '../../context/PortfolioContext';
+import { useTransferSheet } from '../../context/TransferSheetContext';
 import { formatPortfolioRs } from '../../data/mockPortfolio';
 
 // ─── Mock Data ─────────────────────────────────────────────────────────────────
@@ -46,6 +47,7 @@ type Step = 1 | 2 | 3 | 4 | 5 | 6;
 
 export default function DepositScreen() {
   const router = useRouter();
+  const { openTransfer } = useTransferSheet();
   const { addCash, summary } = usePortfolio();
 
   const balanceLabel = `PKR ${formatPortfolioRs(summary.totalValue)}`;
@@ -127,7 +129,7 @@ export default function DepositScreen() {
   const renderProgress = () => {
     const progressIndex = step - 1; // 0-based current step index
     return (
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 14, marginHorizontal: 14 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 10, marginHorizontal: 14 }}>
         {PROGRESS_LABELS.map((label, idx) => {
           const isCompleted = idx < progressIndex;
           const isCurrent   = idx === progressIndex;
@@ -160,16 +162,39 @@ export default function DepositScreen() {
     );
   };
 
-  // ── Shared: Continue Button ─────────────────────────────────────────────────
-  const renderContinueBtn = (onPress: () => void, label = 'Continue', disabled = false) => (
-    <TouchableOpacity
-      onPress={onPress}
-      disabled={disabled}
-      style={{ marginTop: 20, marginBottom: 30, backgroundColor: '#f97316', borderRadius: 100, paddingVertical: 15, opacity: disabled ? 0.4 : 1 }}
-    >
-      <Text style={{ color: '#fff', fontSize: 15, fontWeight: '700', textAlign: 'center' }}>{label}</Text>
-    </TouchableOpacity>
-  );
+  // ── Shared: Sticky Footer CTA (steps 1–5) ───────────────────────────────────
+  const renderFooter = () => {
+    let label = 'Continue';
+    let onPress: () => void = () => setStep(2);
+    let outlined = false;
+    let disabled = false;
+
+    if (step === 1) { onPress = () => setStep(2); }
+    else if (step === 2) { onPress = () => setStep(3); }
+    else if (step === 3) { onPress = () => setStep(4); disabled = !isAmountValid; }
+    else if (step === 4) { label = 'Confirm Deposit'; onPress = () => setStep(5); }
+    else if (step === 5) { label = 'Upload Receipt'; outlined = true; onPress = () => setStep(6); }
+
+    return (
+      <View style={{ paddingHorizontal: 14, paddingTop: 10, paddingBottom: 12, borderTopWidth: 0.5, borderTopColor: '#1e1e1e', backgroundColor: '#050505' }}>
+        <TouchableOpacity
+          onPress={onPress}
+          disabled={disabled}
+          activeOpacity={0.85}
+          style={{
+            backgroundColor: outlined ? 'transparent' : '#f97316',
+            borderWidth: outlined ? 1.5 : 0,
+            borderColor: '#f97316',
+            borderRadius: 100,
+            paddingVertical: 15,
+            opacity: disabled ? 0.4 : 1,
+          }}
+        >
+          <Text style={{ color: outlined ? '#f97316' : '#fff', fontSize: 15, fontWeight: '700', textAlign: 'center' }}>{label}</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
   // ── Step 1: Select Method ───────────────────────────────────────────────────
   const renderStep1 = () => (
@@ -218,10 +243,6 @@ export default function DepositScreen() {
           Deposits are credited to your Spot wallet (buying power). To trade futures, transfer funds from Spot to Futures after your deposit clears.
         </Text>
       </View>
-
-      <View style={{ paddingHorizontal: 14 }}>
-        {renderContinueBtn(() => setStep(2))}
-      </View>
     </ScrollView>
   );
 
@@ -269,8 +290,6 @@ export default function DepositScreen() {
         <Ionicons name="add" size={16} color="#555" />
         <Text style={{ color: '#555', fontSize: 13, fontWeight: '500' }}>Add New Bank Account</Text>
       </TouchableOpacity>
-
-      {renderContinueBtn(() => setStep(3))}
     </ScrollView>
   );
 
@@ -331,8 +350,6 @@ export default function DepositScreen() {
           No fees on deposits via bank transfer.{'\n'}Minimum deposit: PKR 1,000
         </Text>
       </View>
-
-      {renderContinueBtn(() => setStep(4), 'Continue', !isAmountValid)}
     </ScrollView>
   );
 
@@ -398,8 +415,6 @@ export default function DepositScreen() {
           Make sure the details above are correct. You won't be able to change them later.
         </Text>
       </View>
-
-      {renderContinueBtn(() => setStep(5), 'Confirm Deposit')}
     </ScrollView>
   );
 
@@ -478,18 +493,10 @@ export default function DepositScreen() {
               <Text style={{ color: '#fff', fontSize: 11, fontWeight: '700' }}>3</Text>
             </View>
             <Text style={{ color: '#555', fontSize: 12, flex: 1, marginLeft: 10, marginTop: 2 }}>
-              After payment, click the button below to upload the receipt.
+              After payment, tap the button below to upload the receipt.
             </Text>
           </View>
         </View>
-
-        {/* Upload Receipt */}
-        <TouchableOpacity
-          onPress={() => setStep(6)}
-          style={{ marginTop: 14, marginBottom: 30, backgroundColor: 'transparent', borderWidth: 1.5, borderColor: '#f97316', borderRadius: 100, paddingVertical: 15 }}
-        >
-          <Text style={{ color: '#f97316', fontSize: 15, fontWeight: '700', textAlign: 'center' }}>Upload Receipt</Text>
-        </TouchableOpacity>
       </ScrollView>
     );
   };
@@ -548,7 +555,7 @@ export default function DepositScreen() {
       <View style={{ marginTop: 20 }}>
         {cashCredited && (
           <TouchableOpacity
-            onPress={() => router.push('/transfer')}
+            onPress={() => openTransfer()}
             style={{ backgroundColor: '#FF8A00', borderRadius: 100, paddingVertical: 15, marginBottom: 10 }}
           >
             <Text style={{ color: '#000', fontSize: 15, fontWeight: '700', textAlign: 'center' }}>
@@ -590,14 +597,17 @@ export default function DepositScreen() {
 
   // ── Main Render ─────────────────────────────────────────────────────────────
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#0d0d0d' }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#050505' }} edges={['top']}>
       {renderNavBar()}
-      {step === 1 && renderStep1()}
-      {step === 2 && renderStep2()}
-      {step === 3 && renderStep3()}
-      {step === 4 && renderStep4()}
-      {step === 5 && renderStep5()}
-      {step === 6 && renderStep6()}
+      <View style={{ flex: 1 }}>
+        {step === 1 && renderStep1()}
+        {step === 2 && renderStep2()}
+        {step === 3 && renderStep3()}
+        {step === 4 && renderStep4()}
+        {step === 5 && renderStep5()}
+        {step === 6 && renderStep6()}
+      </View>
+      {step < 6 && renderFooter()}
     </SafeAreaView>
   );
 }

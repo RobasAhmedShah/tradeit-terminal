@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, TextInput, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useOrders } from '../../../context/OrdersContext';
+import { useAppAlert } from '../../../context/AppAlertContext';
 
 export default function EditOrderScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { getOrder, updateOrder } = useOrders();
+  const { showAlert } = useAppAlert();
   const order = id ? getOrder(id) : undefined;
 
   const [price, setPrice] = useState(order ? String(order.price) : '');
@@ -16,7 +18,7 @@ export default function EditOrderScreen() {
 
   if (!order) {
     return (
-      <SafeAreaView className="flex-1 bg-[#0d0d0d] justify-center items-center">
+      <SafeAreaView className="flex-1 bg-[#050505] justify-center items-center">
         <Text className="text-white text-lg">Order not found.</Text>
         <TouchableOpacity onPress={() => router.back()} className="mt-4 px-6 py-2 bg-[#f97316] rounded-xl">
           <Text className="text-white font-bold">Go Back</Text>
@@ -31,7 +33,7 @@ export default function EditOrderScreen() {
     const nextPrice = parseFloat(price);
     const nextQty = parseInt(quantity, 10);
     if (!nextPrice || nextPrice <= 0 || !nextQty || nextQty <= 0) {
-      Alert.alert('Invalid values', 'Enter a valid price and quantity.');
+      showAlert('Invalid values', 'Enter a valid price and quantity.', undefined, { tone: 'warning' });
       return;
     }
     updateOrder(order.id, { price: nextPrice, quantity: nextQty });
@@ -39,7 +41,7 @@ export default function EditOrderScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0d0d0d]">
+    <SafeAreaView className="flex-1 bg-[#050505]">
       <View className="flex-row items-center px-4 py-3 border-b border-[#1e1e1e]">
         <TouchableOpacity onPress={() => router.back()} className="w-10">
           <Ionicons name="arrow-back" size={24} color="white" />

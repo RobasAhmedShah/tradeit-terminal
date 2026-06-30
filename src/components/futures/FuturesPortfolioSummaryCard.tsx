@@ -3,10 +3,12 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useFutures } from '../../context/FuturesContext';
+import { useTransferSheet } from '../../context/TransferSheetContext';
 import { formatFuturesPrice } from '../../data/mockFutures';
 
 export const FuturesPortfolioSummaryCard: React.FC = () => {
   const router = useRouter();
+  const { openTransfer } = useTransferSheet();
   const { positions, openOrders, marginAvailable, marginUsed, isMarketLive } = useFutures();
 
   const totalUnrealizedPnl = useMemo(
@@ -21,7 +23,7 @@ export const FuturesPortfolioSummaryCard: React.FC = () => {
     return (
       <TouchableOpacity
         activeOpacity={0.9}
-        onPress={() => router.push('/transfer')}
+        onPress={() => openTransfer()}
         className="mx-4 mb-4 bg-[#111214] border border-[#2A2B2F] rounded-2xl p-4"
       >
         <View className="flex-row items-center">

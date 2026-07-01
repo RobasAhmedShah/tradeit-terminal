@@ -18,7 +18,7 @@ export default function PriceAlertsScreen() {
   const router = useRouter();
   const { alerts, toggleAlert, removeAlert } = usePriceAlerts();
   const { showAlert } = useAppAlert();
-  const { openAlert } = useAlertSheet();
+  const { openAlert, openEditAlert } = useAlertSheet();
 
   const sorted = useMemo(
     () => [...alerts].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
@@ -84,7 +84,7 @@ export default function PriceAlertsScreen() {
             return (
               <TouchableOpacity
                 key={alert.id}
-                onPress={() => router.push({ pathname: '/alerts/create', params: { id: alert.id } })}
+                onPress={() => openEditAlert(alert.id)}
                 activeOpacity={0.7}
                 className="bg-[#111214] border border-[#2A2B2F] rounded-xl p-4 mb-3"
               >

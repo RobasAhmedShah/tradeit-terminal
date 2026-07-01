@@ -73,7 +73,6 @@ export default function RootLayout() {
                 name="alerts/index"
                 options={{ presentation: 'card', contentStyle: { backgroundColor: COLORS.background } }}
               />
-              <Stack.Screen name="alerts/create" />
               <Stack.Screen name="orders/index" />
               <Stack.Screen name="orders/open" />
               <Stack.Screen name="orders/history" />

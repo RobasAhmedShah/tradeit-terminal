@@ -22,15 +22,24 @@ const ACCENT = '#FF8A00';
 interface PriceAlertSheetProps {
   visible: boolean;
   presetSymbol?: string | null;
+  editId?: string | null;
   onClose: () => void;
 }
 
-export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({ visible, presetSymbol, onClose }) => {
+export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({
+  visible,
+  presetSymbol,
+  editId,
+  onClose,
+}) => {
   const insets = useSafeAreaInsets();
-  const { addAlert } = usePriceAlerts();
+  const { alerts, addAlert, updateAlert, removeAlert } = usePriceAlerts();
   const { showAlert } = useAppAlert();
 
-  const [symbol, setSymbol] = useState(presetSymbol ?? '');
+  const existing = editId ? alerts.find((a) => a.id === editId) : undefined;
+  const isEditing = !!existing;
+
+  const [symbol, setSymbol] = useState('');
   const [condition, setCondition] = useState<PriceAlertCondition>('above');
   const [priceInput, setPriceInput] = useState('');
 
@@ -41,15 +50,26 @@ export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({ visible, prese
 
   useEffect(() => {
     if (!visible) return;
+
+    if (editId) {
+      const alert = alerts.find((a) => a.id === editId);
+      if (!alert) return;
+      setSymbol(alert.symbol);
+      setCondition(alert.condition);
+      setPriceInput(String(alert.targetPrice));
+      return;
+    }
+
     const preset = presetSymbol ?? '';
     setSymbol(preset);
     setCondition('above');
     const presetStock = MOCK_MARKET_STOCKS.find((s) => s.symbol === preset);
     setPriceInput(presetStock ? String(presetStock.price) : '');
-  }, [visible, presetSymbol]);
+  }, [visible, editId, presetSymbol, alerts]);
 
   const targetPrice = parseFloat(priceInput.replace(/,/g, '')) || 0;
   const isValid = symbol.trim().length > 0 && targetPrice > 0 && !!stock;
+  const symbolLocked = isEditing || !!presetSymbol;
 
   const handleSave = () => {
     if (!stock || targetPrice <= 0) {
@@ -57,8 +77,36 @@ export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({ visible, prese
       return;
     }
     hapticLight();
+
+    if (existing) {
+      updateAlert(existing.id, { condition, targetPrice });
+      onClose();
+      return;
+    }
+
     addAlert({ symbol: stock.symbol, name: stock.name, condition, targetPrice });
     onClose();
+  };
+
+  const handleDelete = () => {
+    if (!existing) return;
+    showAlert(
+      'Delete Alert',
+      `Remove alert for ${existing.symbol}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            hapticLight();
+            removeAlert(existing.id);
+            onClose();
+          },
+        },
+      ],
+      { tone: 'warning' }
+    );
   };
 
   return (
@@ -77,7 +125,9 @@ export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({ visible, prese
             </View>
 
             <View className="flex-row items-center justify-between px-5 py-3">
-              <Text className="text-white text-[16px] font-bold">New Price Alert</Text>
+              <Text className="text-white text-[16px] font-bold">
+                {isEditing ? 'Edit Price Alert' : 'New Price Alert'}
+              </Text>
               <TouchableOpacity onPress={onClose} className="w-8 h-8 items-center justify-center">
                 <Ionicons name="close" size={22} color="#8A8D93" />
               </TouchableOpacity>
@@ -89,7 +139,6 @@ export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({ visible, prese
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{ paddingBottom: 12 }}
             >
-              {/* Symbol */}
               <Text className="text-[#5C6068] text-[10px] font-semibold uppercase tracking-wider mb-2">Symbol</Text>
               <View className="bg-[#1C1E22] border border-[#25272D] rounded-xl px-3 py-3 mb-1 flex-row items-center">
                 <TextInput
@@ -98,7 +147,7 @@ export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({ visible, prese
                   placeholder="e.g. SAZEW"
                   placeholderTextColor="#444"
                   autoCapitalize="characters"
-                  editable={!presetSymbol}
+                  editable={!symbolLocked}
                   className="flex-1 text-white text-[15px] font-bold py-0"
                 />
                 {stock && (
@@ -117,7 +166,6 @@ export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({ visible, prese
                 <View className="mb-3" />
               )}
 
-              {/* Condition */}
               <Text className="text-[#5C6068] text-[10px] font-semibold uppercase tracking-wider mb-2">Condition</Text>
               <View className="flex-row gap-2 mb-4">
                 {(['above', 'below'] as const).map((c) => {
@@ -141,7 +189,6 @@ export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({ visible, prese
                 })}
               </View>
 
-              {/* Target price */}
               <Text className="text-[#5C6068] text-[10px] font-semibold uppercase tracking-wider mb-2">
                 Target Price (PKR)
               </Text>
@@ -169,6 +216,12 @@ export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({ visible, prese
                   </Text>
                 </View>
               )}
+
+              {isEditing && (
+                <TouchableOpacity onPress={handleDelete} className="py-3 items-center mt-1">
+                  <Text className="text-[#F6465D] text-[14px] font-semibold">Delete Alert</Text>
+                </TouchableOpacity>
+              )}
             </ScrollView>
 
             <View
@@ -182,7 +235,7 @@ export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({ visible, prese
                 style={{ backgroundColor: isValid ? ACCENT : '#25272D' }}
               >
                 <Text className={`font-bold text-[15px] ${isValid ? 'text-black' : 'text-[#5C6068]'}`}>
-                  Create Alert
+                  {isEditing ? 'Save Changes' : 'Create Alert'}
                 </Text>
               </TouchableOpacity>
             </View>

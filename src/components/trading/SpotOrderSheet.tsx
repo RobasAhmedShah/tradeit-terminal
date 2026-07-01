@@ -12,6 +12,7 @@ import Animated, {
 import { usePortfolio } from '../../context/PortfolioContext';
 import { useOrders } from '../../context/OrdersContext';
 import { useNotifications } from '../../context/NotificationsContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { isPendingSpotOrderType } from '../../utils/spotOrderTypes';
 
 export interface SpotOrderInput {
@@ -73,6 +74,7 @@ function DetailRow({
 
 export const SpotOrderSheet: React.FC<SpotOrderSheetProps> = ({ visible, order, onClose }) => {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { applySpotTrade } = usePortfolio();
   const { addPendingOrder: addOrderToHub } = useOrders();
   const { pushNotification } = useNotifications();
@@ -172,9 +174,18 @@ export const SpotOrderSheet: React.FC<SpotOrderSheetProps> = ({ visible, order, 
     return () => clearInterval(interval);
   }, [phase, order, isPending, orderType, applySpotTrade]);
 
-  const closeAndGo = (path?: string) => {
+  const closeAndGo = (href: string | { pathname: string; params?: Record<string, string> }) => {
     onClose();
-    if (path) setTimeout(() => router.push(path as any), 60);
+    setTimeout(() => {
+      if (typeof href === 'string') {
+        router.replace(href as any);
+        return;
+      }
+      router.replace({
+        pathname: href.pathname,
+        params: { ...href.params, returnTo: 'portfolio' },
+      } as any);
+    }, 60);
   };
 
   if (!order) return null;
@@ -192,7 +203,10 @@ export const SpotOrderSheet: React.FC<SpotOrderSheetProps> = ({ visible, order, 
           <TouchableOpacity className="flex-1" activeOpacity={1} onPress={onClose} />
         )}
 
-        <View className="bg-[#161719] rounded-t-3xl border-t border-[#25272D] max-h-[90%]">
+        <View
+          className="bg-[#161719] rounded-t-3xl border-t border-[#25272D] max-h-[90%]"
+          style={{ paddingBottom: Math.max(insets.bottom, 0) }}
+        >
           {/* Grabber */}
           <View className="items-center pt-3 pb-1">
             <View className="w-10 h-1 rounded-full bg-[#3A3D44]" />
@@ -376,7 +390,7 @@ export const SpotOrderSheet: React.FC<SpotOrderSheetProps> = ({ visible, order, 
 
               {isPending ? (
                 <TouchableOpacity
-                  onPress={() => closeAndGo('/orders')}
+                  onPress={() => closeAndGo({ pathname: '/orders', params: { tab: 'spot', view: 'open' } })}
                   className="py-4 rounded-2xl items-center mb-3"
                   style={{ backgroundColor: ACCENT }}
                 >
@@ -384,7 +398,7 @@ export const SpotOrderSheet: React.FC<SpotOrderSheetProps> = ({ visible, order, 
                 </TouchableOpacity>
               ) : isBuy ? (
                 <TouchableOpacity
-                  onPress={() => closeAndGo(`/portfolio/holding/${order.symbol}`)}
+                  onPress={() => closeAndGo('/(tabs)/portfolio')}
                   className="py-4 rounded-2xl items-center mb-3"
                   style={{ backgroundColor: ACCENT }}
                 >

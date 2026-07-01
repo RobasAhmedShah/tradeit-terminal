@@ -59,7 +59,7 @@ function NotificationSwipeRow({
       <TouchableOpacity
         onPress={onOpen}
         activeOpacity={0.7}
-        className={`flex-row px-4 py-4 border-b border-[#111] bg-[#050505] ${!notif.isRead ? 'bg-[#0d0d0f]' : ''}`}
+        className={`flex-row px-4 py-4 border-b border-[#111] bg-[#050505] ${!notif.isRead ? 'bg-[#161719]' : ''}`}
       >
         <View
           className="w-10 h-10 rounded-full items-center justify-center mr-3 mt-0.5 flex-shrink-0"

@@ -148,7 +148,7 @@ export default function TradeScreen() {
   );
 
   const renderEmpty = () => (
-    <View className="items-center justify-center px-8 py-16">
+    <View className="items-center justify-center px-8 py-10">
       <Ionicons name="search-outline" size={40} color="#2A2B2F" />
       <Text className="text-white text-base font-semibold mt-4 text-center">No stocks found</Text>
       <Text className="text-[#9CA3AF] text-sm mt-2 text-center">

@@ -24,12 +24,8 @@ export const AppHeader = () => {
         <Text className="text-[#FF8A00] text-xl font-bold tracking-tight">It</Text>
       </View>
 
-      {/* Scan + Notifications — right */}
-      <View className="flex-row items-center" style={{ gap: 16 }}>
-        <TouchableOpacity>
-          <Ionicons name="scan-outline" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-
+      {/* Notifications — right */}
+      <View className="flex-row items-center">
         <TouchableOpacity className="relative" onPress={() => router.push('/notifications')}>
           <Ionicons name="notifications-outline" size={24} color="#FFFFFF" />
           {unreadCount > 0 && (

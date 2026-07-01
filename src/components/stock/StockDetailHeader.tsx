@@ -37,9 +37,6 @@ export const StockDetailHeader: React.FC<StockDetailHeaderProps> = ({
             <Ionicons name="notifications-outline" size={22} color="#9CA3AF" />
           </TouchableOpacity>
         )}
-        <TouchableOpacity onPress={() => router.push('/(tabs)/home')} className="p-2">
-          <Ionicons name="home-outline" size={24} color="#9CA3AF" />
-        </TouchableOpacity>
         <TouchableOpacity onPress={onWatchlistPress} className="p-2 -mr-2">
           <Ionicons name={isWatchlisted ? 'star' : 'star-outline'} size={24} color={isWatchlisted ? '#FF8A00' : '#9CA3AF'} />
         </TouchableOpacity>

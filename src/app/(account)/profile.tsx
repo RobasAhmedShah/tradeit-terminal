@@ -60,7 +60,7 @@ export default function ProfileScreen() {
         ),
     },
     { icon: 'swap-horizontal-outline', label: 'Transfer', onPress: () => openTransfer() },
-    { icon: 'list-outline', label: 'Open Orders', onPress: () => router.push('/orders') },
+    { icon: 'list-outline', label: 'Open Orders', onPress: () => router.push({ pathname: '/orders', params: { tab: 'spot', view: 'open' } }) },
     { icon: 'alarm-outline', label: 'Price Alerts', onPress: () => router.push('/alerts') },
     {
       icon: 'notifications-outline',

@@ -11,6 +11,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useFutures } from '../../context/FuturesContext';
 import { useNotifications } from '../../context/NotificationsContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   estimateLiqPrice,
   formatFuturesPrice,
@@ -78,6 +79,7 @@ function DetailRow({
 
 export const FuturesOrderSheet: React.FC<FuturesOrderSheetProps> = ({ visible, order, onClose }) => {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { fulfillFuturesOrder } = useFutures();
   const { pushNotification } = useNotifications();
 
@@ -164,9 +166,18 @@ export const FuturesOrderSheet: React.FC<FuturesOrderSheetProps> = ({ visible, o
     return () => clearInterval(interval);
   }, [phase, order, isPending, fulfillFuturesOrder, pushNotification]);
 
-  const closeAndGo = (path?: string) => {
+  const closeAndGo = (href: string | { pathname: string; params?: Record<string, string> }) => {
     onClose();
-    if (path) setTimeout(() => router.push(path as any), 60);
+    setTimeout(() => {
+      if (typeof href === 'string') {
+        router.replace(href as any);
+        return;
+      }
+      router.replace({
+        pathname: href.pathname,
+        params: { ...href.params, returnTo: 'portfolio' },
+      } as any);
+    }, 60);
   };
 
   if (!order) return null;
@@ -180,7 +191,10 @@ export const FuturesOrderSheet: React.FC<FuturesOrderSheetProps> = ({ visible, o
       <View className="flex-1 bg-black/70 justify-end">
         {phase === 'review' && <TouchableOpacity className="flex-1" activeOpacity={1} onPress={onClose} />}
 
-        <View className="bg-[#161719] rounded-t-3xl border-t border-[#25272D] max-h-[90%]">
+        <View
+          className="bg-[#161719] rounded-t-3xl border-t border-[#25272D] max-h-[90%]"
+          style={{ paddingBottom: Math.max(insets.bottom, 0) }}
+        >
           <View className="items-center pt-3 pb-1">
             <View className="w-10 h-1 rounded-full bg-[#3A3D44]" />
           </View>
@@ -352,7 +366,15 @@ export const FuturesOrderSheet: React.FC<FuturesOrderSheetProps> = ({ visible, o
               </View>
 
               <TouchableOpacity
-                onPress={() => closeAndGo('/orders?tab=futures&view=positions')}
+                onPress={() =>
+                  closeAndGo({
+                    pathname: '/orders',
+                    params: {
+                      tab: 'futures',
+                      view: isPending ? 'open' : 'positions',
+                    },
+                  })
+                }
                 className="py-4 rounded-2xl items-center mb-3"
                 style={{ backgroundColor: ACCENT }}
               >

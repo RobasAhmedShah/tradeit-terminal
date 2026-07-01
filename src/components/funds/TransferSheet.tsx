@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { usePortfolio } from '../../context/PortfolioContext';
 import { useFutures } from '../../context/FuturesContext';
@@ -26,6 +27,7 @@ interface TransferSheetProps {
 }
 
 export const TransferSheet: React.FC<TransferSheetProps> = ({ visible, onClose }) => {
+  const insets = useSafeAreaInsets();
   const { summary, transferCashToFutures, receiveTransferFromFutures } = usePortfolio();
   const { marginAvailable, addFuturesMargin, transferMarginToSpot } = useFutures();
   const { showAlert } = useAppAlert();
@@ -87,35 +89,39 @@ export const TransferSheet: React.FC<TransferSheetProps> = ({ visible, onClose }
   };
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={handleClose}>
+    <Modal visible={visible} transparent animationType="slide" statusBarTranslucent onRequestClose={handleClose}>
       <KeyboardAvoidingView
         className="flex-1"
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? insets.top : 0}
       >
         <View className="flex-1 bg-black/70 justify-end">
           <TouchableOpacity className="flex-1" activeOpacity={1} onPress={handleClose} />
 
-          <View className="bg-[#111214] rounded-t-2xl border-t border-[#2A2B2F] max-h-[88%]">
-            <View className="flex-row items-center justify-between px-4 py-3 border-b border-[#2A2B2F]">
-              <View className="w-8" />
-              <Text className="text-white text-base font-bold">Transfer</Text>
-              <TouchableOpacity onPress={handleClose} className="w-8 items-end">
-                <Ionicons name="close" size={22} color="#9CA3AF" />
+          <View className="bg-[#161719] rounded-t-3xl border-t border-[#25272D] max-h-[88%]">
+            <View className="items-center pt-3 pb-1">
+              <View className="w-10 h-1 rounded-full bg-[#3A3D44]" />
+            </View>
+
+            <View className="flex-row items-center justify-between px-5 py-3">
+              <Text className="text-white text-[16px] font-bold">Transfer</Text>
+              <TouchableOpacity onPress={handleClose} className="w-8 h-8 items-center justify-center">
+                <Ionicons name="close" size={22} color="#8A8D93" />
               </TouchableOpacity>
             </View>
 
             <ScrollView
-              className="px-4 pt-3"
+              className="px-5"
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingBottom: 28 }}
+              contentContainerStyle={{ paddingBottom: 12 }}
             >
-              <View className="flex-row bg-[#18191C] border border-[#2A2B2F] rounded-xl p-1 mb-4">
+              <View className="flex-row bg-[#1C1E22] border border-[#25272D] rounded-xl p-1 mb-4">
                 <TouchableOpacity
                   onPress={() => setDirection('spot-to-futures')}
                   className={`flex-1 py-2.5 rounded-lg items-center ${fromSpot ? 'bg-[#FF8A00]' : ''}`}
                 >
-                  <Text className={`text-xs font-bold ${fromSpot ? 'text-black' : 'text-[#9CA3AF]'}`}>
+                  <Text className={`text-xs font-bold ${fromSpot ? 'text-black' : 'text-[#8A8D93]'}`}>
                     Spot → Futures
                   </Text>
                 </TouchableOpacity>
@@ -123,42 +129,42 @@ export const TransferSheet: React.FC<TransferSheetProps> = ({ visible, onClose }
                   onPress={() => setDirection('futures-to-spot')}
                   className={`flex-1 py-2.5 rounded-lg items-center ${!fromSpot ? 'bg-[#FF8A00]' : ''}`}
                 >
-                  <Text className={`text-xs font-bold ${!fromSpot ? 'text-black' : 'text-[#9CA3AF]'}`}>
+                  <Text className={`text-xs font-bold ${!fromSpot ? 'text-black' : 'text-[#8A8D93]'}`}>
                     Futures → Spot
                   </Text>
                 </TouchableOpacity>
               </View>
 
-              <View className="bg-[#18191C] border border-[#2A2B2F] rounded-xl p-4 mb-4">
-                <Text className="text-[#9CA3AF] text-xs mb-1">From</Text>
+              <View className="bg-[#1C1E22] border border-[#25272D] rounded-xl p-4 mb-4">
+                <Text className="text-[#8A8D93] text-xs mb-1">From</Text>
                 <Text className="text-white font-semibold mb-3">
                   {fromSpot ? 'Spot Wallet' : 'Futures Wallet'}
                 </Text>
-                <Text className="text-[#9CA3AF] text-xs mb-1">To</Text>
+                <Text className="text-[#8A8D93] text-xs mb-1">To</Text>
                 <Text className="text-white font-semibold mb-3">
                   {fromSpot ? 'Futures Wallet' : 'Spot Wallet'}
                 </Text>
-                <Text className="text-[#666] text-[11px]">Available: {availableLabel}</Text>
+                <Text className="text-[#5C6068] text-[11px]">Available: {availableLabel}</Text>
               </View>
 
-              <Text className="text-[#9CA3AF] text-xs mb-2">Amount (PKR)</Text>
+              <Text className="text-[#8A8D93] text-xs mb-2">Amount (PKR)</Text>
               <TextInput
                 value={amount}
                 onChangeText={setAmount}
                 keyboardType="numeric"
                 placeholder="0"
                 placeholderTextColor="#555"
-                className="bg-[#18191C] border border-[#2A2B2F] rounded-xl px-4 py-3.5 text-white text-lg font-bold mb-3"
+                className="bg-[#1C1E22] border border-[#25272D] rounded-xl px-4 py-3.5 text-white text-lg font-bold mb-3"
               />
 
-              <View className="flex-row flex-wrap gap-2 mb-5">
+              <View className="flex-row flex-wrap gap-2">
                 {QUICK_AMOUNTS.map((v) => (
                   <TouchableOpacity
                     key={v}
                     onPress={() => setAmount(String(v))}
-                    className="px-3 py-1.5 rounded-full border border-[#2A2B2F] bg-[#18191C]"
+                    className="px-3 py-1.5 rounded-full border border-[#25272D] bg-[#1C1E22]"
                   >
-                    <Text className="text-[#9CA3AF] text-xs font-semibold">{v.toLocaleString()}</Text>
+                    <Text className="text-[#8A8D93] text-xs font-semibold">{v.toLocaleString()}</Text>
                   </TouchableOpacity>
                 ))}
                 <TouchableOpacity
@@ -168,11 +174,16 @@ export const TransferSheet: React.FC<TransferSheetProps> = ({ visible, onClose }
                   <Text className="text-[#FF8A00] text-xs font-semibold">Max</Text>
                 </TouchableOpacity>
               </View>
-
-              <TouchableOpacity onPress={handleTransfer} className="bg-[#FF8A00] rounded-xl py-4 items-center">
-                <Text className="text-black font-bold text-base">Confirm Transfer</Text>
-              </TouchableOpacity>
             </ScrollView>
+
+            <View
+              className="px-5 pt-3 border-t border-[#25272D]"
+              style={{ paddingBottom: Math.max(insets.bottom, 12) }}
+            >
+              <TouchableOpacity onPress={handleTransfer} className="bg-[#FF8A00] rounded-2xl py-4 items-center">
+                <Text className="text-black font-bold text-[15px]">Confirm Transfer</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </KeyboardAvoidingView>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Switch, Modal } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNotifications } from '../../context/NotificationsContext';
 import { NotificationSettings } from '../../utils/notificationSettingsPrefs';
@@ -19,6 +20,7 @@ interface NotificationSettingsSheetProps {
 }
 
 export const NotificationSettingsSheet: React.FC<NotificationSettingsSheetProps> = ({ visible, onClose }) => {
+  const insets = useSafeAreaInsets();
   const { settings, updateSettings } = useNotifications();
 
   const updateSetting = (key: SettingKey, value: boolean) => {
@@ -30,7 +32,7 @@ export const NotificationSettingsSheet: React.FC<NotificationSettingsSheetProps>
       <View className="flex-1 bg-black/70 justify-end">
         <TouchableOpacity className="flex-1" activeOpacity={1} onPress={onClose} />
 
-        <View className="bg-[#161719] rounded-t-3xl border-t border-[#25272D] pb-8">
+        <View className="bg-[#161719] rounded-t-3xl border-t border-[#25272D]" style={{ paddingBottom: Math.max(insets.bottom, 8) }}>
           <View className="items-center pt-3 pb-1">
             <View className="w-10 h-1 rounded-full bg-[#3A3D44]" />
           </View>

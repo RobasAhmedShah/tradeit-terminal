@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, TextInput } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, TouchableOpacity, ScrollView, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  withSequence,
+  withDelay,
+} from 'react-native-reanimated';
 import { usePortfolio } from '../../context/PortfolioContext';
 import { useTransferSheet } from '../../context/TransferSheetContext';
 import { formatPortfolioRs } from '../../data/mockPortfolio';
@@ -45,8 +53,83 @@ const PROGRESS_LABELS = ['Method', 'Bank', 'Amount', 'Review'];
 
 type Step = 1 | 2 | 3 | 4 | 5 | 6;
 
+function DepositSuccessHero() {
+  const ringScale = useSharedValue(0.5);
+  const ringOpacity = useSharedValue(0);
+  const iconScale = useSharedValue(0);
+  const contentOpacity = useSharedValue(0);
+  const contentTranslateY = useSharedValue(16);
+
+  useEffect(() => {
+    ringOpacity.value = withTiming(1, { duration: 250 });
+    ringScale.value = withSequence(
+      withSpring(1.12, { damping: 10, stiffness: 180 }),
+      withSpring(1, { damping: 14 })
+    );
+    iconScale.value = withDelay(120, withSpring(1, { damping: 12, stiffness: 200 }));
+    contentOpacity.value = withDelay(280, withTiming(1, { duration: 350 }));
+    contentTranslateY.value = withDelay(280, withSpring(0, { damping: 16 }));
+  }, [ringScale, ringOpacity, iconScale, contentOpacity, contentTranslateY]);
+
+  const ringStyle = useAnimatedStyle(() => ({
+    opacity: ringOpacity.value,
+    transform: [{ scale: ringScale.value }],
+  }));
+
+  const iconStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: iconScale.value }],
+  }));
+
+  const contentStyle = useAnimatedStyle(() => ({
+    opacity: contentOpacity.value,
+    transform: [{ translateY: contentTranslateY.value }],
+  }));
+
+  return (
+    <View style={{ alignItems: 'center', paddingTop: 30, paddingBottom: 20 }}>
+      <Animated.View
+        style={[
+          {
+            width: 90,
+            height: 90,
+            borderRadius: 45,
+            borderWidth: 3,
+            borderColor: '#22c55e',
+            alignItems: 'center',
+            justifyContent: 'center',
+          },
+          ringStyle,
+        ]}
+      >
+        <Animated.View
+          style={[
+            {
+              width: 70,
+              height: 70,
+              borderRadius: 35,
+              backgroundColor: '#0d2010',
+              alignItems: 'center',
+              justifyContent: 'center',
+            },
+            iconStyle,
+          ]}
+        >
+          <Ionicons name="checkmark" size={36} color="#22c55e" />
+        </Animated.View>
+      </Animated.View>
+      <Animated.View style={[{ alignItems: 'center', marginTop: 16 }, contentStyle]}>
+        <Text style={{ color: '#fff', fontSize: 22, fontWeight: '700', textAlign: 'center' }}>Deposit Successful!</Text>
+        <Text style={{ color: '#555', fontSize: 13, textAlign: 'center', marginTop: 6, marginBottom: 24, lineHeight: 20 }}>
+          Your deposit has been received{'\n'}and is being processed.
+        </Text>
+      </Animated.View>
+    </View>
+  );
+}
+
 export default function DepositScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { openTransfer } = useTransferSheet();
   const { addCash, summary } = usePortfolio();
 
@@ -62,7 +145,7 @@ export default function DepositScreen() {
   const [cashCredited, setCashCredited]           = useState(false);
 
   const parsedAmount    = parseInt(amount, 10) || 0;
-  const isAmountValid   = parsedAmount >= 1000;
+  const isAmountValid   = parsedAmount >= 10;
   const displayAmount   = parsedAmount > 0
     ? `PKR ${parsedAmount.toLocaleString()}.00`
     : `PKR ${DEPOSIT_MOCK.amount.toLocaleString()}.00`;
@@ -176,7 +259,7 @@ export default function DepositScreen() {
     else if (step === 5) { label = 'Upload Receipt'; outlined = true; onPress = () => setStep(6); }
 
     return (
-      <View style={{ paddingHorizontal: 14, paddingTop: 10, paddingBottom: 12, borderTopWidth: 0.5, borderTopColor: '#1e1e1e', backgroundColor: '#050505' }}>
+      <View style={{ paddingHorizontal: 14, paddingTop: 10, paddingBottom: Math.max(insets.bottom, 12), borderTopWidth: 0.5, borderTopColor: '#1e1e1e', backgroundColor: '#050505' }}>
         <TouchableOpacity
           onPress={onPress}
           disabled={disabled}
@@ -347,7 +430,7 @@ export default function DepositScreen() {
       <View style={{ marginTop: 14, backgroundColor: '#111111', borderRadius: 10, padding: 12, flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
         <Ionicons name="information-circle-outline" size={14} color="#555" style={{ marginTop: 1 }} />
         <Text style={{ color: '#555', fontSize: 11, flex: 1 }}>
-          No fees on deposits via bank transfer.{'\n'}Minimum deposit: PKR 1,000
+          No fees on deposits via bank transfer.{'\n'}Minimum deposit: PKR 10
         </Text>
       </View>
     </ScrollView>
@@ -504,18 +587,7 @@ export default function DepositScreen() {
   // ── Step 6: Success ─────────────────────────────────────────────────────────
   const renderStep6 = () => (
     <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 14, paddingBottom: 20 }}>
-      {/* Success Icon */}
-      <View style={{ alignItems: 'center', paddingTop: 30, paddingBottom: 20 }}>
-        <View style={{ width: 90, height: 90, borderRadius: 45, borderWidth: 3, borderColor: '#22c55e', alignItems: 'center', justifyContent: 'center' }}>
-          <View style={{ width: 70, height: 70, borderRadius: 35, backgroundColor: '#0d2010', alignItems: 'center', justifyContent: 'center' }}>
-            <Ionicons name="checkmark" size={36} color="#22c55e" />
-          </View>
-        </View>
-        <Text style={{ color: '#fff', fontSize: 22, fontWeight: '700', textAlign: 'center', marginTop: 16 }}>Deposit Successful!</Text>
-        <Text style={{ color: '#555', fontSize: 13, textAlign: 'center', marginTop: 6, marginBottom: 24, lineHeight: 20 }}>
-          Your deposit has been received{'\n'}and is being processed.
-        </Text>
-      </View>
+      <DepositSuccessHero />
 
       {/* Receipt Card */}
       <View style={{ backgroundColor: '#161616', borderRadius: 12, padding: 14 }}>
@@ -599,15 +671,21 @@ export default function DepositScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#050505' }} edges={['top']}>
       {renderNavBar()}
-      <View style={{ flex: 1 }}>
-        {step === 1 && renderStep1()}
-        {step === 2 && renderStep2()}
-        {step === 3 && renderStep3()}
-        {step === 4 && renderStep4()}
-        {step === 5 && renderStep5()}
-        {step === 6 && renderStep6()}
-      </View>
-      {step < 6 && renderFooter()}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+      >
+        <View style={{ flex: 1 }}>
+          {step === 1 && renderStep1()}
+          {step === 2 && renderStep2()}
+          {step === 3 && renderStep3()}
+          {step === 4 && renderStep4()}
+          {step === 5 && renderStep5()}
+          {step === 6 && renderStep6()}
+        </View>
+        {step < 6 && renderFooter()}
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

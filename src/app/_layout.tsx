@@ -65,6 +65,8 @@ export default function RootLayout() {
               <Stack.Screen name="(tabs)" />
               <Stack.Screen name="(account)" />
               <Stack.Screen name="markets" />
+              <Stack.Screen name="watchlist" />
+              <Stack.Screen name="news" />
               <Stack.Screen name="stock/[symbol]" />
               <Stack.Screen name="spot/[symbol]" />
               <Stack.Screen

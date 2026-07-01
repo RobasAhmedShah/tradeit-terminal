@@ -10,6 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePriceAlerts } from '../../context/PriceAlertsContext';
 import { useAppAlert } from '../../context/AppAlertContext';
 import { MOCK_MARKET_STOCKS } from '../../data/mockStocks';
@@ -25,6 +26,7 @@ interface PriceAlertSheetProps {
 }
 
 export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({ visible, presetSymbol, onClose }) => {
+  const insets = useSafeAreaInsets();
   const { addAlert } = usePriceAlerts();
   const { showAlert } = useAppAlert();
 
@@ -61,7 +63,11 @@ export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({ visible, prese
 
   return (
     <Modal visible={visible} transparent animationType="slide" statusBarTranslucent onRequestClose={onClose}>
-      <KeyboardAvoidingView className="flex-1" behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <KeyboardAvoidingView
+        className="flex-1"
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? insets.top : 0}
+      >
         <View className="flex-1 bg-black/70 justify-end">
           <TouchableOpacity className="flex-1" activeOpacity={1} onPress={onClose} />
 
@@ -81,7 +87,7 @@ export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({ visible, prese
               className="px-5"
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingBottom: 28 }}
+              contentContainerStyle={{ paddingBottom: 12 }}
             >
               {/* Symbol */}
               <Text className="text-[#5C6068] text-[10px] font-semibold uppercase tracking-wider mb-2">Symbol</Text>
@@ -152,7 +158,7 @@ export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({ visible, prese
               </View>
 
               {stock && targetPrice > 0 && (
-                <View className="bg-[#1C1E22] border border-[#25272D] rounded-xl p-3 mb-5">
+                <View className="bg-[#1C1E22] border border-[#25272D] rounded-xl p-3 mb-2">
                   <Text className="text-[#8A8D93] text-[12px] leading-5">
                     Notify when <Text className="text-white font-semibold">{stock.symbol}</Text>{' '}
                     {condition === 'above' ? 'rises above' : 'falls below'}{' '}
@@ -163,7 +169,12 @@ export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({ visible, prese
                   </Text>
                 </View>
               )}
+            </ScrollView>
 
+            <View
+              className="px-5 pt-3 border-t border-[#25272D]"
+              style={{ paddingBottom: Math.max(insets.bottom, 12) }}
+            >
               <TouchableOpacity
                 onPress={handleSave}
                 disabled={!isValid}
@@ -174,7 +185,7 @@ export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({ visible, prese
                   Create Alert
                 </Text>
               </TouchableOpacity>
-            </ScrollView>
+            </View>
           </View>
         </View>
       </KeyboardAvoidingView>

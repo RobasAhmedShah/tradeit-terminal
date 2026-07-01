@@ -1,8 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, TextInput } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, TouchableOpacity, ScrollView, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  withSequence,
+  withDelay,
+} from 'react-native-reanimated';
 import { usePortfolio } from '../../context/PortfolioContext';
 import { useAppAlert } from '../../context/AppAlertContext';
 import { formatPortfolioRs } from '../../data/mockPortfolio';
@@ -38,8 +46,85 @@ const PROGRESS_LABELS = ['Method', 'Bank', 'Amount', 'Review'];
 
 type Step = 1 | 2 | 3 | 4 | 5 | 6;
 
+function WithdrawSuccessHero() {
+  const ringScale = useSharedValue(0.5);
+  const ringOpacity = useSharedValue(0);
+  const iconScale = useSharedValue(0);
+  const contentOpacity = useSharedValue(0);
+  const contentTranslateY = useSharedValue(16);
+
+  useEffect(() => {
+    ringOpacity.value = withTiming(1, { duration: 250 });
+    ringScale.value = withSequence(
+      withSpring(1.12, { damping: 10, stiffness: 180 }),
+      withSpring(1, { damping: 14 })
+    );
+    iconScale.value = withDelay(120, withSpring(1, { damping: 12, stiffness: 200 }));
+    contentOpacity.value = withDelay(280, withTiming(1, { duration: 350 }));
+    contentTranslateY.value = withDelay(280, withSpring(0, { damping: 16 }));
+  }, [ringScale, ringOpacity, iconScale, contentOpacity, contentTranslateY]);
+
+  const ringStyle = useAnimatedStyle(() => ({
+    opacity: ringOpacity.value,
+    transform: [{ scale: ringScale.value }],
+  }));
+
+  const iconStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: iconScale.value }],
+  }));
+
+  const contentStyle = useAnimatedStyle(() => ({
+    opacity: contentOpacity.value,
+    transform: [{ translateY: contentTranslateY.value }],
+  }));
+
+  return (
+    <View style={{ alignItems: 'center', paddingTop: 30, paddingBottom: 20 }}>
+      <Animated.View
+        style={[
+          {
+            width: 90,
+            height: 90,
+            borderRadius: 45,
+            borderWidth: 3,
+            borderColor: '#22c55e',
+            alignItems: 'center',
+            justifyContent: 'center',
+          },
+          ringStyle,
+        ]}
+      >
+        <Animated.View
+          style={[
+            {
+              width: 70,
+              height: 70,
+              borderRadius: 35,
+              backgroundColor: '#0d2010',
+              alignItems: 'center',
+              justifyContent: 'center',
+            },
+            iconStyle,
+          ]}
+        >
+          <Ionicons name="checkmark" size={36} color="#22c55e" />
+        </Animated.View>
+      </Animated.View>
+      <Animated.View style={[{ alignItems: 'center', marginTop: 16 }, contentStyle]}>
+        <Text style={{ color: '#fff', fontSize: 22, fontWeight: '700', textAlign: 'center' }}>
+          Withdrawal Request Submitted!
+        </Text>
+        <Text style={{ color: '#555', fontSize: 13, textAlign: 'center', marginTop: 6, marginBottom: 24, lineHeight: 20 }}>
+          Your withdrawal request has been submitted{'\n'}successfully.
+        </Text>
+      </Animated.View>
+    </View>
+  );
+}
+
 export default function WithdrawScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { withdrawCash, summary } = usePortfolio();
   const { showAlert } = useAppAlert();
   const inputRefs = useRef<(TextInput | null)[]>([]);
@@ -94,7 +179,7 @@ export default function WithdrawScreen() {
   };
 
   const parsedAmount     = parseInt(amount, 10) || 0;
-  const isAmountValid    = parsedAmount >= 1000;
+  const isAmountValid    = parsedAmount >= 10;
   const exceedsBalance   = parsedAmount > summary.buyingPower;
 
   useEffect(() => {
@@ -195,7 +280,7 @@ export default function WithdrawScreen() {
     else if (step === 5) { label = 'Verify & Continue'; onPress = () => setStep(6); }
 
     return (
-      <View style={{ paddingHorizontal: 14, paddingTop: 10, paddingBottom: 12, borderTopWidth: 0.5, borderTopColor: '#1e1e1e', backgroundColor: '#050505' }}>
+      <View style={{ paddingHorizontal: 14, paddingTop: 10, paddingBottom: Math.max(insets.bottom, 12), borderTopWidth: 0.5, borderTopColor: '#1e1e1e', backgroundColor: '#050505' }}>
         <TouchableOpacity
           onPress={onPress}
           disabled={disabled}
@@ -337,7 +422,7 @@ export default function WithdrawScreen() {
           style={{ fontSize: 28, fontWeight: '700', color: '#fff' }}
         />
       </View>
-      <Text style={{ color: '#555', fontSize: 11, marginTop: 8 }}>Minimum Withdrawal: PKR 1,000</Text>
+      <Text style={{ color: '#555', fontSize: 11, marginTop: 8 }}>Minimum Withdrawal: PKR 10</Text>
       {exceedsBalance && parsedAmount > 0 && (
         <Text style={{ color: '#ef4444', fontSize: 11, marginTop: 6 }}>
           Amount exceeds available balance ({availableLabel}).
@@ -516,26 +601,7 @@ export default function WithdrawScreen() {
 
     return (
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 14, paddingBottom: 20 }}>
-        {/* Success Icon */}
-        <View style={{ alignItems: 'center', paddingTop: 30, paddingBottom: 20 }}>
-          <View style={{ position: 'relative', width: 106, height: 106, alignItems: 'center', justifyContent: 'center' }}>
-            {/* Spark dots */}
-            <View style={{ position: 'absolute', top: 0, left: 8, width: 6, height: 6, borderRadius: 3, backgroundColor: '#f97316' }} />
-            <View style={{ position: 'absolute', top: 0, right: 8, width: 6, height: 6, borderRadius: 3, backgroundColor: '#22c55e' }} />
-            <View style={{ position: 'absolute', bottom: 0, left: 8, width: 6, height: 6, borderRadius: 3, backgroundColor: '#22c55e' }} />
-            <View style={{ position: 'absolute', bottom: 0, right: 8, width: 6, height: 6, borderRadius: 3, backgroundColor: '#f97316' }} />
-            {/* Ring + inner */}
-            <View style={{ width: 90, height: 90, borderRadius: 45, borderWidth: 3, borderColor: '#22c55e', alignItems: 'center', justifyContent: 'center' }}>
-              <View style={{ width: 70, height: 70, borderRadius: 35, backgroundColor: '#0d2010', alignItems: 'center', justifyContent: 'center' }}>
-                <Ionicons name="checkmark" size={36} color="#22c55e" />
-              </View>
-            </View>
-          </View>
-          <Text style={{ color: '#fff', fontSize: 20, fontWeight: '700', textAlign: 'center', marginTop: 16 }}>Withdrawal Request Submitted!</Text>
-          <Text style={{ color: '#555', fontSize: 13, textAlign: 'center', marginTop: 6, marginBottom: 24, lineHeight: 20 }}>
-            Your withdrawal request has been submitted{'\n'}successfully.
-          </Text>
-        </View>
+        <WithdrawSuccessHero />
 
         {/* Receipt Card */}
         <View style={{ backgroundColor: '#161616', borderRadius: 12, padding: 14 }}>
@@ -567,7 +633,7 @@ export default function WithdrawScreen() {
         {/* Action Buttons */}
         <View style={{ marginTop: 20 }}>
           <TouchableOpacity
-            onPress={() => router.push('/orders/history')}
+            onPress={() => router.push({ pathname: '/orders', params: { tab: 'spot', view: 'history' } })}
             style={{ backgroundColor: '#f97316', borderRadius: 100, paddingVertical: 15, marginBottom: 10 }}
           >
             <Text style={{ color: '#fff', fontSize: 14, fontWeight: '700', textAlign: 'center' }}>View Withdrawal History</Text>
@@ -587,15 +653,17 @@ export default function WithdrawScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#050505' }} edges={['top']}>
       {renderNavBar()}
-      <View style={{ flex: 1 }}>
-        {step === 1 && renderStep1()}
-        {step === 2 && renderStep2()}
-        {step === 3 && renderStep3()}
-        {step === 4 && renderStep4()}
-        {step === 5 && renderStep5()}
-        {step === 6 && renderStep6()}
-      </View>
-      {step < 6 && renderFooter()}
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <View style={{ flex: 1 }}>
+          {step === 1 && renderStep1()}
+          {step === 2 && renderStep2()}
+          {step === 3 && renderStep3()}
+          {step === 4 && renderStep4()}
+          {step === 5 && renderStep5()}
+          {step === 6 && renderStep6()}
+        </View>
+        {step < 6 && renderFooter()}
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

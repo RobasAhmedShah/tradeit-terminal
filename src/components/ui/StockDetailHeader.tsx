@@ -21,10 +21,6 @@ export const StockDetailHeader: React.FC<StockDetailHeaderProps> = ({ symbol, na
         <Text className="text-white text-base font-bold">{symbol}</Text>
         <Text className="text-[#9CA3AF] text-xs">{name}</Text>
       </View>
-
-      <TouchableOpacity className="p-2 -mr-2">
-        <Ionicons name="home-outline" size={24} color="#9CA3AF" />
-      </TouchableOpacity>
     </View>
   );
 };

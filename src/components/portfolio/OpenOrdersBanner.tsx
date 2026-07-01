@@ -19,7 +19,7 @@ export function OpenOrdersBanner() {
 
   const handlePress = () => {
     const tab = futuresPending > 0 && spotPending === 0 ? 'futures' : 'spot';
-    router.push({ pathname: '/orders', params: { tab, view: 'open' } });
+    router.push({ pathname: '/orders', params: { tab, view: 'open', returnTo: 'portfolio' } });
   };
 
   if (total === 0) {

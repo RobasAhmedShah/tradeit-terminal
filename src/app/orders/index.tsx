@@ -96,7 +96,7 @@ function StatItem({
 
 export default function OrdersHubScreen() {
   const router = useRouter();
-  const { tab, view } = useLocalSearchParams<{ tab?: string; view?: string }>();
+  const { tab, view, returnTo } = useLocalSearchParams<{ tab?: string; view?: string; returnTo?: string }>();
   const { orders, cancelOrder } = useOrders();
   const { positions, openOrders, orderHistory, marginAvailable, marginUsed, cancelOpenOrder } = useFutures();
   const { showAlert } = useAppAlert();
@@ -106,6 +106,18 @@ export default function OrdersHubScreen() {
   const [historyFilter, setHistoryFilter] = useState<HistoryFilter>('All');
 
   const hubTabs = marketTab === 'futures' ? FUTURES_HUB_TABS : SPOT_HUB_TABS;
+
+  const handleBack = () => {
+    if (returnTo === 'portfolio') {
+      router.replace('/(tabs)/portfolio');
+      return;
+    }
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.replace('/(tabs)/home');
+  };
 
   useEffect(() => {
     if (tab === 'futures') {
@@ -640,7 +652,7 @@ export default function OrdersHubScreen() {
       {/* Header */}
       <View className="flex-row items-center justify-between px-4 py-3">
         <TouchableOpacity
-          onPress={() => router.back()}
+          onPress={handleBack}
           className="w-9 h-9 rounded-full bg-[#161719] items-center justify-center"
         >
           <Ionicons name="arrow-back" size={20} color="white" />

@@ -1,11 +1,18 @@
-import React, { useState, useRef, useMemo } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Modal, FlatList } from 'react-native';
+import React, { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Modal,
+  FlatList,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { MOCK_MARKET_STOCKS, Stock } from '../../data/mockStocks';
-import { FuturesContract, formatFuturesPrice } from '../../data/mockFutures';
-import { useFutures } from '../../context/FuturesContext';
+import { MOCK_MARKET_STOCKS, Stock } from '../data/mockStocks';
+import { FuturesContract, formatFuturesPrice } from '../data/mockFutures';
+import { useFutures } from './FuturesContext';
 
 const POPULAR_STOCKS = ['FANM', 'IDSM', 'AABS', 'SAZEW'];
 const POPULAR_FUTURES = ['KSE100-PERP', 'KSE30-PERP'];
@@ -14,7 +21,17 @@ type SearchResult =
   | { type: 'stock'; id: string; stock: Stock }
   | { type: 'futures'; id: string; contract: FuturesContract };
 
-export const SearchBar = () => {
+interface SearchContextType {
+  openSearch: () => void;
+  closeSearch: () => void;
+}
+
+const SearchContext = createContext<SearchContextType>({
+  openSearch: () => {},
+  closeSearch: () => {},
+});
+
+export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const router = useRouter();
   const { contracts } = useFutures();
   const inputRef = useRef<TextInput>(null);
@@ -32,32 +49,30 @@ export const SearchBar = () => {
       .map((stock) => ({ type: 'stock' as const, id: `stock-${stock.id}`, stock }));
 
     const futures = contracts
-      .filter(
-        (c) => c.symbol.toLowerCase().includes(q) || c.name.toLowerCase().includes(q)
-      )
+      .filter((c) => c.symbol.toLowerCase().includes(q) || c.name.toLowerCase().includes(q))
       .slice(0, 4)
       .map((contract) => ({ type: 'futures' as const, id: `fut-${contract.symbol}`, contract }));
 
     return [...futures, ...stocks];
   }, [query, contracts]);
 
-  const open = () => {
+  const openSearch = useCallback(() => {
     setVisible(true);
     setTimeout(() => inputRef.current?.focus(), 100);
-  };
+  }, []);
 
-  const close = () => {
+  const closeSearch = useCallback(() => {
     setVisible(false);
     setQuery('');
-  };
+  }, []);
 
   const handleSelectStock = (symbol: string) => {
-    close();
+    closeSearch();
     router.push(`/stock/${symbol}`);
   };
 
   const handleSelectFutures = (symbol: string) => {
-    close();
+    closeSearch();
     router.push({ pathname: '/(tabs)/futures', params: { contract: symbol } });
   };
 
@@ -84,12 +99,8 @@ export const SearchBar = () => {
             </Text>
           </View>
           <View className="items-end">
-            <Text className="text-white text-sm font-semibold">
-              {formatFuturesPrice(contract.markPrice)}
-            </Text>
-            <Text
-              className={`text-xs ${contract.isPositive ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}
-            >
+            <Text className="text-white text-sm font-semibold">{formatFuturesPrice(contract.markPrice)}</Text>
+            <Text className={`text-xs ${contract.isPositive ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}>
               {contract.isPositive ? '+' : ''}
               {contract.changePercent.toFixed(2)}%
             </Text>
@@ -126,17 +137,10 @@ export const SearchBar = () => {
   };
 
   return (
-    <>
-      <TouchableOpacity
-        onPress={open}
-        activeOpacity={0.8}
-        className="flex-row items-center bg-[#111214] border border-[#2A2B2F] rounded-2xl px-4 py-2.5 mx-4 my-2"
-      >
-        <Ionicons name="search" size={20} color="#9CA3AF" />
-        <Text className="flex-1 text-[#9CA3AF] ml-2 text-base">Search stocks, futures...</Text>
-      </TouchableOpacity>
+    <SearchContext.Provider value={{ openSearch, closeSearch }}>
+      {children}
 
-      <Modal visible={visible} animationType="fade" transparent={false} onRequestClose={close}>
+      <Modal visible={visible} animationType="fade" transparent={false} onRequestClose={closeSearch}>
         <SafeAreaView className="flex-1 bg-[#050505]" edges={['top']}>
           <View className="flex-row items-center bg-[#111214] border border-[#2A2B2F] rounded-2xl px-4 py-2.5 mx-4 mt-2 mb-3">
             <Ionicons name="search" size={20} color="#FF8A00" />
@@ -156,7 +160,7 @@ export const SearchBar = () => {
                 <Ionicons name="close-circle" size={18} color="#555" />
               </TouchableOpacity>
             )}
-            <TouchableOpacity onPress={close}>
+            <TouchableOpacity onPress={closeSearch}>
               <Text className="text-[#FF8A00] font-semibold">Cancel</Text>
             </TouchableOpacity>
           </View>
@@ -178,9 +182,7 @@ export const SearchBar = () => {
             </View>
           ) : (
             <View className="px-4 mt-1">
-              <Text className="text-[#555] text-xs font-semibold mb-3 tracking-widest">
-                POPULAR FUTURES
-              </Text>
+              <Text className="text-[#555] text-xs font-semibold mb-3 tracking-widest">POPULAR FUTURES</Text>
               {POPULAR_FUTURES.map((sym) => {
                 const contract = contracts.find((c) => c.symbol === sym);
                 if (!contract) return null;
@@ -207,9 +209,7 @@ export const SearchBar = () => {
                 );
               })}
 
-              <Text className="text-[#555] text-xs font-semibold mb-3 mt-4 tracking-widest">
-                POPULAR STOCKS
-              </Text>
+              <Text className="text-[#555] text-xs font-semibold mb-3 mt-4 tracking-widest">POPULAR STOCKS</Text>
               {POPULAR_STOCKS.map((sym) => {
                 const stock = MOCK_MARKET_STOCKS.find((s) => s.symbol === sym);
                 if (!stock) return null;
@@ -239,6 +239,8 @@ export const SearchBar = () => {
           )}
         </SafeAreaView>
       </Modal>
-    </>
+    </SearchContext.Provider>
   );
 };
+
+export const useSearch = () => useContext(SearchContext);

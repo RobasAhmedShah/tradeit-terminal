@@ -11,6 +11,7 @@ import { AuthProvider } from '../context/AuthContext';
 import { AppAlertProvider } from '../context/AppAlertContext';
 import { TransferSheetProvider } from '../context/TransferSheetContext';
 import { AlertSheetProvider } from '../context/AlertSheetContext';
+import { SearchProvider } from '../context/SearchContext';
 import { PortfolioProvider } from '../context/PortfolioContext';
 import { FuturesProvider } from '../context/FuturesContext';
 import { PriceAlertsProvider } from '../context/PriceAlertsContext';
@@ -51,6 +52,7 @@ export default function RootLayout() {
         <WatchlistProvider>
           <PortfolioProvider>
             <FuturesProvider>
+            <SearchProvider>
             <PriceAlertsProvider>
             <AlertSheetProvider>
             <NotificationsProvider>
@@ -92,6 +94,7 @@ export default function RootLayout() {
             </NotificationsProvider>
             </AlertSheetProvider>
             </PriceAlertsProvider>
+            </SearchProvider>
           </FuturesProvider>
           </PortfolioProvider>
         </WatchlistProvider>

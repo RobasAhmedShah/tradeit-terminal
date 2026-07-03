@@ -4,9 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { AppHeader }          from '../../components/ui/AppHeader';
-import { SearchBar }          from '../../components/ui/SearchBar';
-import { PortfolioValueCard } from '../../components/ui/PortfolioValueCard';
-import { QuickActionGrid }    from '../../components/ui/QuickActionGrid';
+import { DiscoverBalanceStrip } from '../../components/discover/DiscoverBalanceStrip';
 import { SectionHeader }      from '../../components/ui/SectionHeader';
 import { StockMiniCard }      from '../../components/ui/StockMiniCard';
 import { MarketMoverChip }    from '../../components/ui/MarketMoverChip';
@@ -65,9 +63,7 @@ export default function HomeScreen() {
   /* ── above-news block ────────────────────────────────────── */
   const renderAboveNews = () => (
     <View onLayout={e => { aboveNewsHeight.current = e.nativeEvent.layout.height; }}>
-      <SearchBar />
-      <PortfolioValueCard />
-      <QuickActionGrid />
+      <DiscoverBalanceStrip />
 
       {/* Watchlist */}
       <SectionHeader

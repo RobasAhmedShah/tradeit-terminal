@@ -30,6 +30,8 @@
       "backgroundColor": "#050505"
     },
     "android": {
+      "package": "com.tradit.tradit20",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/image.png",
         "backgroundColor": "#050505"

@@ -3,10 +3,12 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useNotifications } from '../../context/NotificationsContext';
+import { useSearch } from '../../context/SearchContext';
 
 export const AppHeader = () => {
   const router = useRouter();
   const { unreadCount } = useNotifications();
+  const { openSearch } = useSearch();
 
   return (
     <View className="flex-row items-center justify-between px-4 py-3 bg-[#050505]">
@@ -24,8 +26,11 @@ export const AppHeader = () => {
         <Text className="text-[#FF8A00] text-xl font-bold tracking-tight">It</Text>
       </View>
 
-      {/* Notifications — right */}
-      <View className="flex-row items-center">
+      {/* Search + Notifications — right */}
+      <View className="flex-row items-center gap-4">
+        <TouchableOpacity className="p-2" onPress={openSearch} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+          <Ionicons name="search-outline" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
         <TouchableOpacity className="relative" onPress={() => router.push('/notifications')}>
           <Ionicons name="notifications-outline" size={24} color="#FFFFFF" />
           {unreadCount > 0 && (

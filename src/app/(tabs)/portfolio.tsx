@@ -9,15 +9,15 @@ import { HoldingRow, HoldingsEmptyState } from '../../components/portfolio/Holdi
 import { FuturesPortfolioSummaryCard } from '../../components/futures/FuturesPortfolioSummaryCard';
 import { usePortfolio } from '../../context/PortfolioContext';
 import { useTransferSheet } from '../../context/TransferSheetContext';
-import { formatPortfolioRs } from '../../data/mockPortfolio';
 import { sortHoldings } from '../../utils/portfolioUi';
 import { OpenOrdersBanner } from '../../components/portfolio/OpenOrdersBanner';
+import { PortfolioActivityList } from '../../components/portfolio/PortfolioActivityList';
 import { PortfolioSkeleton } from '../../components/ui/ScreenSkeletons';
 
 export default function PortfolioScreen() {
   const router = useRouter();
   const { openTransfer } = useTransferSheet();
-  const { holdings, summary, recentTradeSymbols, isRefreshing, lastRefreshedAt, refreshPortfolio, ready } = usePortfolio();
+  const { holdings, recentTradeSymbols, activities, isRefreshing, lastRefreshedAt, refreshPortfolio, ready } = usePortfolio();
 
   const previewHoldings = useMemo(() => {
     const byValue = sortHoldings(holdings, 'value');
@@ -27,7 +27,8 @@ export default function PortfolioScreen() {
     const rest = byValue.filter((h) => !recentTradeSymbols.includes(h.symbol));
     return [...pinned, ...rest].slice(0, 5);
   }, [holdings, recentTradeSymbols]);
-  const isPnlPositive = summary.todayPnl >= 0;
+
+  const recentActivity = useMemo(() => activities.slice(0, 3), [activities]);
 
   const refreshedLabel = lastRefreshedAt
     ? `Updated ${new Date(lastRefreshedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`
@@ -106,38 +107,6 @@ export default function PortfolioScreen() {
           </TouchableOpacity>
         </View>
 
-        <View className="flex-row mx-4 mb-4 gap-2">
-          <TouchableOpacity
-            onPress={() => router.push('/deposit')}
-            className="flex-1 bg-[#111214] rounded-xl p-3 border border-[#2A2B2F]"
-          >
-            <View className="flex-row justify-between items-start mb-1">
-              <Text className="text-[#9CA3AF] text-[10px] font-semibold">Buying Power</Text>
-              <Ionicons name="chevron-forward" size={12} color="#9CA3AF" />
-            </View>
-            <Text className="text-white font-bold text-[13px] mb-0.5">
-              Rs {formatPortfolioRs(summary.buyingPower)}
-            </Text>
-            <Text className="text-[#9CA3AF] text-[9px]">Tap to add funds</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => router.push('/portfolio/holdings')}
-            className="flex-1 bg-[#111214] rounded-xl p-3 border border-[#2A2B2F]"
-          >
-            <View className="flex-row justify-between items-start mb-1">
-              <Text className="text-[#9CA3AF] text-[10px] font-semibold">Today's P/L</Text>
-              <Ionicons name="chevron-forward" size={12} color="#9CA3AF" />
-            </View>
-            <Text
-              className={`font-bold text-[12px] mb-0.5 ${isPnlPositive ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}
-            >
-              {isPnlPositive ? '+' : ''}Rs {formatPortfolioRs(summary.todayPnl)} ({summary.todayPnlPct}%)
-            </Text>
-            <Text className="text-[#9CA3AF] text-[9px]">View holdings</Text>
-          </TouchableOpacity>
-        </View>
-
         <View className="mx-4 mb-4">
           <View className="flex-row justify-between items-end mb-3">
             <Text className="text-white text-sm font-semibold">Holdings</Text>
@@ -180,6 +149,18 @@ export default function PortfolioScreen() {
               ))}
             </>
           )}
+        </View>
+
+        <View className="mx-4 mb-4">
+          <View className="flex-row justify-between items-end mb-3">
+            <Text className="text-white text-sm font-semibold">Recent Activity</Text>
+            {activities.length > 0 && (
+              <TouchableOpacity onPress={() => router.push('/portfolio/activity')}>
+                <Text className="text-[#FF8A00] text-xs font-semibold">View all</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+          <PortfolioActivityList items={recentActivity} compact />
         </View>
         </>
         )}

@@ -11,12 +11,13 @@ import { hapticLight } from '../../utils/haptics';
 import { CompactEmptyState } from '../../components/ui/CompactEmptyState';
 import { safeBack } from '../../utils/navigation';
 
-type NotifCategory = 'All' | 'Orders' | 'Alerts' | 'News';
+type NotifCategory = 'All' | 'Orders' | 'Alerts' | 'News' | 'Community';
 
 const ICON_MAP: Record<AppNotificationType, { icon: keyof typeof Ionicons.glyphMap; color: string; bg: string }> = {
   order: { icon: 'receipt-outline', color: '#f97316', bg: '#1a0e00' },
   alert: { icon: 'notifications-outline', color: '#facc15', bg: '#1a1500' },
   news: { icon: 'newspaper-outline', color: '#60a5fa', bg: '#0a1628' },
+  community: { icon: 'heart-outline', color: '#F6465D', bg: '#200006' },
   system: { icon: 'shield-checkmark-outline', color: '#4ade80', bg: '#0a1f0a' },
 };
 
@@ -99,6 +100,7 @@ export default function NotificationsScreen() {
     if (activeTab === 'Orders') return n.type === 'order';
     if (activeTab === 'Alerts') return n.type === 'alert';
     if (activeTab === 'News') return n.type === 'news' || n.type === 'system';
+    if (activeTab === 'Community') return n.type === 'community';
     return true;
   });
 
@@ -117,7 +119,7 @@ export default function NotificationsScreen() {
       return;
     }
 
-    if (notif.type === 'news') {
+    if (notif.type === 'news' || notif.type === 'community') {
       if (notif.newsId) router.push(`/news/${notif.newsId}`);
       else router.push('/markets?tab=news');
       return;
@@ -131,7 +133,7 @@ export default function NotificationsScreen() {
     router.push('/alerts');
   };
 
-  const tabs: NotifCategory[] = ['All', 'Orders', 'Alerts', 'News'];
+  const tabs: NotifCategory[] = ['All', 'Orders', 'Alerts', 'News', 'Community'];
 
   return (
     <SafeAreaView className="flex-1 bg-[#050505]" edges={['top']}>

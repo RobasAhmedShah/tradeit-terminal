@@ -21,6 +21,8 @@ export interface NewsPost {
     views:    string;       // pre-formatted e.g. '218.1K'
   };
   featured?: boolean;
+  /** Local or remote image attached to the post */
+  imageUri?: string;
   /** User-generated community post */
   isUserPost?: boolean;
   userId?: string;

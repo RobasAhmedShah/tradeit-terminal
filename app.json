@@ -11,7 +11,13 @@
       "tsconfigPaths": true
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow TradeIt to attach photos to your community posts."
+        }
+      ]
     ],
     "orientation": "portrait",
     "icon": "./assets/image.png",

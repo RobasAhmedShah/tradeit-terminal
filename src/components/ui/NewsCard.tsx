@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { NewsPost, Sentiment } from '../../data/mockNews';
@@ -185,6 +185,20 @@ export const NewsCard: React.FC<Props> = ({
             </Text>
           )}
         </Text>
+
+        {post.imageUri ? (
+          <Image
+            source={{ uri: post.imageUri }}
+            style={{
+              width: '100%',
+              height: 180,
+              borderRadius: 12,
+              marginBottom: 10,
+              backgroundColor: '#111214',
+            }}
+            resizeMode="cover"
+          />
+        ) : null}
 
         {/* ── stock price chips ────────────────────────────── */}
         {post.tickers.length > 0 && (

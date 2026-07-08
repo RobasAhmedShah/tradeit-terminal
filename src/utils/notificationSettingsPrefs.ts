@@ -4,6 +4,7 @@ export interface NotificationSettings {
   orderUpdates: boolean;
   priceAlerts: boolean;
   newsUpdates: boolean;
+  communityEngagement: boolean;
   pushEnabled: boolean;
 }
 
@@ -13,6 +14,7 @@ export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
   orderUpdates: true,
   priceAlerts: true,
   newsUpdates: true,
+  communityEngagement: true,
   pushEnabled: true,
 };
 

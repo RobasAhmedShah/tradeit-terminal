@@ -7,10 +7,12 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 import { NEWS_CATEGORIES, NewsCategory, Sentiment } from '../../data/mockNews';
 import { usePosts } from '../../context/PostsContext';
 import { useAuth } from '../../context/AuthContext';
@@ -36,6 +38,7 @@ export default function ComposePostScreen() {
   const [content, setContent] = useState('');
   const [category, setCategory] = useState<NewsCategory>('PSX');
   const [sentiment, setSentiment] = useState<Sentiment | undefined>(undefined);
+  const [imageUri, setImageUri] = useState<string | undefined>(undefined);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -50,6 +53,7 @@ export default function ComposePostScreen() {
       setContent(existing.content);
       setCategory(existing.category);
       setSentiment(existing.sentiment);
+      setImageUri(existing.imageUri);
       setHydrated(true);
     }
   }, [isEdit, ready, existing, canEdit, hydrated, showAlert, router]);
@@ -58,6 +62,31 @@ export default function ComposePostScreen() {
   const initials = initialsFromName(displayName);
   const tickers = extractTickers(content);
   const isValid = content.trim().length >= 10;
+
+  const pickImage = async () => {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
+      showAlert(
+        'Permission needed',
+        'Allow photo access to attach an image to your post.',
+        undefined,
+        { tone: 'warning' }
+      );
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      quality: 0.8,
+      allowsEditing: true,
+      aspect: [16, 9],
+    });
+
+    if (!result.canceled && result.assets[0]?.uri) {
+      hapticSelection();
+      setImageUri(result.assets[0].uri);
+    }
+  };
 
   const handleSubmit = () => {
     const trimmed = content.trim();
@@ -68,7 +97,12 @@ export default function ComposePostScreen() {
     hapticLight();
 
     if (isEdit && editId) {
-      const ok = updatePost(editId, { content: trimmed, category, sentiment });
+      const ok = updatePost(editId, {
+        content: trimmed,
+        category,
+        sentiment,
+        imageUri: imageUri ?? null,
+      });
       if (!ok) {
         showAlert('Update failed', 'Could not save your changes.', undefined, { tone: 'error' });
         return;
@@ -78,7 +112,7 @@ export default function ComposePostScreen() {
       return;
     }
 
-    const post = addPost({ content: trimmed, category, sentiment });
+    const post = addPost({ content: trimmed, category, sentiment, imageUri });
     hapticSuccess();
     router.replace({ pathname: '/news/[id]', params: { id: post.id } });
   };
@@ -88,7 +122,6 @@ export default function ComposePostScreen() {
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
       >
         <View className="flex-row items-center justify-between px-4 py-3 border-b border-[#2A2B2F]">
           <TouchableOpacity onPress={() => router.back()} className="w-10">
@@ -151,6 +184,32 @@ export default function ComposePostScreen() {
                 </View>
               ))}
             </View>
+          )}
+
+          <Text className="text-[#5C6068] text-[10px] font-semibold uppercase tracking-wider mb-2">
+            Photo (optional)
+          </Text>
+          {imageUri ? (
+            <View className="mb-5 relative">
+              <Image source={{ uri: imageUri }} className="w-full h-44 rounded-xl" resizeMode="cover" />
+              <TouchableOpacity
+                onPress={() => {
+                  hapticSelection();
+                  setImageUri(undefined);
+                }}
+                className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/70 items-center justify-center"
+              >
+                <Ionicons name="close" size={18} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <TouchableOpacity
+              onPress={pickImage}
+              className="mb-5 flex-row items-center justify-center py-4 rounded-xl border border-dashed border-[#2A2B2F] bg-[#111214]"
+            >
+              <Ionicons name="image-outline" size={20} color="#FF8A00" />
+              <Text className="text-[#FF8A00] text-[13px] font-semibold ml-2">Add photo</Text>
+            </TouchableOpacity>
           )}
 
           <Text className="text-[#5C6068] text-[10px] font-semibold uppercase tracking-wider mb-2">

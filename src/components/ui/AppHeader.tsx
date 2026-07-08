@@ -14,9 +14,11 @@ export type AppHeaderVariant = 'discover' | 'default';
 interface AppHeaderProps {
   variant?: AppHeaderVariant;
   title?: string;
+  /** Discover only — opens customize widgets sheet */
+  onCustomize?: () => void;
 }
 
-export const AppHeader: React.FC<AppHeaderProps> = ({ variant = 'default', title }) => {
+export const AppHeader: React.FC<AppHeaderProps> = ({ variant = 'default', title, onCustomize }) => {
   const router = useRouter();
   const { unreadCount } = useNotifications();
   const { openSearch } = useSearch();
@@ -56,6 +58,15 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ variant = 'default', title
       )}
 
       <View className="flex-row items-center gap-1">
+        {isDiscover && onCustomize && (
+          <TouchableOpacity
+            className="p-2"
+            onPress={onCustomize}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Ionicons name="options-outline" size={22} color={COLORS.text} />
+          </TouchableOpacity>
+        )}
         {isDiscover && (
           <TouchableOpacity
             className="p-2"

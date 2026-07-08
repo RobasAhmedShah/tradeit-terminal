@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   ScrollView,
   RefreshControl,
@@ -16,7 +15,6 @@ import { useAlertSheet } from '../context/AlertSheetContext';
 import { MOCK_TOP_GAINERS, MOCK_TOP_LOSERS } from '../data/mockStocks';
 import { Stock } from '../types';
 import {
-  filterStocks,
   getMostActiveStocks,
   MoverSegment,
   MoverSort,
@@ -67,7 +65,6 @@ export default function MarketsScreen() {
 
   const [activeTab, setActiveTab] = useState<MarketsTab>(initialTab);
   const [moverSegment, setMoverSegment] = useState<MoverSegment>(initialSegment);
-  const [query, setQuery] = useState('');
   const [watchlistSort, setWatchlistSort] = useState<WatchlistSort>('change');
   const [moverSort, setMoverSort] = useState<MoverSort>('change');
   const [showSort, setShowSort] = useState(false);
@@ -103,14 +100,13 @@ export default function MarketsScreen() {
 
   const watchlistData = useMemo(() => {
     const live = applyLive(watchlist);
-    return sortStocks(filterStocks(live, query), watchlistSort) as Stock[];
-  }, [watchlist, query, watchlistSort, applyLive]);
+    return sortStocks(live, watchlistSort) as Stock[];
+  }, [watchlist, watchlistSort, applyLive]);
 
   const moversData = useMemo(() => {
     const live = applyLive(baseMovers);
-    const sorted = sortStocks(live, moverSort) as Stock[];
-    return filterStocks(sorted, query);
-  }, [baseMovers, query, moverSort, applyLive]);
+    return sortStocks(live, moverSort) as Stock[];
+  }, [baseMovers, moverSort, applyLive]);
 
   useEffect(() => {
     const symbols = new Set<string>();
@@ -268,7 +264,7 @@ export default function MarketsScreen() {
           <MarketsEmptyState
             icon="analytics-outline"
             title="No movers found"
-            message="Try another segment or search term."
+            message="Try another segment."
           />
         }
       />
@@ -303,23 +299,6 @@ export default function MarketsScreen() {
         <TouchableOpacity onPress={() => activeTab !== 'news' && setShowSort(true)} className="w-10 items-end">
           <Ionicons name="options-outline" size={22} color="#9CA3AF" />
         </TouchableOpacity>
-      </View>
-
-      {/* Search */}
-      <View className="mx-4 mt-3 mb-2 flex-row items-center bg-[#111214] border border-[#2A2B2F] rounded-xl px-3 py-2.5">
-        <Ionicons name="search-outline" size={18} color="#555" />
-        <TextInput
-          value={query}
-          onChangeText={setQuery}
-          placeholder="Search stocks, futures, news..."
-          placeholderTextColor="#555"
-          className="flex-1 text-white text-sm ml-2 py-0"
-        />
-        {query.length > 0 && (
-          <TouchableOpacity onPress={() => setQuery('')}>
-            <Ionicons name="close-circle" size={18} color="#555" />
-          </TouchableOpacity>
-        )}
       </View>
 
       {/* Main tabs */}
@@ -372,7 +351,7 @@ export default function MarketsScreen() {
             showsVerticalScrollIndicator={false}
           >
             <NewsTabPanel
-              query={query}
+              query=""
               activeCategory={newsCategory}
               savedIds={savedNews}
               dismissedIds={dismissedNews}

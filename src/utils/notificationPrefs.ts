@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export type AppNotificationType = 'order' | 'alert' | 'news' | 'system';
+export type AppNotificationType = 'order' | 'alert' | 'news' | 'system' | 'community';
 
 export interface AppNotification {
   id: string;

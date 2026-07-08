@@ -60,10 +60,10 @@ export default function RootLayout() {
             <FuturesCloseSheetProvider>
             <SearchProvider>
             <AppMenuProvider>
+            <NotificationsProvider>
             <PostsProvider>
             <PriceAlertsProvider>
             <AlertSheetProvider>
-            <NotificationsProvider>
             <OrdersProvider>
             <EditOrderSheetProvider>
             <OrderDetailSheetProvider>
@@ -106,10 +106,10 @@ export default function RootLayout() {
             </OrderDetailSheetProvider>
             </EditOrderSheetProvider>
             </OrdersProvider>
-            </NotificationsProvider>
             </AlertSheetProvider>
             </PriceAlertsProvider>
             </PostsProvider>
+            </NotificationsProvider>
             </AppMenuProvider>
             </SearchProvider>
             </FuturesCloseSheetProvider>

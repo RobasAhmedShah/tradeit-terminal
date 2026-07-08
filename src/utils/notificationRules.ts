@@ -15,6 +15,8 @@ export function isNotificationTypeEnabled(
       return settings.priceAlerts;
     case 'news':
       return settings.newsUpdates;
+    case 'community':
+      return settings.communityEngagement;
     case 'system':
       return true;
     default:

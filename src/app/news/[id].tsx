@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -171,6 +171,14 @@ export default function NewsDetailScreen() {
         )}
 
         <Text className="text-[#D0D0D0] text-[15px] leading-6 mb-3">{post.content}</Text>
+
+        {post.imageUri ? (
+          <Image
+            source={{ uri: post.imageUri }}
+            className="w-full h-48 rounded-xl mb-3 bg-[#111214]"
+            resizeMode="cover"
+          />
+        ) : null}
 
         {/* Price chips — same as feed card */}
         {post.tickers.length > 0 && (

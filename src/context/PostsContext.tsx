@@ -5,6 +5,7 @@ import { filterNews } from '../utils/marketsHub';
 import { CommentsSheet } from '../components/community/CommentsSheet';
 import { PostActionsSheet } from '../components/community/PostActionsSheet';
 import { useAppAlert } from './AppAlertContext';
+import { useNotifications } from './NotificationsContext';
 import { useRouter } from 'expo-router';
 import {
   createCommentId,
@@ -27,6 +28,7 @@ interface CreatePostInput {
   content: string;
   category: NewsCategory;
   sentiment?: Sentiment;
+  imageUri?: string;
   repostOfId?: string;
   repostOfAuthor?: string;
 }
@@ -35,6 +37,7 @@ interface UpdatePostInput {
   content: string;
   category: NewsCategory;
   sentiment?: Sentiment;
+  imageUri?: string | null;
 }
 
 interface PostsContextType {
@@ -95,6 +98,8 @@ const PostsContext = createContext<PostsContextType>({
 export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { session } = useAuth();
   const { showAlert } = useAppAlert();
+  const { pushNotification } = useNotifications();
+  const router = useRouter();
   const [storedPosts, setStoredPosts] = useState<StoredUserPost[]>([]);
   const [comments, setComments] = useState<PostComment[]>([]);
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
@@ -103,7 +108,6 @@ export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [ready, setReady] = useState(false);
   const [commentsPostId, setCommentsPostId] = useState<string | null>(null);
   const [actionsPostId, setActionsPostId] = useState<string | null>(null);
-  const router = useRouter();
 
   useEffect(() => {
     loadPostsStorage().then((data) => {
@@ -256,13 +260,37 @@ export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         sentiment: input.sentiment,
         createdAt: new Date().toISOString(),
         viewCount: 1,
+        imageUri: input.imageUri,
         repostOfId: input.repostOfId,
         repostOfAuthor: input.repostOfAuthor,
       };
       setStoredPosts((prev) => [stored, ...prev]);
+
+      // Demo engagement pings so Community inbox has sample activity
+      if (!input.repostOfId) {
+        const postId = stored.id;
+        const snippet = trimmed.length > 48 ? `${trimmed.slice(0, 48)}…` : trimmed;
+        setTimeout(() => {
+          pushNotification({
+            type: 'community',
+            title: 'New like on your post',
+            body: `PSX Trader liked “${snippet}”`,
+            newsId: postId,
+          });
+        }, 4500);
+        setTimeout(() => {
+          pushNotification({
+            type: 'community',
+            title: 'New comment on your post',
+            body: `Market Watch PK: “Solid take on this trade 👀”`,
+            newsId: postId,
+          });
+        }, 9000);
+      }
+
       return enrichPost(storedPostToNewsPost(stored));
     },
-    [session, enrichPost, currentUserId]
+    [session, enrichPost, currentUserId, pushNotification]
   );
 
   const updatePost = useCallback(
@@ -275,7 +303,18 @@ export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setStoredPosts((prev) =>
         prev.map((p) =>
           p.id === postId
-            ? { ...p, content: trimmed, category: input.category, sentiment: input.sentiment }
+            ? {
+                ...p,
+                content: trimmed,
+                category: input.category,
+                sentiment: input.sentiment,
+                imageUri:
+                  input.imageUri === null
+                    ? undefined
+                    : input.imageUri !== undefined
+                      ? input.imageUri
+                      : p.imageUri,
+              }
             : p
         )
       );
@@ -365,6 +404,7 @@ export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         createdAt: new Date().toISOString(),
       };
       setComments((prev) => [...prev, comment]);
+      hapticLight();
     },
     [session]
   );

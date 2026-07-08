@@ -11,6 +11,7 @@ export interface StoredUserPost {
   sentiment?: Sentiment;
   createdAt: string;
   viewCount?: number;
+  imageUri?: string;
   repostOfId?: string;
   repostOfAuthor?: string;
 }
@@ -170,6 +171,7 @@ export function storedPostToNewsPost(stored: StoredUserPost): NewsPost {
     tickers: extractTickers(stored.content),
     content: stored.content,
     category: stored.category,
+    imageUri: stored.imageUri,
     engagement: {
       comments: 0,
       reposts: 0,

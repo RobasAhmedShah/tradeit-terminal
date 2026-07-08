@@ -197,7 +197,7 @@ export const FuturesOrderPanel: React.FC<FuturesOrderPanelProps> = ({
           }`}
         >
           <TouchableOpacity onPress={() => adjustPrice(-0.5)} disabled={orderType === 'Market'}>
-            <Text className={`text-base ${orderType === 'Market' ? 'text-[#555]' : 'text-[#9CA3AF]'}`}>-</Text>
+            <Text className={`text-base ${orderType === 'Market' ? 'text-[#5C6068]' : 'text-[#9CA3AF]'}`}>-</Text>
           </TouchableOpacity>
           <TextInput
             value={orderType === 'Market' ? 'Market' : limitPrice}
@@ -287,14 +287,14 @@ export const FuturesOrderPanel: React.FC<FuturesOrderPanelProps> = ({
         <TouchableOpacity
           onPress={() => submitOrder('Long')}
           disabled={qty <= 0}
-          className={`flex-1 rounded-md py-3 ${qty > 0 ? 'bg-[#00C853]' : 'bg-[#00C853]/40'}`}
+          className={`flex-1 rounded-md py-3 ${qty > 0 ? 'bg-[#0ECB81]' : 'bg-[#0ECB81]/40'}`}
         >
           <Text className="text-white text-sm font-bold text-center">Long</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => submitOrder('Short')}
           disabled={qty <= 0}
-          className={`flex-1 rounded-md py-3 ${qty > 0 ? 'bg-[#FF3B30]' : 'bg-[#FF3B30]/40'}`}
+          className={`flex-1 rounded-md py-3 ${qty > 0 ? 'bg-[#F6465D]' : 'bg-[#F6465D]/40'}`}
         >
           <Text className="text-white text-sm font-bold text-center">Short</Text>
         </TouchableOpacity>

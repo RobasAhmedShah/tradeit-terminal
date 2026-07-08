@@ -21,6 +21,11 @@ export interface NewsPost {
     views:    string;       // pre-formatted e.g. '218.1K'
   };
   featured?: boolean;
+  /** User-generated community post */
+  isUserPost?: boolean;
+  userId?: string;
+  createdAt?: string;
+  repostOf?: { id: string; authorName: string };
 }
 
 export const MOCK_NEWS: NewsPost[] = [
@@ -127,3 +132,6 @@ export const MOCK_NEWS: NewsPost[] = [
 ];
 
 export const NEWS_CATEGORIES: NewsCategory[] = ['Markets', 'PSX', 'Trading', 'Economy', 'Crypto'];
+
+export const COMMUNITY_FEED_TABS = ['Discover', 'Following', ...NEWS_CATEGORIES] as const;
+export type CommunityFeedTab = (typeof COMMUNITY_FEED_TABS)[number];

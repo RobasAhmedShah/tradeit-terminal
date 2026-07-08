@@ -18,7 +18,7 @@ export const StockRow: React.FC<StockRowProps> = ({
   onWatchlistPress,
 }) => {
   const isPositive = stock.isPositive;
-  const changeColor = isPositive ? 'text-[#00C853]' : 'text-[#FF3B30]';
+  const changeColor = isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]';
   const sign = isPositive ? '+' : '';
 
   return (
@@ -45,8 +45,8 @@ export const StockRow: React.FC<StockRowProps> = ({
         </View>
 
         <View className="flex-[0.8] items-end justify-center pr-2">
-          <Text className="text-[#00C853] text-[11px] font-semibold">{stock.buyPrice?.toFixed(2)}</Text>
-          <Text className="text-[#FF3B30] text-[11px] font-semibold mt-0.5">{stock.sellPrice?.toFixed(2)}</Text>
+          <Text className="text-[#0ECB81] text-[11px] font-semibold">{stock.buyPrice?.toFixed(2)}</Text>
+          <Text className="text-[#F6465D] text-[11px] font-semibold mt-0.5">{stock.sellPrice?.toFixed(2)}</Text>
         </View>
 
         <View className="flex-[0.8] items-end justify-center">

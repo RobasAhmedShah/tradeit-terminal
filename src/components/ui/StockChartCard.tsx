@@ -26,12 +26,12 @@ export const StockChartCard = () => {
       {/* SVG Placeholder matching the premium green gradient line chart */}
       <View className="h-48 w-full px-4 flex-row">
         <View className="flex-1 justify-end pb-6">
-          <Text className="text-[#00C853] text-sm tracking-[5px] opacity-50">\/\/\__/\/\_/\___/\/`</Text>
-          <Text className="text-[#00C853] text-lg tracking-[8px] font-bold">/\_/\/\_/\/`</Text>
+          <Text className="text-[#0ECB81] text-sm tracking-[5px] opacity-50">\/\/\__/\/\_/\___/\/`</Text>
+          <Text className="text-[#0ECB81] text-lg tracking-[8px] font-bold">/\_/\/\_/\/`</Text>
         </View>
         <View className="w-12 justify-between items-end pb-6">
           <Text className="text-[#9CA3AF] text-[10px]">920</Text>
-          <View className="bg-[#00C853] px-1 py-0.5 rounded">
+          <View className="bg-[#0ECB81] px-1 py-0.5 rounded">
             <Text className="text-black text-[10px] font-bold">904</Text>
           </View>
           <Text className="text-[#9CA3AF] text-[10px]">880</Text>

@@ -25,9 +25,9 @@ export function MarketMoverRow({ stock, variant, onPress, pulse }: MarketMoverRo
 
   const changeColor =
     variant === 'gainer'
-      ? 'text-[#00C853]'
+      ? 'text-[#0ECB81]'
       : variant === 'loser'
-        ? 'text-[#FF3B30]'
+        ? 'text-[#F6465D]'
         : 'text-[#9CA3AF]';
   const sign = stock.isPositive ? '+' : '';
 
@@ -35,7 +35,7 @@ export function MarketMoverRow({ stock, variant, onPress, pulse }: MarketMoverRo
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.7}
-      className="flex-row items-center px-4 py-3 border-b border-[#141414]"
+      className="flex-row items-center px-4 py-3 border-b border-[#2A2B2F]"
     >
       <View className="w-10 h-10 rounded-full bg-[#18191C] items-center justify-center mr-3 border border-[#2A2B2F]">
         <Text className="text-white text-xs font-bold">{stock.symbol.charAt(0)}</Text>
@@ -43,7 +43,7 @@ export function MarketMoverRow({ stock, variant, onPress, pulse }: MarketMoverRo
 
       <View className="flex-1 mr-2">
         <Text className="text-white font-semibold text-[13px]">{stock.symbol}</Text>
-        <Text className="text-[#555] text-[11px] mt-0.5" numberOfLines={1}>
+        <Text className="text-[#5C6068] text-[11px] mt-0.5" numberOfLines={1}>
           {stock.name}
         </Text>
       </View>

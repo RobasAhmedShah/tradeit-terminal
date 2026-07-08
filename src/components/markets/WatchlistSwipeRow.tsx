@@ -46,8 +46,8 @@ export function WatchlistSwipeRow({ stock, onRemove, onAlert, pulse }: Watchlist
         }}
         className="bg-[#200006] w-[72px] items-center justify-center"
       >
-        <Ionicons name="trash-outline" size={20} color="#FF3B30" />
-        <Text className="text-[#FF3B30] text-[9px] mt-1 font-semibold">Remove</Text>
+        <Ionicons name="trash-outline" size={20} color="#F6465D" />
+        <Text className="text-[#F6465D] text-[9px] mt-1 font-semibold">Remove</Text>
       </TouchableOpacity>
     </View>
   );
@@ -63,7 +63,7 @@ export function WatchlistSwipeRow({ stock, onRemove, onAlert, pulse }: Watchlist
           }}
           delayLongPress={350}
           activeOpacity={0.7}
-          className="flex-row items-center px-4 py-3.5 bg-[#050505] border-b border-[#141414]"
+          className="flex-row items-center px-4 py-3.5 bg-[#050505] border-b border-[#2A2B2F]"
         >
           <View className="w-10 h-10 rounded-full bg-[#18191C] items-center justify-center mr-3 border border-[#2A2B2F]">
             <Text className="text-[#FF8A00] text-sm font-bold">{stock.symbol.charAt(0)}</Text>
@@ -71,7 +71,7 @@ export function WatchlistSwipeRow({ stock, onRemove, onAlert, pulse }: Watchlist
 
           <View className="flex-1">
             <Text className="text-white font-semibold text-[13px]">{stock.symbol}</Text>
-            <Text className="text-[#555] text-[11px] mt-0.5" numberOfLines={1}>
+            <Text className="text-[#5C6068] text-[11px] mt-0.5" numberOfLines={1}>
               {stock.name}
             </Text>
           </View>
@@ -88,10 +88,10 @@ export function WatchlistSwipeRow({ stock, onRemove, onAlert, pulse }: Watchlist
               <Ionicons
                 name={stock.isPositive ? 'caret-up' : 'caret-down'}
                 size={10}
-                color={stock.isPositive ? '#00C853' : '#FF3B30'}
+                color={stock.isPositive ? '#0ECB81' : '#F6465D'}
               />
               <Text
-                className={`text-[11px] font-semibold ml-0.5 ${stock.isPositive ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}
+                className={`text-[11px] font-semibold ml-0.5 ${stock.isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}
               >
                 {Math.abs(stock.changePercent).toFixed(2)}%
               </Text>

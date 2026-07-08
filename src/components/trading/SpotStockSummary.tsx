@@ -13,7 +13,7 @@ export const SpotStockSummary: React.FC<SpotStockSummaryProps> = ({ stock }) => 
   const router = useRouter();
   const [isSheetVisible, setIsSheetVisible] = useState(false);
   
-  const changeColor = stock.isPositive ? 'text-[#00C853]' : 'text-[#FF3B30]';
+  const changeColor = stock.isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]';
   const sign = stock.isPositive ? '+' : '';
 
   const handleSelectStock = (selectedStock: Stock) => {
@@ -41,8 +41,8 @@ export const SpotStockSummary: React.FC<SpotStockSummaryProps> = ({ stock }) => 
 
         <View className="flex-row items-center">
           {stock.isShariahCompliant && (
-            <View className="bg-[#002211] px-2 py-1 rounded border border-[#00C853]/30 mr-2">
-              <Text className="text-[#00C853] text-[10px] font-semibold">Shariah Compliant</Text>
+            <View className="bg-[#002211] px-2 py-1 rounded border border-[#0ECB81]/30 mr-2">
+              <Text className="text-[#0ECB81] text-[10px] font-semibold">Shariah Compliant</Text>
             </View>
           )}
           <View className="bg-[#111214] px-2 py-1 rounded border border-[#2A2B2F] flex-row items-center">
@@ -69,11 +69,11 @@ export const SpotStockSummary: React.FC<SpotStockSummaryProps> = ({ stock }) => 
         <View className="flex-1 flex-row flex-wrap justify-end">
           <View className="w-1/2 items-end mb-2">
             <Text className="text-[#9CA3AF] text-[10px] mb-0.5">Day High</Text>
-            <Text className="text-[#00C853] text-xs font-semibold">{stock.high?.toFixed(2) || '-'}</Text>
+            <Text className="text-[#0ECB81] text-xs font-semibold">{stock.high?.toFixed(2) || '-'}</Text>
           </View>
           <View className="w-1/2 items-end mb-2 pl-2">
             <Text className="text-[#9CA3AF] text-[10px] mb-0.5">Day Low</Text>
-            <Text className="text-[#FF3B30] text-xs font-semibold">{stock.low?.toFixed(2) || '-'}</Text>
+            <Text className="text-[#F6465D] text-xs font-semibold">{stock.low?.toFixed(2) || '-'}</Text>
           </View>
           <View className="w-1/2 items-end">
             <Text className="text-[#9CA3AF] text-[10px] mb-0.5">Avg Vol (20D)</Text>

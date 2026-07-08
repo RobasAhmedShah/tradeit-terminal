@@ -2,12 +2,15 @@ import React, { useMemo } from 'react';
 import { View, ScrollView, TouchableOpacity, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { NewsCard } from '../ui/NewsCard';
-import { MOCK_NEWS, NEWS_CATEGORIES, NewsCategory } from '../../data/mockNews';
+import { COMMUNITY_FEED_TABS, CommunityFeedTab } from '../../data/mockNews';
 import { filterNews } from '../../utils/marketsHub';
-import { MarketsEmptyState } from './MarketsEmptyState';
+import { FollowingEmptyState } from '../community/FollowingEmptyState';
+import { CommunityFeedEmpty } from '../community/CommunityFeedEmpty';
+import { usePosts } from '../../context/PostsContext';
+import { useComposePost } from '../../hooks/useComposePost';
 import { hapticSelection } from '../../utils/haptics';
 
-export type NewsFilter = 'Discover' | NewsCategory;
+export type NewsFilter = CommunityFeedTab;
 
 interface NewsCategoryTabsProps {
   activeCategory: NewsFilter;
@@ -16,13 +19,16 @@ interface NewsCategoryTabsProps {
 
 export function NewsCategoryTabs({ activeCategory, onCategoryChange }: NewsCategoryTabsProps) {
   return (
-    <View className="bg-[#050505] border-b border-[#141414]">
+    <View className="bg-[#050505] border-b border-[#2A2B2F]">
+      <View className="px-4 pt-3 pb-0">
+        <Text className="text-white text-[15px] font-bold">Community</Text>
+      </View>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 10, paddingBottom: 10 }}
       >
-        {(['Discover', ...NEWS_CATEGORIES] as const).map((cat) => {
+        {COMMUNITY_FEED_TABS.map((cat) => {
           const active = activeCategory === cat;
           return (
             <TouchableOpacity
@@ -72,55 +78,56 @@ export function NewsTabPanel({
   dismissedIds,
   onDismiss,
   onSave,
-  onCategoryChange,
 }: NewsTabPanelProps) {
   const router = useRouter();
+  const { getFeed, isLiked, toggleLike, getLikeCount, repostPost, openComments, isOwnPost, openPostActions } = usePosts();
+  const { openCompose } = useComposePost();
 
   const visiblePosts = useMemo(() => {
-    const base = MOCK_NEWS.filter((n) => !dismissedIds.has(n.id));
-    const filtered = filterNews(base, query);
-    return filtered.filter((n) => {
-      if (activeCategory === 'Discover') return true;
-      return n.category === activeCategory;
-    });
-  }, [query, activeCategory, dismissedIds]);
+    const base = getFeed({ category: activeCategory, excludeIds: dismissedIds });
+    return filterNews(base, query);
+  }, [getFeed, query, activeCategory, dismissedIds]);
 
-  const featured = visiblePosts.find((n) => n.featured);
+  const isFollowingTab = activeCategory === 'Following';
+  const featured = !isFollowingTab ? visiblePosts.find((n) => n.featured && !n.isUserPost) : undefined;
   const regular = visiblePosts.filter((n) => n.id !== featured?.id);
 
   if (visiblePosts.length === 0) {
+    if (activeCategory === 'Following' && !query) {
+      return <FollowingEmptyState />;
+    }
     return (
-      <MarketsEmptyState
-        icon="newspaper-outline"
-        title="No news found"
-        message={query ? 'Try a different search term.' : 'No posts in this category.'}
-        actionLabel={query ? undefined : 'Show Discover'}
-        onAction={query ? undefined : () => onCategoryChange?.('Discover')}
+      <CommunityFeedEmpty
+        category={activeCategory}
+        hasQuery={!!query}
+        onCreatePost={openCompose}
       />
     );
   }
 
+  const cardProps = (post: (typeof visiblePosts)[0]) => {
+    const own = isOwnPost(post);
+    return {
+      post,
+      saved: savedIds.has(post.id),
+      liked: isLiked(post.id),
+      likeCount: getLikeCount(post),
+      isOwnPost: own,
+      onLike: () => toggleLike(post.id),
+      onComment: () => openComments(post.id),
+      onRepost: () => repostPost(post.id),
+      onDismiss: own ? undefined : () => onDismiss(post.id),
+      onMore: () => openPostActions(post.id),
+      onSave: () => onSave(post.id),
+      onOpen: () => router.push(`/news/${post.id}`),
+    };
+  };
+
   return (
     <View>
-      {featured && (
-        <NewsCard
-          post={featured}
-          featured
-          saved={savedIds.has(featured.id)}
-          onDismiss={() => onDismiss(featured.id)}
-          onSave={() => onSave(featured.id)}
-          onOpen={() => router.push(`/news/${featured.id}`)}
-        />
-      )}
+      {featured && <NewsCard {...cardProps(featured)} featured />}
       {regular.map((post) => (
-        <NewsCard
-          key={post.id}
-          post={post}
-          saved={savedIds.has(post.id)}
-          onDismiss={() => onDismiss(post.id)}
-          onSave={() => onSave(post.id)}
-          onOpen={() => router.push(`/news/${post.id}`)}
-        />
+        <NewsCard key={post.id} {...cardProps(post)} />
       ))}
     </View>
   );

@@ -58,10 +58,10 @@ export const CandlestickChartPlaceholder: React.FC<CandlestickChartPlaceholderPr
 
       <View className="flex-row items-center px-3 py-2 flex-wrap">
         <Text className="text-[#9CA3AF] text-[10px] mr-2">{stock.symbol} • {timeframe} • PSX</Text>
-        <Text className="text-[#00C853] text-[10px] mr-2">O {(stock.open ?? stock.price).toFixed(2)}</Text>
-        <Text className="text-[#00C853] text-[10px] mr-2">H {(stock.high ?? stock.price).toFixed(2)}</Text>
-        <Text className="text-[#FF3B30] text-[10px] mr-2">L {(stock.low ?? stock.price).toFixed(2)}</Text>
-        <Text className={`text-[10px] ${stock.isPositive ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}>C {stock.price.toFixed(2)}</Text>
+        <Text className="text-[#0ECB81] text-[10px] mr-2">O {(stock.open ?? stock.price).toFixed(2)}</Text>
+        <Text className="text-[#0ECB81] text-[10px] mr-2">H {(stock.high ?? stock.price).toFixed(2)}</Text>
+        <Text className="text-[#F6465D] text-[10px] mr-2">L {(stock.low ?? stock.price).toFixed(2)}</Text>
+        <Text className={`text-[10px] ${stock.isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>C {stock.price.toFixed(2)}</Text>
       </View>
 
       <View className="flex-row">
@@ -80,7 +80,7 @@ export const CandlestickChartPlaceholder: React.FC<CandlestickChartPlaceholderPr
           ))}
 
           {mapped.map((c, i) => {
-            const color = c.isUp ? '#00C853' : '#FF3B30';
+            const color = c.isUp ? '#0ECB81' : '#F6465D';
             return (
               <G key={i}>
                 <Line x1={c.x} y1={c.yHigh} x2={c.x} y2={c.yLow} stroke={color} strokeWidth="1" />

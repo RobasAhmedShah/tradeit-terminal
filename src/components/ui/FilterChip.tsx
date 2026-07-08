@@ -20,7 +20,7 @@ export const FilterChip: React.FC<FilterChipProps> = ({ label, isActive, onPress
       }`}
     >
       {isShariah && (
-        <Ionicons name="moon" size={12} color="#00C853" className="mr-1" style={{ marginRight: 4 }} />
+        <Ionicons name="moon" size={12} color="#0ECB81" className="mr-1" style={{ marginRight: 4 }} />
       )}
       <Text className={`${isActive ? 'text-[#FF8A00]' : 'text-[#9CA3AF]'} font-semibold`}>
         {label}

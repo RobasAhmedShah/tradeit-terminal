@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { PortfolioActivity, activityIcon, formatActivityTime } from '../../data/portfolioActivity';
 import { formatPortfolioRs } from '../../data/mockPortfolio';
+import { useOrderDetailSheet } from '../../context/OrderDetailSheetContext';
 
 interface PortfolioActivityListProps {
   items: PortfolioActivity[];
@@ -12,10 +13,11 @@ interface PortfolioActivityListProps {
 
 export function PortfolioActivityList({ items, compact = false }: PortfolioActivityListProps) {
   const router = useRouter();
+  const { openOrderDetail } = useOrderDetailSheet();
 
   const handlePress = (item: PortfolioActivity) => {
     if (item.orderId) {
-      router.push(`/orders/${item.orderId}`);
+      openOrderDetail(item.orderId);
       return;
     }
     if (item.symbol && (item.type === 'buy' || item.type === 'sell')) {
@@ -47,7 +49,7 @@ export function PortfolioActivityList({ items, compact = false }: PortfolioActiv
       {items.map((item) => {
         const icon = activityIcon(item.type);
         const isCredit = item.type === 'deposit' || item.type === 'sell';
-        const amountColor = isCredit ? 'text-[#00C853]' : 'text-white';
+        const amountColor = isCredit ? 'text-[#0ECB81]' : 'text-white';
 
         return (
           <TouchableOpacity

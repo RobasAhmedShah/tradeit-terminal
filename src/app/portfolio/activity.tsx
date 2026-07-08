@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { usePortfolio } from '../../context/PortfolioContext';
 import { PortfolioActivityList } from '../../components/portfolio/PortfolioActivityList';
+import { safeBack } from '../../utils/navigation';
 
 export default function PortfolioActivityScreen() {
   const router = useRouter();
@@ -13,7 +14,7 @@ export default function PortfolioActivityScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#050505]">
       <View className="flex-row items-center px-4 py-3 border-b border-[#2A2B2F]">
-        <TouchableOpacity onPress={() => router.back()} className="w-10">
+        <TouchableOpacity onPress={() => safeBack(router, '/(tabs)/portfolio')} className="w-10">
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
         <Text className="flex-1 text-center text-white text-lg font-bold mr-10">Activity</Text>

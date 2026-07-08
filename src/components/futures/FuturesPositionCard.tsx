@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { FuturesPosition, formatFuturesPrice } from '../../data/mockFutures';
+import { futuresPositionHref } from '../../utils/futuresRoutes';
 
 interface FuturesPositionCardProps {
   position: FuturesPosition;
@@ -17,19 +18,24 @@ export const FuturesPositionCard: React.FC<FuturesPositionCardProps> = ({
   const router = useRouter();
   const isLong = position.side === 'Long';
 
+  const openDetail = () => {
+    const href = futuresPositionHref(position);
+    if (href) router.push(href);
+  };
+
   return (
     <TouchableOpacity
       activeOpacity={0.85}
-      onPress={() => router.push(`/futures/position/${position.id}`)}
+      onPress={openDetail}
       className="bg-[#111214] border border-[#2A2B2F] rounded-xl p-3 mb-2"
     >
       <View className="flex-row items-center">
         <View
           className={`px-1.5 py-0.5 rounded border ${
-            isLong ? 'bg-[#00C853]/10 border-[#00C853]/30' : 'bg-[#FF3B30]/10 border-[#FF3B30]/30'
+            isLong ? 'bg-[#0ECB81]/10 border-[#0ECB81]/30' : 'bg-[#F6465D]/10 border-[#F6465D]/30'
           }`}
         >
-          <Text className={`text-[11px] font-bold ${isLong ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}>
+          <Text className={`text-[11px] font-bold ${isLong ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
             {position.side}
           </Text>
         </View>
@@ -66,13 +72,13 @@ export const FuturesPositionCard: React.FC<FuturesPositionCardProps> = ({
         <View className="flex-1 items-end">
           <Text className="text-[#9CA3AF] text-[10px] mb-1">Unrealized PnL</Text>
           <Text
-            className={`text-xs font-medium ${position.unrealizedPnl >= 0 ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}
+            className={`text-xs font-medium ${position.unrealizedPnl >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}
           >
             {position.unrealizedPnl >= 0 ? '+' : ''}
             {formatFuturesPrice(position.unrealizedPnl)}
           </Text>
           <Text
-            className={`text-[10px] ${position.unrealizedPnlPct >= 0 ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}
+            className={`text-[10px] ${position.unrealizedPnlPct >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}
           >
             ({position.unrealizedPnlPct >= 0 ? '+' : ''}
             {position.unrealizedPnlPct.toFixed(2)}%)

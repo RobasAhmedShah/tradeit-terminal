@@ -16,11 +16,11 @@ export const StockStatsGrid: React.FC<StockStatsGridProps> = ({ stock }) => {
         </View>
         <View className="flex-[1]">
           <Text className="text-[#9CA3AF] text-xs mb-1">High (R)</Text>
-          <Text className="text-[#00C853] text-sm font-semibold">{stock.high?.toFixed(2) || '-'}</Text>
+          <Text className="text-[#0ECB81] text-sm font-semibold">{stock.high?.toFixed(2) || '-'}</Text>
         </View>
         <View className="flex-[1]">
           <Text className="text-[#9CA3AF] text-xs mb-1">Low</Text>
-          <Text className="text-[#FF3B30] text-sm font-semibold">{stock.low?.toFixed(2) || '-'}</Text>
+          <Text className="text-[#F6465D] text-sm font-semibold">{stock.low?.toFixed(2) || '-'}</Text>
         </View>
         <View className="flex-[0.8] items-end">
           <Text className="text-[#9CA3AF] text-xs mb-1">LCL</Text>

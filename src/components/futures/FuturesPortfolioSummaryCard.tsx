@@ -57,9 +57,9 @@ export const FuturesPortfolioSummaryCard: React.FC = () => {
             <View className="flex-row items-center">
               <Text className="text-white text-sm font-bold">Futures Margin</Text>
               {isMarketLive && (
-                <View className="ml-2 flex-row items-center bg-[#00C853]/10 px-1.5 py-0.5 rounded-full">
-                  <View className="w-1 h-1 rounded-full bg-[#00C853] mr-1" />
-                  <Text className="text-[#00C853] text-[8px] font-bold">LIVE</Text>
+                <View className="ml-2 flex-row items-center bg-[#0ECB81]/10 px-1.5 py-0.5 rounded-full">
+                  <View className="w-1 h-1 rounded-full bg-[#0ECB81] mr-1" />
+                  <Text className="text-[#0ECB81] text-[8px] font-bold">LIVE</Text>
                 </View>
               )}
             </View>
@@ -86,7 +86,7 @@ export const FuturesPortfolioSummaryCard: React.FC = () => {
         </View>
         <View className="flex-1 items-end">
           <Text className="text-[#9CA3AF] text-[10px] mb-1">Unrealized PnL</Text>
-          <Text className={`text-sm font-semibold ${isPositive ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}>
+          <Text className={`text-sm font-semibold ${isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
             {isPositive ? '+' : ''}
             {formatFuturesPrice(totalUnrealizedPnl)}
           </Text>

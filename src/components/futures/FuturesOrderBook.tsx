@@ -33,8 +33,8 @@ function BookRow({
   onPress?: () => void;
 }) {
   const textSize = compact ? 'text-[11px]' : 'text-xs';
-  const color = side === 'ask' ? 'text-[#FF3B30]' : 'text-[#00C853]';
-  const depthColor = side === 'ask' ? '#FF3B30' : '#00C853';
+  const color = side === 'ask' ? 'text-[#F6465D]' : 'text-[#0ECB81]';
+  const depthColor = side === 'ask' ? '#F6465D' : '#0ECB81';
 
   const content = (
     <View
@@ -196,14 +196,14 @@ export const FuturesOrderBook: React.FC<FuturesOrderBookProps> = ({
             {displayBids.map((bid, index) => renderRow(bid, 'bid', index))}
             <View className="mt-2.5">
               <View className="flex-row items-center gap-1">
-                <Text className="text-[#00C853] text-xs">B</Text>
-                <View className="flex-[0.56] h-[5px] bg-[#00C853] opacity-30 rounded-full" />
-                <View className="flex-[0.44] h-[5px] bg-[#FF3B30] opacity-30 rounded-full" />
-                <Text className="text-[#FF3B30] text-xs">S</Text>
+                <Text className="text-[#0ECB81] text-xs">B</Text>
+                <View className="flex-[0.56] h-[5px] bg-[#0ECB81] opacity-30 rounded-full" />
+                <View className="flex-[0.44] h-[5px] bg-[#F6465D] opacity-30 rounded-full" />
+                <Text className="text-[#F6465D] text-xs">S</Text>
               </View>
               <View className="flex-row justify-between mt-1">
-                <Text className="text-[#00C853] text-[11px]">56%</Text>
-                <Text className="text-[#FF3B30] text-[11px]">44%</Text>
+                <Text className="text-[#0ECB81] text-[11px]">56%</Text>
+                <Text className="text-[#F6465D] text-[11px]">44%</Text>
               </View>
             </View>
           </>

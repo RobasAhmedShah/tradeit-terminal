@@ -9,6 +9,7 @@ import { useAlertSheet } from '../../context/AlertSheetContext';
 import { MOCK_MARKET_STOCKS } from '../../data/mockStocks';
 import { hapticLight } from '../../utils/haptics';
 import { CompactEmptyState } from '../../components/ui/CompactEmptyState';
+import { safeBack } from '../../utils/navigation';
 
 function conditionLabel(condition: 'above' | 'below', price: number): string {
   return condition === 'above' ? `Above Rs ${price.toFixed(2)}` : `Below Rs ${price.toFixed(2)}`;
@@ -48,8 +49,8 @@ export default function PriceAlertsScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#050505]" edges={['top']}>
-      <View className="flex-row items-center px-4 py-3 border-b border-[#141414]">
-        <TouchableOpacity onPress={() => router.back()} className="w-10">
+      <View className="flex-row items-center px-4 py-3 border-b border-[#2A2B2F]">
+        <TouchableOpacity onPress={() => safeBack(router, '/(tabs)/home')} className="w-10">
           <Ionicons name="arrow-back" size={22} color="#fff" />
         </TouchableOpacity>
         <Text className="flex-1 text-center text-white text-[17px] font-bold">Price Alerts</Text>
@@ -62,7 +63,7 @@ export default function PriceAlertsScreen() {
       </View>
 
       <View className="px-4 py-3 flex-row justify-between items-center">
-        <Text className="text-[#666] text-[12px]">
+        <Text className="text-[#8A8D93] text-[12px]">
           {activeCount} active · {alerts.length} total
         </Text>
       </View>
@@ -91,7 +92,7 @@ export default function PriceAlertsScreen() {
                 <View className="flex-row justify-between items-start mb-2">
                   <View className="flex-1 mr-3">
                     <Text className="text-white text-[15px] font-bold">{alert.symbol}</Text>
-                    <Text className="text-[#666] text-[11px] mt-0.5" numberOfLines={1}>
+                    <Text className="text-[#8A8D93] text-[11px] mt-0.5" numberOfLines={1}>
                       {alert.name}
                     </Text>
                   </View>
@@ -104,11 +105,11 @@ export default function PriceAlertsScreen() {
                   >
                     <View
                       className={`px-2.5 py-1 rounded-full border ${
-                        alert.isActive ? 'border-[#00C853]/40 bg-[#00C853]/10' : 'border-[#444] bg-[#18191C]'
+                        alert.isActive ? 'border-[#0ECB81]/40 bg-[#0ECB81]/10' : 'border-[#444] bg-[#18191C]'
                       }`}
                     >
                       <Text
-                        className={`text-[10px] font-semibold ${alert.isActive ? 'text-[#00C853]' : 'text-[#666]'}`}
+                        className={`text-[10px] font-semibold ${alert.isActive ? 'text-[#0ECB81]' : 'text-[#8A8D93]'}`}
                       >
                         {alert.isActive ? 'Active' : 'Paused'}
                       </Text>
@@ -122,7 +123,7 @@ export default function PriceAlertsScreen() {
                       {conditionLabel(alert.condition, alert.targetPrice)}
                     </Text>
                     {currentPrice != null && (
-                      <Text className="text-[#555] text-[11px] mt-1">
+                      <Text className="text-[#5C6068] text-[11px] mt-1">
                         Now Rs {currentPrice.toFixed(2)}
                       </Text>
                     )}
@@ -132,7 +133,7 @@ export default function PriceAlertsScreen() {
                     hitSlop={8}
                     className="p-2"
                   >
-                    <Ionicons name="trash-outline" size={18} color="#666" />
+                    <Ionicons name="trash-outline" size={18} color="#8A8D93" />
                   </TouchableOpacity>
                 </View>
               </TouchableOpacity>

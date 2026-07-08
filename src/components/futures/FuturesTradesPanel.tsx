@@ -27,12 +27,12 @@ export const FuturesTradesPanel: React.FC<FuturesTradesPanelProps> = ({ contract
           </View>
         </View>
         <View className="flex-row items-center gap-1">
-          <Text className="text-[#00C853] text-xs">Buy {buyPct}%</Text>
+          <Text className="text-[#0ECB81] text-xs">Buy {buyPct}%</Text>
           <View className="flex-1 h-1.5 bg-[#18191C] rounded-full overflow-hidden flex-row">
-            <View className="h-full bg-[#00C853]" style={{ width: `${buyPct}%` }} />
-            <View className="h-full bg-[#FF3B30]" style={{ width: `${100 - buyPct}%` }} />
+            <View className="h-full bg-[#0ECB81]" style={{ width: `${buyPct}%` }} />
+            <View className="h-full bg-[#F6465D]" style={{ width: `${100 - buyPct}%` }} />
           </View>
-          <Text className="text-[#FF3B30] text-xs">Sell {100 - buyPct}%</Text>
+          <Text className="text-[#F6465D] text-xs">Sell {100 - buyPct}%</Text>
         </View>
       </View>
 
@@ -45,7 +45,7 @@ export const FuturesTradesPanel: React.FC<FuturesTradesPanelProps> = ({ contract
         {trades.map((trade) => (
           <View key={trade.id} className="flex-row px-3 py-2 border-b border-[#18191C]">
             <Text
-              className={`flex-1 text-sm font-semibold ${trade.side === 'buy' ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}
+              className={`flex-1 text-sm font-semibold ${trade.side === 'buy' ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}
             >
               {formatFuturesPrice(trade.price)}
             </Text>

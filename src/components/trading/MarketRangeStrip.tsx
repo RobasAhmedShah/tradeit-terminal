@@ -9,7 +9,7 @@ interface MarketRangeStripProps {
 
 export const MarketRangeStrip: React.FC<MarketRangeStripProps> = ({ stock }) => {
   const isPositive = stock.isPositive;
-  const changeColor = isPositive ? 'text-[#00C853]' : 'text-[#FF3B30]';
+  const changeColor = isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]';
   const sign = isPositive ? '+' : '';
 
   return (
@@ -29,24 +29,24 @@ export const MarketRangeStrip: React.FC<MarketRangeStripProps> = ({ stock }) => 
         {/* Day Range */}
         <View className="items-center">
           <Text className="text-[#9CA3AF] text-[9px] mb-1">Day Range</Text>
-          <View className="w-16 h-0.5 bg-[#FF3B30] flex-row">
-            <View className="w-1/2 h-full bg-[#00C853]" />
+          <View className="w-16 h-0.5 bg-[#F6465D] flex-row">
+            <View className="w-1/2 h-full bg-[#0ECB81]" />
           </View>
           <View className="flex-row justify-between w-full mt-1">
-            <Text className="text-[#FF3B30] text-[8px]">{stock.low?.toFixed(2)}</Text>
-            <Text className="text-[#00C853] text-[8px]">{stock.high?.toFixed(2)}</Text>
+            <Text className="text-[#F6465D] text-[8px]">{stock.low?.toFixed(2)}</Text>
+            <Text className="text-[#0ECB81] text-[8px]">{stock.high?.toFixed(2)}</Text>
           </View>
         </View>
 
         {/* 52W Range */}
         <View className="items-center">
           <Text className="text-[#9CA3AF] text-[9px] mb-1">52W Range</Text>
-          <View className="w-16 h-0.5 bg-[#FF3B30] flex-row">
-            <View className="w-3/4 h-full bg-[#00C853]" />
+          <View className="w-16 h-0.5 bg-[#F6465D] flex-row">
+            <View className="w-3/4 h-full bg-[#0ECB81]" />
           </View>
           <View className="flex-row justify-between w-full mt-1">
-            <Text className="text-[#FF3B30] text-[8px]">612.00</Text>
-            <Text className="text-[#00C853] text-[8px]">1,015.00</Text>
+            <Text className="text-[#F6465D] text-[8px]">612.00</Text>
+            <Text className="text-[#0ECB81] text-[8px]">1,015.00</Text>
           </View>
         </View>
       </View>

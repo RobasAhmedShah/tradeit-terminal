@@ -41,3 +41,22 @@ export async function saveFuturesPortfolio(state: FuturesPortfolioState): Promis
     // Non-blocking
   }
 }
+
+/** URL-safe id for futures positions (never use order ids with #). */
+export function createFuturesPositionId(): string {
+  return `fp-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+}
+
+function normalizePositionId(id: unknown, index: number): string {
+  if (typeof id === 'string' && id.length > 0 && !id.includes('#') && !id.includes('/')) {
+    return id;
+  }
+  return `fp-migrated-${Date.now()}-${index}`;
+}
+
+export function normalizeFuturesPositions(positions: FuturesPosition[]): FuturesPosition[] {
+  return positions.map((position, index) => ({
+    ...position,
+    id: normalizePositionId(position.id, index),
+  }));
+}

@@ -19,7 +19,7 @@ export const SparklinePlaceholder: React.FC<SparklinePlaceholderProps> = ({
   data,
 }) => {
   const rawPoints = data ?? (isPositive ? POSITIVE_POINTS : NEGATIVE_POINTS);
-  const color = isPositive ? '#00C853' : '#FF3B30';
+  const color = isPositive ? '#0ECB81' : '#F6465D';
 
   const min = Math.min(...rawPoints);
   const max = Math.max(...rawPoints);

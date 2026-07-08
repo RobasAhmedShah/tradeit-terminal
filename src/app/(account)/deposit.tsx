@@ -14,6 +14,7 @@ import Animated, {
 import { usePortfolio } from '../../context/PortfolioContext';
 import { useTransferSheet } from '../../context/TransferSheetContext';
 import { formatPortfolioRs } from '../../data/mockPortfolio';
+import { safeBack } from '../../utils/navigation';
 
 // ─── Mock Data ─────────────────────────────────────────────────────────────────
 const DEPOSIT_MOCK = {
@@ -179,7 +180,10 @@ export default function DepositScreen() {
     return `${m}:${s}`;
   };
 
-  const goBack = () => { if (step === 1) router.back(); else setStep((step - 1) as Step); };
+  const goBack = () => {
+    if (step === 1) safeBack(router, '/(tabs)/home');
+    else setStep((step - 1) as Step);
+  };
 
   // ── Shared: Nav Bar ─────────────────────────────────────────────────────────
   const renderNavBar = () => (
@@ -199,7 +203,7 @@ export default function DepositScreen() {
           <Ionicons name="help-circle-outline" size={20} color="#555" />
         </TouchableOpacity>
       ) : step === 6 ? (
-        <TouchableOpacity onPress={() => router.push('/(tabs)/home')} style={{ width: 36, alignItems: 'flex-end' }}>
+        <TouchableOpacity onPress={() => router.replace('/(tabs)/home')} style={{ width: 36, alignItems: 'flex-end' }}>
           <Ionicons name="home-outline" size={20} color="#555" />
         </TouchableOpacity>
       ) : (
@@ -415,14 +419,14 @@ export default function DepositScreen() {
                 borderWidth: 1, borderColor: isSelected ? '#f97316' : '#1e1e1e',
               }}
             >
-              <Text style={{ color: isSelected ? '#fff' : '#888', fontSize: 12, fontWeight: '500' }}>
+              <Text style={{ color: isSelected ? '#fff' : '#8A8D93', fontSize: 12, fontWeight: '500' }}>
                 +{qa.toLocaleString()}
               </Text>
             </TouchableOpacity>
           );
         })}
         <TouchableOpacity style={{ flexBasis: '30%', paddingVertical: 10, borderRadius: 8, alignItems: 'center', backgroundColor: '#161616', borderWidth: 1, borderColor: '#1e1e1e' }}>
-          <Text style={{ color: '#888', fontSize: 12, fontWeight: '500' }}>Other</Text>
+          <Text style={{ color: '#8A8D93', fontSize: 12, fontWeight: '500' }}>Other</Text>
         </TouchableOpacity>
       </View>
 
@@ -636,7 +640,7 @@ export default function DepositScreen() {
           </TouchableOpacity>
         )}
         <TouchableOpacity
-          onPress={() => router.push('/(tabs)/portfolio')}
+          onPress={() => router.replace('/(tabs)/portfolio')}
           style={{
             backgroundColor: cashCredited ? 'transparent' : '#f97316',
             borderWidth: cashCredited ? 1.5 : 0,
@@ -658,10 +662,10 @@ export default function DepositScreen() {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => router.push('/(tabs)/home')}
+          onPress={() => router.replace('/(tabs)/home')}
           style={{ paddingVertical: 14, marginBottom: 30 }}
         >
-          <Text style={{ color: '#888', fontSize: 14, fontWeight: '500', textAlign: 'center' }}>Back to Home</Text>
+          <Text style={{ color: '#8A8D93', fontSize: 14, fontWeight: '500', textAlign: 'center' }}>Back to Home</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

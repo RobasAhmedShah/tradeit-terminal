@@ -82,7 +82,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       return (
         <TouchableOpacity
           onPress={() => handleSelectFutures(contract.symbol)}
-          className="flex-row items-center px-4 py-3.5 border-b border-[#141414]"
+          className="flex-row items-center px-4 py-3.5 border-b border-[#2A2B2F]"
         >
           <View className="w-9 h-9 rounded-full bg-[#FF8A00]/15 items-center justify-center mr-3 border border-[#FF8A00]/30">
             <Ionicons name="pulse" size={16} color="#FF8A00" />
@@ -94,13 +94,13 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                 <Text className="text-[#FF8A00] text-[9px] font-bold">FUTURES</Text>
               </View>
             </View>
-            <Text className="text-[#555] text-xs" numberOfLines={1}>
+            <Text className="text-[#5C6068] text-xs" numberOfLines={1}>
               {contract.name} · {contract.expiry}
             </Text>
           </View>
           <View className="items-end">
             <Text className="text-white text-sm font-semibold">{formatFuturesPrice(contract.markPrice)}</Text>
-            <Text className={`text-xs ${contract.isPositive ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}>
+            <Text className={`text-xs ${contract.isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
               {contract.isPositive ? '+' : ''}
               {contract.changePercent.toFixed(2)}%
             </Text>
@@ -114,7 +114,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return (
       <TouchableOpacity
         onPress={() => handleSelectStock(stock.symbol)}
-        className="flex-row items-center px-4 py-3.5 border-b border-[#141414]"
+        className="flex-row items-center px-4 py-3.5 border-b border-[#2A2B2F]"
       >
         <View className="w-9 h-9 rounded-full bg-[#18191C] items-center justify-center mr-3 border border-[#2A2B2F]">
           <Text className="text-[#FF8A00] text-xs font-bold">{stock.symbol.charAt(0)}</Text>
@@ -127,7 +127,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         </View>
         <View className="items-end">
           <Text className="text-white text-sm font-semibold">Rs {stock.price.toFixed(2)}</Text>
-          <Text className={`text-xs ${stock.isPositive ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}>
+          <Text className={`text-xs ${stock.isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
             {stock.isPositive ? '+' : ''}
             {stock.changePercent.toFixed(2)}%
           </Text>
@@ -190,7 +190,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                   <TouchableOpacity
                     key={sym}
                     onPress={() => handleSelectFutures(sym)}
-                    className="flex-row items-center py-3 border-b border-[#141414]"
+                    className="flex-row items-center py-3 border-b border-[#2A2B2F]"
                   >
                     <View className="w-7 h-7 rounded-full bg-[#FF8A00]/15 items-center justify-center mr-3">
                       <Ionicons name="pulse" size={14} color="#FF8A00" />
@@ -200,7 +200,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                       {contract.name}
                     </Text>
                     <Text
-                      className={`text-xs font-semibold ${contract.isPositive ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}
+                      className={`text-xs font-semibold ${contract.isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}
                     >
                       {contract.isPositive ? '+' : ''}
                       {contract.changePercent.toFixed(2)}%
@@ -217,7 +217,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                   <TouchableOpacity
                     key={sym}
                     onPress={() => handleSelectStock(sym)}
-                    className="flex-row items-center py-3 border-b border-[#141414]"
+                    className="flex-row items-center py-3 border-b border-[#2A2B2F]"
                   >
                     <View className="w-7 h-7 rounded-full bg-[#1A0E00] items-center justify-center mr-3">
                       <Ionicons name="trending-up-outline" size={14} color="#FF8A00" />
@@ -227,7 +227,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                       {stock.name}
                     </Text>
                     <Text
-                      className={`text-xs font-semibold ${stock.isPositive ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}
+                      className={`text-xs font-semibold ${stock.isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}
                     >
                       {stock.isPositive ? '+' : ''}
                       {stock.changePercent.toFixed(2)}%

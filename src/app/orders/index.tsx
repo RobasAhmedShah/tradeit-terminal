@@ -4,20 +4,26 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useOrders } from '../../context/OrdersContext';
+import { safeBack } from '../../utils/navigation';
 import { useAppAlert } from '../../context/AppAlertContext';
 import { useFutures } from '../../context/FuturesContext';
 import { Order, OrderStatus } from '../../data/mockOrders';
 import { CompactEmptyState } from '../../components/ui/CompactEmptyState';
 import { formatFuturesPrice, FuturesHistoryItem, FuturesPosition } from '../../data/mockFutures';
+import { futuresPositionHref } from '../../utils/futuresRoutes';
 import { useTransferSheet } from '../../context/TransferSheetContext';
+import { useEditOrderSheet } from '../../context/EditOrderSheetContext';
+import { useOrderDetailSheet } from '../../context/OrderDetailSheetContext';
+import { useFuturesCloseSheet } from '../../context/FuturesCloseSheetContext';
+import { COLORS } from '../../constants/theme';
 
 type MarketTab = 'spot' | 'futures';
 type HubTab = 'positions' | 'open' | 'history' | 'trades';
 type HistoryFilter = 'All' | 'Executed' | 'Cancelled' | 'Rejected';
 
-const BUY = '#0ECB81';
-const SELL = '#F6465D';
-const ACCENT = '#FF8A00';
+const BUY = COLORS.buy;
+const SELL = COLORS.sell;
+const ACCENT = COLORS.primary;
 
 const SPOT_HUB_TABS: { id: HubTab; label: string }[] = [
   { id: 'open', label: 'Open Orders' },
@@ -101,6 +107,9 @@ export default function OrdersHubScreen() {
   const { positions, openOrders, orderHistory, marginAvailable, marginUsed, cancelOpenOrder } = useFutures();
   const { showAlert } = useAppAlert();
   const { openTransfer } = useTransferSheet();
+  const { openEditOrder } = useEditOrderSheet();
+  const { openOrderDetail } = useOrderDetailSheet();
+  const { openCloseSheet } = useFuturesCloseSheet();
   const [hubTab, setHubTab] = useState<HubTab>('open');
   const [marketTab, setMarketTab] = useState<MarketTab>('spot');
   const [historyFilter, setHistoryFilter] = useState<HistoryFilter>('All');
@@ -112,11 +121,7 @@ export default function OrdersHubScreen() {
       router.replace('/(tabs)/portfolio');
       return;
     }
-    if (router.canGoBack()) {
-      router.back();
-      return;
-    }
-    router.replace('/(tabs)/home');
+    safeBack(router, '/(tabs)/home');
   };
 
   useEffect(() => {
@@ -187,10 +192,7 @@ export default function OrdersHubScreen() {
   };
 
   const handleFuturesClose = (position: FuturesPosition) => {
-    router.push({
-      pathname: '/futures/close-review',
-      params: { data: JSON.stringify(position) },
-    });
+    openCloseSheet(position);
   };
 
   const handleCancelAll = () => {
@@ -235,7 +237,7 @@ export default function OrdersHubScreen() {
         style={{ borderWidth: 1, borderColor: '#25272D' }}
       >
         <View className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: sideColor }} />
-        <TouchableOpacity activeOpacity={0.85} onPress={() => router.push(`/orders/${order.id}`)} className="p-4">
+        <TouchableOpacity activeOpacity={0.85} onPress={() => openOrderDetail(order.id)} className="p-4">
           <View className="flex-row items-center mb-3.5">
             <SymbolAvatar symbol={order.symbol} color={sideColor} />
             <View className="flex-1">
@@ -281,7 +283,7 @@ export default function OrdersHubScreen() {
 
         <View className="flex-row border-t" style={{ borderColor: '#25272D' }}>
           <TouchableOpacity
-            onPress={() => router.push(`/orders/edit/${order.id}`)}
+            onPress={() => openEditOrder(order.id)}
             className="flex-1 py-3 items-center flex-row justify-center"
           >
             <Ionicons name="create-outline" size={15} color="#C9CDD3" />
@@ -311,7 +313,7 @@ export default function OrdersHubScreen() {
       <TouchableOpacity
         key={order.id}
         activeOpacity={0.85}
-        onPress={() => router.push(`/orders/${order.id}`)}
+        onPress={() => openOrderDetail(order.id)}
         className="bg-[#161719] rounded-2xl mb-3 p-4 overflow-hidden"
         style={{ borderWidth: 1, borderColor: '#25272D' }}
       >
@@ -360,7 +362,7 @@ export default function OrdersHubScreen() {
       <TouchableOpacity
         key={`trade-${order.id}`}
         activeOpacity={0.85}
-        onPress={() => router.push(`/orders/${order.id}`)}
+        onPress={() => openOrderDetail(order.id)}
         className="bg-[#161719] rounded-2xl mb-3 p-4 overflow-hidden"
         style={{ borderWidth: 1, borderColor: '#25272D' }}
       >
@@ -406,7 +408,10 @@ export default function OrdersHubScreen() {
         <View className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: sideColor }} />
         <TouchableOpacity
           activeOpacity={0.85}
-          onPress={() => router.push(`/futures/position/${position.id}`)}
+          onPress={() => {
+            const href = futuresPositionHref(position);
+            if (href) router.push(href);
+          }}
           className="p-4"
         >
           <View className="flex-row items-center mb-3">

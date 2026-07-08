@@ -6,6 +6,7 @@ import Svg, { Path, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { usePortfolio } from '../../context/PortfolioContext';
 import { formatPortfolioRs } from '../../data/mockPortfolio';
 import { getRangeMetrics, PortfolioRange } from '../../utils/portfolioUi';
+import { COLORS } from '../../constants/theme';
 
 const RANGES: PortfolioRange[] = ['1D', '1W', '1M', '3M', 'YTD'];
 
@@ -27,7 +28,7 @@ export const PortfolioHeroCard: React.FC = () => {
   const isEmpty = summary.totalValue === 0 && holdings.length === 0;
   const sparkPath = isPositive ? SPARKLINE_UP : SPARKLINE_DOWN;
   const sparkFill = `${sparkPath} L110,65 L0,65 Z`;
-  const sparkColor = isPositive ? '#00C853' : '#FF3B30';
+  const sparkColor = isPositive ? COLORS.buy : COLORS.sell;
 
   return (
     <View className="mx-4 bg-[#111214] border border-[#2A2B2F] rounded-2xl p-4 mb-4 overflow-hidden relative">
@@ -72,11 +73,11 @@ export const PortfolioHeroCard: React.FC = () => {
           <Text className="text-[#9CA3AF] text-xs">Balance hidden</Text>
         ) : (
           <>
-            <Text className={`text-xs font-bold mb-1 ${isPositive ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}>
+            <Text className={`text-xs font-bold mb-1 ${isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
               {isPositive ? '+' : ''}Rs {formatPortfolioRs(rangeStats.periodPnl)} ({rangeStats.periodPnlPct}%){' '}
               <Text className="text-[#9CA3AF] font-normal">{rangeStats.label}</Text>
             </Text>
-            <Text className={`text-xs font-bold mb-1 ${summary.totalReturn >= 0 ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}>
+            <Text className={`text-xs font-bold mb-1 ${summary.totalReturn >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
               <Text className="text-[#9CA3AF] font-normal">Total return • </Text>
               {summary.totalReturn >= 0 ? '+' : ''}Rs {formatPortfolioRs(summary.totalReturn)} ({summary.totalReturnPct}%)
             </Text>

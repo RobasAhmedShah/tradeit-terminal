@@ -40,8 +40,8 @@ export const OrderBookCard: React.FC<OrderBookCardProps> = ({
   ) => {
     const isBid = side === 'bid';
     const selected = selectedPrice != null && Math.abs(selectedPrice - price) < 0.001;
-    const color = isBid ? 'text-[#00C853]' : 'text-[#FF3B30]';
-    const barColor = isBid ? 'bg-[#00C853]/10' : 'bg-[#FF3B30]/10';
+    const color = isBid ? 'text-[#0ECB81]' : 'text-[#F6465D]';
+    const barColor = isBid ? 'bg-[#0ECB81]/10' : 'bg-[#F6465D]/10';
     const width = depthWidth(seed, index);
 
     const content = (
@@ -105,12 +105,12 @@ export const OrderBookCard: React.FC<OrderBookCardProps> = ({
       </View>
 
       <View className="flex-row justify-between items-center mt-1 pt-1.5 border-t border-[#2A2B2F]">
-        <Text className="text-[#00C853] text-sm font-bold">{data.bids[0].price.toFixed(2)}</Text>
+        <Text className="text-[#0ECB81] text-sm font-bold">{data.bids[0].price.toFixed(2)}</Text>
         <View className="items-center">
-          <Text className="text-[#00C853] text-[9px]">{data.spread.value.toFixed(2)} ({data.spread.percent}%)</Text>
+          <Text className="text-[#0ECB81] text-[9px]">{data.spread.value.toFixed(2)} ({data.spread.percent}%)</Text>
           <Text className="text-[#9CA3AF] text-[8px]">Spread</Text>
         </View>
-        <Text className="text-[#FF3B30] text-sm font-bold">{data.asks[0].price.toFixed(2)}</Text>
+        <Text className="text-[#F6465D] text-sm font-bold">{data.asks[0].price.toFixed(2)}</Text>
       </View>
     </View>
   );

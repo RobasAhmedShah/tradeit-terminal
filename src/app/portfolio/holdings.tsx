@@ -7,6 +7,7 @@ import { usePortfolio } from '../../context/PortfolioContext';
 import { formatPortfolioRs } from '../../data/mockPortfolio';
 import { HoldingRow, HoldingsEmptyState } from '../../components/portfolio/HoldingRow';
 import { HoldingSortKey, sortHoldings } from '../../utils/portfolioUi';
+import { safeBack } from '../../utils/navigation';
 
 const SORT_OPTIONS: { key: HoldingSortKey; label: string }[] = [
   { key: 'value', label: 'Value' },
@@ -25,7 +26,7 @@ export default function PortfolioHoldingsScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#050505]">
       <View className="flex-row items-center px-4 py-3 border-b border-[#2A2B2F]">
-        <TouchableOpacity onPress={() => router.back()} className="w-10">
+        <TouchableOpacity onPress={() => safeBack(router, '/(tabs)/portfolio')} className="w-10">
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
         <Text className="flex-1 text-center text-white text-lg font-bold mr-10">Holdings</Text>

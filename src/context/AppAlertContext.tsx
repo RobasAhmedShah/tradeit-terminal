@@ -38,9 +38,9 @@ const AppAlertContext = createContext<AppAlertContextType>({
 
 const TONE_META: Record<AppAlertTone, { icon: keyof typeof Ionicons.glyphMap; color: string; bg: string }> = {
   info: { icon: 'information-circle', color: '#FF8A00', bg: '#FF8A0015' },
-  success: { icon: 'checkmark-circle', color: '#00C853', bg: '#00C85315' },
+  success: { icon: 'checkmark-circle', color: '#0ECB81', bg: '#0ECB8115' },
   warning: { icon: 'warning', color: '#FBBF24', bg: '#FBBF2415' },
-  error: { icon: 'alert-circle', color: '#FF3B30', bg: '#FF3B3015' },
+  error: { icon: 'alert-circle', color: '#F6465D', bg: '#F6465D15' },
 };
 
 export const AppAlertProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -106,7 +106,7 @@ export const AppAlertProvider: React.FC<{ children: React.ReactNode }> = ({ chil
               {buttons.map((btn, idx) => {
                 const color =
                   btn.style === 'destructive'
-                    ? '#FF3B30'
+                    ? '#F6465D'
                     : btn.style === 'cancel'
                       ? '#9CA3AF'
                       : '#FF8A00';

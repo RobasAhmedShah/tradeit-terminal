@@ -7,3 +7,11 @@ export function hapticLight() {
 export function hapticSelection() {
   Haptics.selectionAsync().catch(() => {});
 }
+
+export function hapticMedium() {
+  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+}
+
+export function hapticSuccess() {
+  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+}

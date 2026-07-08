@@ -39,14 +39,14 @@ export const FuturesChartPanel: React.FC<FuturesChartPanelProps> = ({
         <Text className="text-[#9CA3AF] text-[10px]">
           {contract.symbol} · {timeframe} · {contract.exchange}
         </Text>
-        <View className="w-1.5 h-1.5 rounded-full bg-[#00C853] ml-1" />
+        <View className="w-1.5 h-1.5 rounded-full bg-[#0ECB81] ml-1" />
       </View>
 
       <View className="flex-row items-center mb-2 px-1">
         <Text className="text-white text-xs font-semibold mr-1">
           {formatFuturesPrice(contract.markPrice)}
         </Text>
-        <Text className={`text-[10px] ${contract.isPositive ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}>
+        <Text className={`text-[10px] ${contract.isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
           {contract.isPositive ? '+' : ''}
           {formatFuturesPrice(contract.changeValue)} ({contract.changePercent.toFixed(2)}%)
         </Text>
@@ -89,7 +89,7 @@ export const FuturesChartPanel: React.FC<FuturesChartPanelProps> = ({
                 y1={candle.high}
                 x2={candle.x + 4}
                 y2={candle.low}
-                stroke={candle.isUp ? '#00C853' : '#FF3B30'}
+                stroke={candle.isUp ? '#0ECB81' : '#F6465D'}
                 strokeWidth="1"
               />
               <Rect
@@ -97,14 +97,14 @@ export const FuturesChartPanel: React.FC<FuturesChartPanelProps> = ({
                 y={Math.min(candle.open, candle.close)}
                 width="8"
                 height={Math.max(Math.abs(candle.open - candle.close), 1)}
-                fill={candle.isUp ? '#00C853' : '#FF3B30'}
+                fill={candle.isUp ? '#0ECB81' : '#F6465D'}
               />
               <Rect
                 x={candle.x + 1}
                 y={150 - candle.volume * 0.4}
                 width="6"
                 height={candle.volume * 0.4}
-                fill={candle.isUp ? '#00C853' : '#FF3B30'}
+                fill={candle.isUp ? '#0ECB81' : '#F6465D'}
                 opacity="0.45"
               />
             </React.Fragment>

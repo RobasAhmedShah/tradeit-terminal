@@ -36,7 +36,7 @@ export default function PortfolioScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#050505]" edges={['top']}>
-      <AppHeader />
+      <AppHeader title="Portfolio" />
 
       <ScrollView
         className="flex-1"
@@ -103,7 +103,7 @@ export default function PortfolioScreen() {
               <Text className="text-white font-bold text-[13px]">Transfer</Text>
               <Text className="text-[#9CA3AF] text-[10px]">Move funds Spot ↔ Futures</Text>
             </View>
-            <Ionicons name="chevron-forward" size={16} color="#666" />
+            <Ionicons name="chevron-forward" size={16} color="#8A8D93" />
           </TouchableOpacity>
         </View>
 

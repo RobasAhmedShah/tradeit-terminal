@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { usePortfolio } from '../../../context/PortfolioContext';
 import { formatPortfolioRs } from '../../../data/mockPortfolio';
+import { safeBack } from '../../../utils/navigation';
 
 function StatRow({ label, value, valueClass = 'text-white' }: { label: string; value: string; valueClass?: string }) {
   return (
@@ -36,7 +37,7 @@ export default function PortfolioHoldingDetailScreen() {
         >
           <Text className="text-black font-bold">Buy {symbol}</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity onPress={() => safeBack(router, '/portfolio/holdings')}>
           <Text className="text-[#9CA3AF]">Go back</Text>
         </TouchableOpacity>
       </SafeAreaView>
@@ -48,12 +49,12 @@ export default function PortfolioHoldingDetailScreen() {
   const unrealizedPnl = holding.currentValue - costBasis;
   const unrealizedPct = costBasis > 0 ? (unrealizedPnl / costBasis) * 100 : 0;
   const isUp = unrealizedPnl >= 0;
-  const pnlColor = isUp ? 'text-[#00C853]' : 'text-[#FF3B30]';
+  const pnlColor = isUp ? 'text-[#0ECB81]' : 'text-[#F6465D]';
 
   return (
     <SafeAreaView className="flex-1 bg-[#050505]">
       <View className="flex-row items-center px-4 py-3 border-b border-[#2A2B2F]">
-        <TouchableOpacity onPress={() => router.back()} className="w-10">
+        <TouchableOpacity onPress={() => safeBack(router, '/portfolio/holdings')} className="w-10">
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
         <Text className="flex-1 text-center text-white text-lg font-bold mr-10">{holding.symbol}</Text>
@@ -61,8 +62,8 @@ export default function PortfolioHoldingDetailScreen() {
 
       <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
         <View className="items-center mb-6">
-          <View className="w-14 h-14 rounded-full bg-[#00C853]/10 items-center justify-center mb-3">
-            <Text className="text-[#00C853] font-bold text-xl">{holding.symbol.charAt(0)}</Text>
+          <View className="w-14 h-14 rounded-full bg-[#0ECB81]/10 items-center justify-center mb-3">
+            <Text className="text-[#0ECB81] font-bold text-xl">{holding.symbol.charAt(0)}</Text>
           </View>
           <Text className="text-white text-2xl font-bold">{holding.symbol}</Text>
           <Text className="text-[#9CA3AF] text-sm mt-1">{holding.name}</Text>
@@ -86,7 +87,7 @@ export default function PortfolioHoldingDetailScreen() {
           <StatRow
             label="Day change"
             value={`${holding.dayChange >= 0 ? '+' : ''}Rs ${formatPortfolioRs(holding.dayChange)} (${holding.dayChangePct.toFixed(2)}%)`}
-            valueClass={holding.dayChange >= 0 ? 'text-[#00C853]' : 'text-[#FF3B30]'}
+            valueClass={holding.dayChange >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'}
           />
         </View>
 

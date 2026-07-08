@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { COLORS, UI } from '../../constants/theme';
 
 interface SectionHeaderProps {
   title: string;
@@ -12,15 +13,15 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({ title, subtitle, o
   return (
     <View className="flex-row items-end justify-between px-4 mt-6 mb-3">
       <View className="flex-row items-center">
-        <Text className="text-white text-lg font-bold mr-2">{title}</Text>
-        {subtitle && (
-          <Text className="text-[#9CA3AF] text-sm">• {subtitle}</Text>
-        )}
+        <Text className={UI.sectionTitle + ' mr-2'}>{title}</Text>
+        {subtitle && <Text className="text-[#9CA3AF] text-sm">• {subtitle}</Text>}
       </View>
-      <TouchableOpacity onPress={onViewAll} className="flex-row items-center">
-        <Text className="text-[#FF8A00] text-sm mr-1">View all</Text>
-        <Ionicons name="chevron-forward" size={14} color="#FF8A00" />
-      </TouchableOpacity>
+      {onViewAll && (
+        <TouchableOpacity onPress={onViewAll} className="flex-row items-center">
+          <Text className={UI.sectionLink + ' mr-1'}>View all</Text>
+          <Ionicons name="chevron-forward" size={14} color={COLORS.primary} />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

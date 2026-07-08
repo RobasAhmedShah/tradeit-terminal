@@ -13,7 +13,7 @@ interface InfoTabContentProps {
 
 function SectionTitle({ children }: { children: string }) {
   return (
-    <Text className="text-[#555] text-[10px] font-semibold uppercase tracking-wider mb-2.5">
+    <Text className="text-[#5C6068] text-[10px] font-semibold uppercase tracking-wider mb-2.5">
       {children}
     </Text>
   );
@@ -73,7 +73,7 @@ function ActionRow({
       activeOpacity={0.65}
       className={`flex-row items-center py-3.5 ${last ? '' : 'border-b border-[#1A1A1A]'}`}
     >
-      <Ionicons name={icon} size={16} color="#666" />
+      <Ionicons name={icon} size={16} color="#8A8D93" />
       <Text className="text-white text-[13px] ml-3 flex-1">{label}</Text>
       <Ionicons name="chevron-forward" size={14} color="#444" />
     </TouchableOpacity>
@@ -99,20 +99,20 @@ export const InfoTabContent: React.FC<InfoTabContentProps> = ({ stock }) => {
         <View className="flex-row items-center mb-1">
           <Text className="text-white text-[15px] font-bold">{stock.symbol}</Text>
           <Text className="text-[#444] text-[13px] mx-2">·</Text>
-          <Text className="text-[#666] text-[12px]">PSX</Text>
+          <Text className="text-[#8A8D93] text-[12px]">PSX</Text>
         </View>
         <Text className="text-[#9CA3AF] text-[13px] mb-2.5" numberOfLines={2}>
           {stock.name}
         </Text>
         <View className="flex-row items-center flex-wrap gap-2 mb-3">
           {stock.isShariahCompliant && (
-            <View className="bg-[#00C853]/10 px-2 py-0.5 rounded">
-              <Text className="text-[#00C853] text-[10px] font-medium">Shariah Compliant</Text>
+            <View className="bg-[#0ECB81]/10 px-2 py-0.5 rounded">
+              <Text className="text-[#0ECB81] text-[10px] font-medium">Shariah Compliant</Text>
             </View>
           )}
           <Text className="text-[#555] text-[11px]">{sectorLine}</Text>
         </View>
-        <Text className="text-[#666] text-[12px] leading-[18px]" numberOfLines={3}>
+        <Text className="text-[#8A8D93] text-[12px] leading-[18px]" numberOfLines={3}>
           {about}
         </Text>
       </View>
@@ -127,9 +127,9 @@ export const InfoTabContent: React.FC<InfoTabContentProps> = ({ stock }) => {
             <StatCell label="Prev Close" value={prevClose} />
           </View>
           <View className="flex-row border-b border-[#2A2B2F]">
-            <StatCell label="Day High" value={stock.high?.toFixed(2) ?? '—'} valueColor="text-[#00C853]" />
+            <StatCell label="Day High" value={stock.high?.toFixed(2) ?? '—'} valueColor="text-[#0ECB81]" />
             <View className="w-px bg-[#2A2B2F]" />
-            <StatCell label="Day Low" value={stock.low?.toFixed(2) ?? '—'} valueColor="text-[#FF3B30]" />
+            <StatCell label="Day Low" value={stock.low?.toFixed(2) ?? '—'} valueColor="text-[#F6465D]" />
           </View>
           <View className="flex-row">
             <StatCell label="Volume" value={formatVolume(stock.volume)} />

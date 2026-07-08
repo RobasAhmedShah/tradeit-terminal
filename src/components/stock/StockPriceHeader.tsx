@@ -9,7 +9,7 @@ interface StockPriceHeaderProps {
 
 export const StockPriceHeader: React.FC<StockPriceHeaderProps> = ({ stock }) => {
   const isPositive = stock.isPositive;
-  const changeColor = isPositive ? 'text-[#00C853]' : 'text-[#FF3B30]';
+  const changeColor = isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]';
   const sign = isPositive ? '+' : '';
 
   return (
@@ -27,8 +27,8 @@ export const StockPriceHeader: React.FC<StockPriceHeaderProps> = ({ stock }) => 
       </View>
 
       {stock.isShariahCompliant && (
-        <View className="bg-[#002211] self-start px-3 py-1.5 rounded-full mt-4 border border-[#00C853]/30">
-          <Text className="text-[#00C853] text-xs font-semibold">Shariah Compliant</Text>
+        <View className="bg-[#002211] self-start px-3 py-1.5 rounded-full mt-4 border border-[#0ECB81]/30">
+          <Text className="text-[#0ECB81] text-xs font-semibold">Shariah Compliant</Text>
         </View>
       )}
     </View>

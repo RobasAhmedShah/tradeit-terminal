@@ -15,10 +15,10 @@ export const FuturesOpenOrderRow: React.FC<FuturesOpenOrderRowProps> = ({ order,
       <View className="flex-row items-center">
         <View
           className={`px-1.5 py-0.5 rounded border ${
-            isLong ? 'bg-[#00C853]/10 border-[#00C853]/30' : 'bg-[#FF3B30]/10 border-[#FF3B30]/30'
+            isLong ? 'bg-[#0ECB81]/10 border-[#0ECB81]/30' : 'bg-[#F6465D]/10 border-[#F6465D]/30'
           }`}
         >
-          <Text className={`text-[11px] font-bold ${isLong ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}>
+          <Text className={`text-[11px] font-bold ${isLong ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
             {order.side}
           </Text>
         </View>
@@ -32,7 +32,7 @@ export const FuturesOpenOrderRow: React.FC<FuturesOpenOrderRowProps> = ({ order,
           onPress={() => onCancel(order)}
           className="bg-[#18191C] border border-[#2A2B2F] px-2.5 py-1 rounded"
         >
-          <Text className="text-[#FF3B30] text-[11px] font-semibold">Cancel</Text>
+          <Text className="text-[#F6465D] text-[11px] font-semibold">Cancel</Text>
         </TouchableOpacity>
       </View>
 

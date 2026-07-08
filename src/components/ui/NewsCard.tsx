@@ -7,8 +7,8 @@ import { MOCK_MARKET_STOCKS } from '../../data/mockStocks';
 
 /* ─── helpers ─────────────────────────────────────────────── */
 const SENTIMENT: Record<Sentiment, { color: string; bg: string; icon: any; label: string }> = {
-  Bullish: { color: '#00C853', bg: '#001f0e', icon: 'trending-up',   label: 'Bullish' },
-  Bearish: { color: '#FF3B30', bg: '#200006', icon: 'trending-down', label: 'Bearish' },
+  Bullish: { color: '#0ECB81', bg: '#001f0e', icon: 'trending-up',   label: 'Bullish' },
+  Bearish: { color: '#F6465D', bg: '#200006', icon: 'trending-down', label: 'Bearish' },
   Neutral: { color: '#9CA3AF', bg: '#1a1a1a', icon: 'remove',        label: 'Neutral' },
 };
 
@@ -23,15 +23,39 @@ interface Props {
   post:        NewsPost;
   featured?:   boolean;
   saved?:      boolean;
+  liked?:      boolean;
+  likeCount?:  number;
+  isOwnPost?:  boolean;
   onDismiss?:  () => void;
+  onMore?:     () => void;
   onSave?:     () => void;
+  onLike?:     () => void;
+  onComment?:  () => void;
+  onRepost?:   () => void;
   onOpen?:     () => void;
 }
 
-export const NewsCard: React.FC<Props> = ({ post, featured, saved, onDismiss, onSave, onOpen }) => {
+export const NewsCard: React.FC<Props> = ({
+  post,
+  featured,
+  saved,
+  liked: likedProp,
+  likeCount,
+  isOwnPost,
+  onDismiss,
+  onMore,
+  onSave,
+  onLike,
+  onComment,
+  onRepost,
+  onOpen,
+}) => {
   const router  = useRouter();
-  const [liked,    setLiked]    = useState(false);
+  const [likedLocal, setLikedLocal]    = useState(false);
   const [expanded, setExpanded] = useState(false);
+
+  const liked = likedProp ?? likedLocal;
+  const displayLikes = likeCount ?? post.engagement.likes + (liked && !likedProp ? 1 : 0);
 
   const cfg        = post.sentiment ? SENTIMENT[post.sentiment] : null;
   const isLong     = post.content.length > TRUNCATE;
@@ -72,6 +96,17 @@ export const NewsCard: React.FC<Props> = ({ post, featured, saved, onDismiss, on
               {post.author.verified && (
                 <Ionicons name="checkmark-circle" size={13} color="#FF8A00" />
               )}
+              {isOwnPost && (
+                <View style={{
+                  marginLeft: 6,
+                  backgroundColor: 'rgba(255,138,0,0.12)',
+                  paddingHorizontal: 5,
+                  paddingVertical: 1,
+                  borderRadius: 4,
+                }}>
+                  <Text style={{ color: '#FF8A00', fontSize: 9, fontWeight: '700' }}>YOU</Text>
+                </View>
+              )}
             </View>
             <Text style={{ color: '#555', fontSize: 11, marginTop: 1 }}>{post.time}</Text>
           </View>
@@ -91,8 +126,19 @@ export const NewsCard: React.FC<Props> = ({ post, featured, saved, onDismiss, on
             </View>
           )}
 
-          {/* dismiss X */}
-          {onDismiss && (
+          {/* more menu (own posts) or dismiss */}
+          {onMore ? (
+            <TouchableOpacity
+              onPress={(e) => {
+                e.stopPropagation?.();
+                onMore();
+              }}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={{ marginLeft: 10, padding: 2 }}
+            >
+              <Ionicons name="ellipsis-horizontal" size={18} color="#8A8D93" />
+            </TouchableOpacity>
+          ) : onDismiss ? (
             <TouchableOpacity
               onPress={(e) => {
                 e.stopPropagation?.();
@@ -103,8 +149,17 @@ export const NewsCard: React.FC<Props> = ({ post, featured, saved, onDismiss, on
             >
               <Ionicons name="close" size={18} color="#444" />
             </TouchableOpacity>
-          )}
+          ) : null}
         </View>
+
+        {post.repostOf && (
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+            <Ionicons name="repeat" size={12} color="#8A8D93" />
+            <Text style={{ color: '#8A8D93', fontSize: 11, marginLeft: 4 }}>
+              Reposted from {post.repostOf.authorName}
+            </Text>
+          </View>
+        )}
 
         {/* ── ticker tags ──────────────────────────────────── */}
         {post.tickers.length > 0 && (
@@ -157,10 +212,10 @@ export const NewsCard: React.FC<Props> = ({ post, featured, saved, onDismiss, on
                   <Ionicons
                     name={stock.isPositive ? 'caret-up' : 'caret-down'}
                     size={10}
-                    color={stock.isPositive ? '#00C853' : '#FF3B30'}
+                    color={stock.isPositive ? '#0ECB81' : '#F6465D'}
                   />
                   <Text style={{
-                    color: stock.isPositive ? '#00C853' : '#FF3B30',
+                    color: stock.isPositive ? '#0ECB81' : '#F6465D',
                     fontSize: 11, fontWeight: '600', marginLeft: 2,
                   }}>
                     {Math.abs(stock.changePercent).toFixed(2)}%
@@ -179,25 +234,37 @@ export const NewsCard: React.FC<Props> = ({ post, featured, saved, onDismiss, on
         borderTopWidth: 1, borderTopColor: '#111',
       }}>
         {/* comments */}
-        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', marginRight: 22 }}>
+        <TouchableOpacity
+          onPress={(e) => {
+            e.stopPropagation?.();
+            onComment?.();
+          }}
+          style={{ flexDirection: 'row', alignItems: 'center', marginRight: 22 }}
+        >
           <Ionicons name="chatbubble-outline" size={15} color="#555" />
           <Text style={{ color: '#555', fontSize: 12, marginLeft: 5 }}>{fmt(post.engagement.comments)}</Text>
         </TouchableOpacity>
 
         {/* reposts */}
-        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', marginRight: 22 }}>
+        <TouchableOpacity
+          onPress={(e) => {
+            e.stopPropagation?.();
+            onRepost?.();
+          }}
+          style={{ flexDirection: 'row', alignItems: 'center', marginRight: 22 }}
+        >
           <Ionicons name="repeat-outline" size={15} color="#555" />
           <Text style={{ color: '#555', fontSize: 12, marginLeft: 5 }}>{fmt(post.engagement.reposts)}</Text>
         </TouchableOpacity>
 
         {/* likes — toggleable */}
         <TouchableOpacity
-          onPress={() => setLiked(l => !l)}
+          onPress={() => (onLike ? onLike() : setLikedLocal((l) => !l))}
           style={{ flexDirection: 'row', alignItems: 'center', marginRight: 22 }}
         >
-          <Ionicons name={liked ? 'heart' : 'heart-outline'} size={15} color={liked ? '#FF3B30' : '#555'} />
-          <Text style={{ color: liked ? '#FF3B30' : '#555', fontSize: 12, marginLeft: 5 }}>
-            {fmt(post.engagement.likes + (liked ? 1 : 0))}
+          <Ionicons name={liked ? 'heart' : 'heart-outline'} size={15} color={liked ? '#F6465D' : '#555'} />
+          <Text style={{ color: liked ? '#F6465D' : '#555', fontSize: 12, marginLeft: 5 }}>
+            {fmt(displayLikes)}
           </Text>
         </TouchableOpacity>
 

@@ -9,7 +9,7 @@ interface StockAnalysisTabProps {
 
 export const StockAnalysisTab: React.FC<StockAnalysisTabProps> = ({ stock }) => {
   const aiBadge = stock.aiInsight?.badge || 'Neutral';
-  const aiBadgeColor = aiBadge === 'Bullish' ? 'text-[#00C853]' : aiBadge === 'Bearish' ? 'text-[#FF3B30]' : 'text-[#FF8A00]';
+  const aiBadgeColor = aiBadge === 'Bullish' ? 'text-[#0ECB81]' : aiBadge === 'Bearish' ? 'text-[#F6465D]' : 'text-[#FF8A00]';
   const aiBgColor = aiBadge === 'Bullish' ? 'bg-[#002211]' : aiBadge === 'Bearish' ? 'bg-[#220B0A]' : 'bg-[#2A1A05]';
 
   return (
@@ -35,7 +35,7 @@ export const StockAnalysisTab: React.FC<StockAnalysisTabProps> = ({ stock }) => 
       <View className="bg-[#111214] border border-[#2A2B2F] rounded-2xl p-4 mb-4">
         <Text className="text-white text-sm font-bold mb-4">Analyst Ratings</Text>
         <View className="flex-row items-center mb-4">
-          <View className="w-16 h-16 rounded-full border-4 border-[#00C853] items-center justify-center mr-4">
+          <View className="w-16 h-16 rounded-full border-4 border-[#0ECB81] items-center justify-center mr-4">
             <Text className="text-white text-lg font-bold">78%</Text>
           </View>
           <View className="flex-1">
@@ -49,7 +49,7 @@ export const StockAnalysisTab: React.FC<StockAnalysisTabProps> = ({ stock }) => 
           <View className="flex-row items-center justify-between">
             <Text className="text-[#9CA3AF] text-xs w-12">Buy</Text>
             <View className="flex-1 h-2 bg-[#2A2B2F] rounded-full mx-2 overflow-hidden">
-              <View className="h-full bg-[#00C853] w-[78%]" />
+              <View className="h-full bg-[#0ECB81] w-[78%]" />
             </View>
             <Text className="text-white text-xs w-8 text-right">11</Text>
           </View>
@@ -63,7 +63,7 @@ export const StockAnalysisTab: React.FC<StockAnalysisTabProps> = ({ stock }) => 
           <View className="flex-row items-center justify-between">
             <Text className="text-[#9CA3AF] text-xs w-12">Sell</Text>
             <View className="flex-1 h-2 bg-[#2A2B2F] rounded-full mx-2 overflow-hidden">
-              <View className="h-full bg-[#FF3B30] w-[8%]" />
+              <View className="h-full bg-[#F6465D] w-[8%]" />
             </View>
             <Text className="text-white text-xs w-8 text-right">1</Text>
           </View>
@@ -79,7 +79,7 @@ export const StockAnalysisTab: React.FC<StockAnalysisTabProps> = ({ stock }) => 
         </View>
         <View className="flex-row justify-between mb-2">
           <Text className="text-[#9CA3AF] text-xs">MACD (12, 26)</Text>
-          <Text className="text-[#00C853] text-xs font-semibold">Bullish</Text>
+          <Text className="text-[#0ECB81] text-xs font-semibold">Bullish</Text>
         </View>
         <View className="flex-row justify-between mb-2">
           <Text className="text-[#9CA3AF] text-xs">MA (50)</Text>

@@ -56,8 +56,8 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({
   }, [bookPriceFill, onBookPriceFillConsumed]);
 
   const isBuy = side === 'buy';
-  const mainColor = isBuy ? 'bg-[#00C853]' : 'bg-[#FF3B30]';
-  const mainColorText = isBuy ? 'text-[#00C853]' : 'text-[#FF3B30]';
+  const mainColor = isBuy ? 'bg-[#0ECB81]' : 'bg-[#F6465D]';
+  const mainColorText = isBuy ? 'text-[#0ECB81]' : 'text-[#F6465D]';
 
   const p = parseFloat(price || '0');
   const q = parseFloat(qty || '0');
@@ -177,13 +177,13 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({
       <View className="flex-row bg-[#18191C] rounded-lg p-1 mb-3 border border-[#2A2B2F]">
         <TouchableOpacity
           onPress={() => setSide('buy')}
-          className={`flex-1 items-center py-1.5 rounded-md ${isBuy ? 'bg-[#00C853]' : ''}`}
+          className={`flex-1 items-center py-1.5 rounded-md ${isBuy ? 'bg-[#0ECB81]' : ''}`}
         >
           <Text className={`font-bold text-xs ${isBuy ? 'text-black' : 'text-white'}`}>Buy</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => setSide('sell')}
-          className={`flex-1 items-center py-1.5 rounded-md ${!isBuy ? 'bg-[#FF3B30]' : ''}`}
+          className={`flex-1 items-center py-1.5 rounded-md ${!isBuy ? 'bg-[#F6465D]' : ''}`}
         >
           <Text className={`font-bold text-xs ${!isBuy ? 'text-white' : 'text-[#9CA3AF]'}`}>Sell</Text>
         </TouchableOpacity>
@@ -331,7 +331,7 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({
 
       <TouchableOpacity
         onPress={handleCtaPress}
-        className={`${isBuy ? 'bg-[#FF8A00]' : 'bg-[#FF3B30]'} rounded-xl py-3 items-center`}
+        className={`${isBuy ? 'bg-[#FF8A00]' : 'bg-[#F6465D]'} rounded-xl py-3 items-center`}
       >
         <Text className={`font-bold text-sm ${isBuy ? 'text-black' : 'text-white'}`}>
           {isBuy ? 'Buy' : 'Sell'} {symbol}

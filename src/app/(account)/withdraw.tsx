@@ -14,6 +14,7 @@ import Animated, {
 import { usePortfolio } from '../../context/PortfolioContext';
 import { useAppAlert } from '../../context/AppAlertContext';
 import { formatPortfolioRs } from '../../data/mockPortfolio';
+import { safeBack } from '../../utils/navigation';
 
 // ─── Mock Data ─────────────────────────────────────────────────────────────────
 const WITHDRAW_MOCK = {
@@ -194,7 +195,10 @@ export default function WithdrawScreen() {
   const selectedBankData = BANKS.find((b) => b.id === selectedBank) || BANKS[0];
   const activeOtpIndex   = otpValues.findIndex((v) => v === '');
 
-  const goBack = () => { if (step === 1) router.back(); else setStep((step - 1) as Step); };
+  const goBack = () => {
+    if (step === 1) safeBack(router, '/(tabs)/portfolio');
+    else setStep((step - 1) as Step);
+  };
 
   // ── Shared: NavBar ────────────────────────────────────────────────────────
   const renderNavBar = () => (
@@ -206,7 +210,7 @@ export default function WithdrawScreen() {
         <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>Withdraw</Text>
       </View>
       {step === 6 ? (
-        <TouchableOpacity onPress={() => router.back()} style={{ width: 36, alignItems: 'flex-end' }}>
+        <TouchableOpacity onPress={() => safeBack(router, '/(tabs)/portfolio')} style={{ width: 36, alignItems: 'flex-end' }}>
           <Ionicons name="close" size={20} color="#555" />
         </TouchableOpacity>
       ) : (
@@ -445,7 +449,7 @@ export default function WithdrawScreen() {
                 borderWidth: 1, borderColor: isSelected ? '#f97316' : '#1e1e1e',
               }}
             >
-              <Text style={{ color: isSelected ? '#fff' : '#888', fontSize: 12, fontWeight: '500' }}>
+              <Text style={{ color: isSelected ? '#fff' : '#8A8D93', fontSize: 12, fontWeight: '500' }}>
                 +{qa.toLocaleString()}
               </Text>
             </TouchableOpacity>
@@ -455,7 +459,7 @@ export default function WithdrawScreen() {
           onPress={() => { setAmount('12456789'); setSelectedQuickAmount(null); }}
           style={{ flexBasis: '31%', paddingVertical: 10, borderRadius: 8, alignItems: 'center', backgroundColor: '#161616', borderWidth: 1, borderColor: '#1e1e1e' }}
         >
-          <Text style={{ color: '#888', fontSize: 12, fontWeight: '500' }}>Max</Text>
+          <Text style={{ color: '#8A8D93', fontSize: 12, fontWeight: '500' }}>Max</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -633,16 +637,16 @@ export default function WithdrawScreen() {
         {/* Action Buttons */}
         <View style={{ marginTop: 20 }}>
           <TouchableOpacity
-            onPress={() => router.push({ pathname: '/orders', params: { tab: 'spot', view: 'history' } })}
+            onPress={() => router.replace({ pathname: '/orders', params: { tab: 'spot', view: 'history' } })}
             style={{ backgroundColor: '#f97316', borderRadius: 100, paddingVertical: 15, marginBottom: 10 }}
           >
             <Text style={{ color: '#fff', fontSize: 14, fontWeight: '700', textAlign: 'center' }}>View Withdrawal History</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => router.push('/(tabs)/portfolio')}
+            onPress={() => router.replace('/(tabs)/portfolio')}
             style={{ paddingVertical: 14, marginBottom: 30 }}
           >
-            <Text style={{ color: '#888', fontSize: 14, fontWeight: '500', textAlign: 'center' }}>Back to Portfolio</Text>
+            <Text style={{ color: '#8A8D93', fontSize: 14, fontWeight: '500', textAlign: 'center' }}>Back to Portfolio</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

@@ -30,8 +30,8 @@ function BookSide({
   selectedPrice?: number | null;
   onPricePress?: (price: number, side: 'bid' | 'ask') => void;
 }) {
-  const priceColor = side === 'bid' ? 'text-[#00C853]' : 'text-[#FF3B30]';
-  const barColor = side === 'bid' ? '#00C853' : '#FF3B30';
+  const priceColor = side === 'bid' ? 'text-[#0ECB81]' : 'text-[#F6465D]';
+  const barColor = side === 'bid' ? '#0ECB81' : '#F6465D';
 
   return (
     <View className="flex-1">
@@ -119,12 +119,12 @@ export const OrderBookTabContent: React.FC<OrderBookTabContentProps> = ({
         </Text>
 
         <View className="flex-row justify-between mb-1.5">
-          <Text className="text-[#00C853] text-[11px] font-medium">Buy Pressure {buyPressure}%</Text>
-          <Text className="text-[#FF3B30] text-[11px] font-medium">Sell Pressure {sellPressure}%</Text>
+          <Text className="text-[#0ECB81] text-[11px] font-medium">Buy Pressure {buyPressure}%</Text>
+          <Text className="text-[#F6465D] text-[11px] font-medium">Sell Pressure {sellPressure}%</Text>
         </View>
         <View className="h-2 w-full bg-[#2A2B2F] rounded-full overflow-hidden flex-row">
-          <View style={{ width: `${buyPressure}%` }} className="h-full bg-[#00C853]" />
-          <View style={{ width: `${sellPressure}%` }} className="h-full bg-[#FF3B30]" />
+          <View style={{ width: `${buyPressure}%` }} className="h-full bg-[#0ECB81]" />
+          <View style={{ width: `${sellPressure}%` }} className="h-full bg-[#F6465D]" />
         </View>
       </View>
 
@@ -156,11 +156,11 @@ export const OrderBookTabContent: React.FC<OrderBookTabContentProps> = ({
       <View className="bg-[#111214] border border-[#2A2B2F] rounded-xl px-3 py-3 flex-row">
         <View className="flex-1 items-center">
           <Text className="text-[#9CA3AF] text-[10px] mb-1">Best Bid</Text>
-          <Text className="text-[#00C853] text-[13px] font-bold">{bestBid.toFixed(2)}</Text>
+          <Text className="text-[#0ECB81] text-[13px] font-bold">{bestBid.toFixed(2)}</Text>
         </View>
         <View className="flex-1 items-center">
           <Text className="text-[#9CA3AF] text-[10px] mb-1">Best Ask</Text>
-          <Text className="text-[#FF3B30] text-[13px] font-bold">{bestAsk.toFixed(2)}</Text>
+          <Text className="text-[#F6465D] text-[13px] font-bold">{bestAsk.toFixed(2)}</Text>
         </View>
         <View className="flex-1 items-center">
           <Text className="text-[#9CA3AF] text-[10px] mb-1">Mid Price</Text>

@@ -51,10 +51,10 @@ function HistoryRow({ item }: { item: FuturesHistoryItem }) {
         <View className="flex-row items-center">
           <View
             className={`px-1.5 py-0.5 rounded border mr-2 ${
-              isLong ? 'bg-[#00C853]/10 border-[#00C853]/30' : 'bg-[#FF3B30]/10 border-[#FF3B30]/30'
+              isLong ? 'bg-[#0ECB81]/10 border-[#0ECB81]/30' : 'bg-[#F6465D]/10 border-[#F6465D]/30'
             }`}
           >
-            <Text className={`text-[11px] font-bold ${isLong ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}>
+            <Text className={`text-[11px] font-bold ${isLong ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
               {item.side}
             </Text>
           </View>
@@ -70,7 +70,7 @@ function HistoryRow({ item }: { item: FuturesHistoryItem }) {
       </View>
       {pnl !== undefined && (
         <Text
-          className={`text-xs font-semibold mt-1.5 ${pnl >= 0 ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}
+          className={`text-xs font-semibold mt-1.5 ${pnl >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}
         >
           Realized PnL: {pnl >= 0 ? '+' : ''}
           {formatFuturesPrice(pnl)}

@@ -5,9 +5,11 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Swipeable } from 'react-native-gesture-handler';
 import { useNotifications } from '../../context/NotificationsContext';
+import { useOrderDetailSheet } from '../../context/OrderDetailSheetContext';
 import { AppNotification, AppNotificationType } from '../../utils/notificationPrefs';
 import { hapticLight } from '../../utils/haptics';
 import { CompactEmptyState } from '../../components/ui/CompactEmptyState';
+import { safeBack } from '../../utils/navigation';
 
 type NotifCategory = 'All' | 'Orders' | 'Alerts' | 'News';
 
@@ -38,8 +40,8 @@ function NotificationSwipeRow({
       activeOpacity={0.85}
       className="bg-[#200006] w-[88px] items-center justify-center h-full"
     >
-      <Ionicons name="trash-outline" size={22} color="#FF3B30" />
-      <Text className="text-[#FF3B30] text-[10px] mt-1 font-semibold">Delete</Text>
+      <Ionicons name="trash-outline" size={22} color="#F6465D" />
+      <Text className="text-[#F6465D] text-[10px] mt-1 font-semibold">Delete</Text>
     </TouchableOpacity>
   );
 
@@ -74,9 +76,9 @@ function NotificationSwipeRow({
               {notif.title}
               {notif.symbol ? <Text className="text-[#f97316]"> · {notif.symbol}</Text> : null}
             </Text>
-            <Text className="text-[#555] text-[11px]">{notif.time}</Text>
+            <Text className="text-[#5C6068] text-[11px]">{notif.time}</Text>
           </View>
-          <Text className="text-[#888] text-[12px] leading-5">{notif.body}</Text>
+          <Text className="text-[#8A8D93] text-[12px] leading-5">{notif.body}</Text>
         </View>
 
         {!notif.isRead && (
@@ -90,6 +92,7 @@ function NotificationSwipeRow({
 export default function NotificationsScreen() {
   const router = useRouter();
   const { notifications, unreadCount, markRead, markAllRead, removeNotification } = useNotifications();
+  const { openOrderDetail } = useOrderDetailSheet();
   const [activeTab, setActiveTab] = useState<NotifCategory>('All');
 
   const filtered = notifications.filter((n) => {
@@ -103,7 +106,7 @@ export default function NotificationsScreen() {
     markRead(notif.id);
 
     if (notif.type === 'order') {
-      if (notif.orderId) router.push(`/orders/${notif.orderId}`);
+      if (notif.orderId) openOrderDetail(notif.orderId);
       else router.push('/orders');
       return;
     }
@@ -133,7 +136,7 @@ export default function NotificationsScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#050505]" edges={['top']}>
       <View className="flex-row items-center justify-between px-4 py-3 border-b border-[#1a1a1a]">
-        <TouchableOpacity onPress={() => router.back()} className="w-10">
+        <TouchableOpacity onPress={() => safeBack(router, '/(tabs)/home')} className="w-10">
           <Ionicons name="arrow-back" size={24} color="#e0e0e0" />
         </TouchableOpacity>
         <View className="flex-1 items-center">

@@ -28,6 +28,7 @@ import {
   WatchlistSort,
 } from '../utils/marketsHub';
 import { hapticSelection, hapticLight } from '../utils/haptics';
+import { safeBack } from '../utils/navigation';
 import { MarketMoverRow } from '../components/markets/MarketMoverRow';
 import { WatchlistSwipeRow } from '../components/markets/WatchlistSwipeRow';
 import {
@@ -39,6 +40,8 @@ import { MarketsSkeleton } from '../components/markets/MarketsSkeleton';
 import { MarketsEmptyState } from '../components/markets/MarketsEmptyState';
 import { MarketsErrorState } from '../components/markets/MarketsErrorState';
 import { SortFilterSheet } from '../components/markets/SortFilterSheet';
+import { ComposePostFab } from '../components/community/ComposePostFab';
+import { usePosts } from '../context/PostsContext';
 
 const MAIN_TABS: { id: MarketsTab; label: string }[] = [
   { id: 'watchlist', label: 'Watchlist' },
@@ -57,6 +60,7 @@ export default function MarketsScreen() {
   const { openAlert } = useAlertSheet();
   const params = useLocalSearchParams<{ tab?: string; type?: string; category?: string }>();
   const { watchlist, toggleWatchlist } = useWatchlist();
+  const { refreshPosts } = usePosts();
 
   const initialTab = parseMarketsTab(params.tab);
   const initialSegment = parseMoverSegment(params.type);
@@ -133,7 +137,11 @@ export default function MarketsScreen() {
   const handleRefresh = async () => {
     setRefreshing(true);
     setError(false);
-    await new Promise((r) => setTimeout(r, 600));
+    if (activeTab === 'news') {
+      await refreshPosts();
+    } else {
+      await new Promise((r) => setTimeout(r, 600));
+    }
     setRefreshing(false);
   };
 
@@ -197,7 +205,7 @@ export default function MarketsScreen() {
         }
         ListHeaderComponent={
           <View className="flex-row items-center justify-between px-4 py-2">
-            <Text className="text-[#555] text-xs">{watchlistData.length} symbols</Text>
+            <Text className="text-[#5C6068] text-xs">{watchlistData.length} symbols</Text>
             <TouchableOpacity onPress={() => setShowSort(true)} className="flex-row items-center">
               <Ionicons name="swap-vertical-outline" size={13} color="#FF8A00" />
               <Text className="text-[#FF8A00] text-xs ml-1">Sort</Text>
@@ -269,6 +277,7 @@ export default function MarketsScreen() {
 
   const parseNewsCategory = (category?: string): NewsFilter => {
     if (!category || category === 'Discover') return 'Discover';
+    if (category === 'Following') return 'Following';
     const valid = ['Markets', 'PSX', 'Trading', 'Economy', 'Crypto'] as const;
     return valid.includes(category as (typeof valid)[number])
       ? (category as NewsFilter)
@@ -286,8 +295,8 @@ export default function MarketsScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#050505]" edges={['top']}>
       {/* Header */}
-      <View className="flex-row items-center px-4 py-3 border-b border-[#141414]">
-        <TouchableOpacity onPress={() => router.back()} className="w-10">
+      <View className="flex-row items-center px-4 py-3 border-b border-[#2A2B2F]">
+        <TouchableOpacity onPress={() => safeBack(router, '/(tabs)/home')} className="w-10">
           <Ionicons name="arrow-back" size={22} color="#fff" />
         </TouchableOpacity>
         <Text className="flex-1 text-center text-white text-[17px] font-bold">Markets</Text>
@@ -314,7 +323,7 @@ export default function MarketsScreen() {
       </View>
 
       {/* Main tabs */}
-      <View className="flex-row border-b border-[#141414] px-2">
+      <View className="flex-row border-b border-[#2A2B2F] px-2">
         {MAIN_TABS.map((tab) => {
           const active = activeTab === tab.id;
           return (
@@ -380,6 +389,7 @@ export default function MarketsScreen() {
               onCategoryChange={setNewsCategory}
             />
           </ScrollView>
+          <ComposePostFab />
         </View>
       )}
 

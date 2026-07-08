@@ -31,7 +31,7 @@ export const StockFinancialsTab: React.FC<StockFinancialsTabProps> = ({ stock })
           </View>
           <View className="flex-row justify-between pb-1">
             <Text className="text-[#9CA3AF] text-sm">Profit Margin</Text>
-            <Text className="text-[#00C853] text-sm font-semibold">12.7%</Text>
+            <Text className="text-[#0ECB81] text-sm font-semibold">12.7%</Text>
           </View>
         </View>
       </View>

@@ -14,7 +14,7 @@ export const FuturesContractHeader: React.FC<FuturesContractHeaderProps> = ({
   onContractPress,
   isLive = false,
 }) => {
-  const changeColor = contract.isPositive ? 'text-[#00C853]' : 'text-[#FF3B30]';
+  const changeColor = contract.isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]';
   const sign = contract.isPositive ? '+' : '';
 
   return (
@@ -39,9 +39,9 @@ export const FuturesContractHeader: React.FC<FuturesContractHeaderProps> = ({
         <View className="items-end">
           <View className="flex-row items-center">
             {isLive && (
-              <View className="flex-row items-center mr-2 bg-[#00C853]/10 px-1.5 py-0.5 rounded-full">
-                <View className="w-1.5 h-1.5 rounded-full bg-[#00C853] mr-1" />
-                <Text className="text-[#00C853] text-[9px] font-bold">LIVE</Text>
+              <View className="flex-row items-center mr-2 bg-[#0ECB81]/10 px-1.5 py-0.5 rounded-full">
+                <View className="w-1.5 h-1.5 rounded-full bg-[#0ECB81] mr-1" />
+                <Text className="text-[#0ECB81] text-[9px] font-bold">LIVE</Text>
               </View>
             )}
             <Text className={`text-xl font-bold ${changeColor}`}>

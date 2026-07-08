@@ -49,23 +49,23 @@ export const StockOverviewCards: React.FC<StockOverviewCardsProps> = ({ stock })
           <View className="space-y-3">
             <View className="flex-row justify-between mb-3">
               <Text className="text-[#9CA3AF] text-xs">1D Return</Text>
-              <Text className="text-[#00C853] text-xs font-semibold">+{stock.performance?.oneDay || '-'}%</Text>
+              <Text className="text-[#0ECB81] text-xs font-semibold">+{stock.performance?.oneDay || '-'}%</Text>
             </View>
             <View className="flex-row justify-between mb-3">
               <Text className="text-[#9CA3AF] text-xs">1W Return</Text>
-              <Text className="text-[#00C853] text-xs font-semibold">+{stock.performance?.oneWeek || '-'}%</Text>
+              <Text className="text-[#0ECB81] text-xs font-semibold">+{stock.performance?.oneWeek || '-'}%</Text>
             </View>
             <View className="flex-row justify-between mb-3">
               <Text className="text-[#9CA3AF] text-xs">1M Return</Text>
-              <Text className="text-[#00C853] text-xs font-semibold">+{stock.performance?.oneMonth || '-'}%</Text>
+              <Text className="text-[#0ECB81] text-xs font-semibold">+{stock.performance?.oneMonth || '-'}%</Text>
             </View>
             <View className="flex-row justify-between mb-3">
               <Text className="text-[#9CA3AF] text-xs">3M Return</Text>
-              <Text className="text-[#00C853] text-xs font-semibold">+{stock.performance?.threeMonth || '-'}%</Text>
+              <Text className="text-[#0ECB81] text-xs font-semibold">+{stock.performance?.threeMonth || '-'}%</Text>
             </View>
             <View className="flex-row justify-between">
               <Text className="text-[#9CA3AF] text-xs">YTD Return</Text>
-              <Text className="text-[#00C853] text-xs font-semibold">+{stock.performance?.ytd || '-'}%</Text>
+              <Text className="text-[#0ECB81] text-xs font-semibold">+{stock.performance?.ytd || '-'}%</Text>
             </View>
           </View>
         </View>
@@ -125,8 +125,8 @@ export const StockOverviewCards: React.FC<StockOverviewCardsProps> = ({ stock })
               <Ionicons name="sparkles" size={16} color="#B388FF" className="mr-2" />
               <Text className="text-white text-sm font-bold ml-2">AI / Analyst Insight</Text>
             </View>
-            <View className="bg-[#00C853]/20 px-2 py-1 rounded">
-              <Text className="text-[#00C853] text-[10px] font-bold uppercase">{stock.aiInsight.badge}</Text>
+            <View className="bg-[#0ECB81]/20 px-2 py-1 rounded">
+              <Text className="text-[#0ECB81] text-[10px] font-bold uppercase">{stock.aiInsight.badge}</Text>
             </View>
           </View>
           <Text className="text-[#D1C4E9] text-sm leading-6">

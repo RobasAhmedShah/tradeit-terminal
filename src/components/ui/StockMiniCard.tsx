@@ -28,8 +28,8 @@ export const StockMiniCard: React.FC<StockMiniCardProps> = ({ stock, onPress }) 
       <Text className="text-white font-bold text-lg mb-1">Rs {stock.price.toFixed(2)}</Text>
       
       <View className="flex-row items-center mb-2">
-        <Ionicons name={isPositive ? "caret-up" : "caret-down"} size={12} color={isPositive ? '#00C853' : '#FF3B30'} />
-        <Text className={`text-xs ml-1 ${isPositive ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}>
+        <Ionicons name={isPositive ? "caret-up" : "caret-down"} size={12} color={isPositive ? '#0ECB81' : '#F6465D'} />
+        <Text className={`text-xs ml-1 ${isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
           {Math.abs(stock.changePercent).toFixed(2)}%
         </Text>
       </View>

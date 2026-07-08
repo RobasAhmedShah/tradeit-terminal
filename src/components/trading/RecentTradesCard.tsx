@@ -35,7 +35,7 @@ export const RecentTradesCard: React.FC<RecentTradesCardProps> = ({ symbol, stoc
 
       {visible.map((trade) => (
         <View key={trade.id} className="flex-row justify-between items-center py-1">
-          <Text className={`text-[10px] font-semibold flex-1 ${trade.type === 'buy' ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}>
+          <Text className={`text-[10px] font-semibold flex-1 ${trade.type === 'buy' ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
             {trade.price.toFixed(2)}
           </Text>
           <Text className="text-white text-[10px] flex-1 text-center">{trade.qty.toLocaleString()}</Text>

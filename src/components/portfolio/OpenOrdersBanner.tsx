@@ -34,9 +34,9 @@ export function OpenOrdersBanner() {
         </View>
         <View className="flex-1">
           <Text className="text-white text-sm font-semibold">Open orders</Text>
-          <Text className="text-[#666] text-[11px] mt-0.5">No pending spot or futures orders</Text>
+          <Text className="text-[#8A8D93] text-[11px] mt-0.5">No pending spot or futures orders</Text>
         </View>
-        <Ionicons name="chevron-forward" size={18} color="#666" />
+        <Ionicons name="chevron-forward" size={18} color="#8A8D93" />
       </TouchableOpacity>
     );
   }

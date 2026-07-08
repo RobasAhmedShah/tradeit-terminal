@@ -48,7 +48,7 @@ export default function LoginScreen() {
 
         <View className="bg-[#111214] border border-[#2A2B2F] rounded-2xl p-5">
           <Text className="text-white text-lg font-bold mb-1">Sign in</Text>
-          <Text className="text-[#666] text-xs mb-5">Demo login — any email & password works</Text>
+          <Text className="text-[#8A8D93] text-xs mb-5">Demo login — any email & password works</Text>
 
           <Text className="text-[#9CA3AF] text-xs mb-1">Email</Text>
           <TextInput
@@ -67,7 +67,7 @@ export default function LoginScreen() {
             className="bg-[#18191C] border border-[#2A2B2F] rounded-xl px-4 py-3 text-white mb-2"
           />
 
-          {error ? <Text className="text-[#FF3B30] text-xs mb-3">{error}</Text> : null}
+          {error ? <Text className="text-[#F6465D] text-xs mb-3">{error}</Text> : null}
 
           <TouchableOpacity
             onPress={handleLogin}
@@ -83,8 +83,8 @@ export default function LoginScreen() {
         </View>
 
         <View className="flex-row items-center justify-center mt-6">
-          <Ionicons name="shield-checkmark-outline" size={14} color="#666" />
-          <Text className="text-[#666] text-[11px] ml-1.5">Mock session · data stays on this device</Text>
+          <Ionicons name="shield-checkmark-outline" size={14} color="#8A8D93" />
+          <Text className="text-[#8A8D93] text-[11px] ml-1.5">Mock session · data stays on this device</Text>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

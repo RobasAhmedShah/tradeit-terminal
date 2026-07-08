@@ -34,7 +34,7 @@ export const FuturesContractSelectorModal: React.FC<FuturesContractSelectorModal
         <ScrollView className="px-4 py-3" showsVerticalScrollIndicator={false}>
           {contracts.map((item) => {
             const isSelected = item.symbol === selectedSymbol;
-            const changeColor = item.isPositive ? 'text-[#00C853]' : 'text-[#FF3B30]';
+            const changeColor = item.isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]';
             const sign = item.isPositive ? '+' : '';
 
             return (

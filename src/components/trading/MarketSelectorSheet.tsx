@@ -109,7 +109,7 @@ export const MarketSelectorSheet: React.FC<MarketSelectorSheetProps> = ({ visibl
 
                 <View className="items-end">
                   <Text className="text-white font-bold text-sm mb-0.5">{item.price.toFixed(2)}</Text>
-                  <Text className={`text-xs font-semibold ${item.isPositive ? 'text-[#00C853]' : 'text-[#FF3B30]'}`}>
+                  <Text className={`text-xs font-semibold ${item.isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
                     {item.isPositive ? '+' : ''}{item.changePercent.toFixed(2)}%
                   </Text>
                 </View>

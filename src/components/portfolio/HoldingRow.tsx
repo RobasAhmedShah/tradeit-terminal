@@ -12,15 +12,15 @@ interface HoldingRowProps {
 export function HoldingRow({ holding, onPress, compact = false }: HoldingRowProps) {
   const isUp = holding.dayChange > 0;
   const isDown = holding.dayChange < 0;
-  const changeColor = isUp ? 'text-[#00C853]' : isDown ? 'text-[#FF3B30]' : 'text-[#9CA3AF]';
+  const changeColor = isUp ? 'text-[#0ECB81]' : isDown ? 'text-[#F6465D]' : 'text-[#9CA3AF]';
 
   return (
     <TouchableOpacity
       onPress={onPress}
       className={`flex-row items-center border-b border-[#2A2B2F] ${compact ? 'py-2.5' : 'py-3'}`}
     >
-      <View className="w-8 h-8 rounded-full bg-[#00C853]/10 items-center justify-center mr-2">
-        <Text className="text-[#00C853] font-bold text-[10px]">{holding.symbol.charAt(0)}</Text>
+      <View className="w-8 h-8 rounded-full bg-[#0ECB81]/10 items-center justify-center mr-2">
+        <Text className="text-[#0ECB81] font-bold text-[10px]">{holding.symbol.charAt(0)}</Text>
       </View>
 
       <View className="flex-[1.2]">
@@ -59,7 +59,7 @@ export function HoldingRow({ holding, onPress, compact = false }: HoldingRowProp
         <Svg width="40" height="24" viewBox="0 0 40 24">
           <Path
             d={holding.chartPath}
-            stroke={isUp ? '#00C853' : isDown ? '#FF3B30' : '#9CA3AF'}
+            stroke={isUp ? '#0ECB81' : isDown ? '#F6465D' : '#9CA3AF'}
             strokeWidth="1.2"
             fill="none"
           />

@@ -27,13 +27,13 @@ export function formatActivityTime(ts: number): string {
 export function activityIcon(type: ActivityType): { name: string; color: string } {
   switch (type) {
     case 'deposit':
-      return { name: 'arrow-down-circle', color: '#00C853' };
+      return { name: 'arrow-down-circle', color: '#0ECB81' };
     case 'withdraw':
-      return { name: 'arrow-up-circle', color: '#FF3B30' };
+      return { name: 'arrow-up-circle', color: '#F6465D' };
     case 'buy':
-      return { name: 'trending-up', color: '#00C853' };
+      return { name: 'trending-up', color: '#0ECB81' };
     case 'sell':
-      return { name: 'trending-down', color: '#FF3B30' };
+      return { name: 'trending-down', color: '#F6465D' };
     case 'order_pending':
       return { name: 'time', color: '#FF8A00' };
     case 'transfer':

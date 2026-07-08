@@ -22,7 +22,9 @@ import {
 } from '../utils/futuresMarginPrefs';
 import {
   FuturesPortfolioState,
+  createFuturesPositionId,
   loadFuturesPortfolio,
+  normalizeFuturesPositions,
   saveFuturesPortfolio,
 } from '../utils/futuresPortfolioPrefs';
 
@@ -148,7 +150,7 @@ export const FuturesProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setMarginLoaded(true);
     });
     loadFuturesPortfolio().then((portfolio) => {
-      setPositions(portfolio.positions);
+      setPositions(normalizeFuturesPositions(portfolio.positions));
       setOpenOrders(portfolio.openOrders);
       setOrderHistory(portfolio.orderHistory);
       setPortfolioLoaded(true);
@@ -234,7 +236,7 @@ export const FuturesProvider: React.FC<{ children: React.ReactNode }> = ({ child
             order.quantity
           );
           const newPosition: FuturesPosition = {
-            id: orderId,
+            id: createFuturesPositionId(),
             side: order.futuresSide,
             symbol: order.symbol,
             expiry: order.expiry ?? 'Perpetual',
@@ -317,7 +319,7 @@ export const FuturesProvider: React.FC<{ children: React.ReactNode }> = ({ child
             order.quantity
           );
           const newPosition: FuturesPosition = {
-            id: order.id,
+            id: createFuturesPositionId(),
             side: order.side,
             symbol: order.symbol,
             expiry: order.expiry,

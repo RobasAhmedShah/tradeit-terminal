@@ -10,6 +10,7 @@ import { useTransferSheet } from '../../context/TransferSheetContext';
 import { useAppAlert } from '../../context/AppAlertContext';
 import { formatPortfolioRs } from '../../data/mockPortfolio';
 import { NotificationSettingsSheet } from '../../components/settings/NotificationSettingsSheet';
+import { safeBack } from '../../utils/navigation';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -73,14 +74,14 @@ export default function ProfileScreen() {
   const MenuRow = ({ icon, title, sub, isSecurity, hideBorder, onPress }: any) => (
     <TouchableOpacity
       onPress={onPress}
-      className={`flex-row items-center py-4 px-4 ${hideBorder ? '' : 'border-b border-[#222]'}`}
+      className={`flex-row items-center py-4 px-4 ${hideBorder ? '' : 'border-b border-[#2A2B2F]'}`}
     >
       <View className="mr-4 w-6 items-center">
-        <Ionicons name={icon} size={22} color="#888" />
+        <Ionicons name={icon} size={22} color="#8A8D93" />
       </View>
       <View className="flex-1 justify-center">
         <Text className="text-[#e0e0e0] text-[13px] font-medium">{title}</Text>
-        <Text className="text-[#666] text-[11px] mt-0.5">{sub}</Text>
+        <Text className="text-[#8A8D93] text-[11px] mt-0.5">{sub}</Text>
       </View>
       {isSecurity ? (
         <Text className="text-[#22c55e] text-[11px] font-medium">2FA Enabled</Text>
@@ -94,7 +95,7 @@ export default function ProfileScreen() {
     <SafeAreaView className="flex-1 bg-[#050505]">
       {/* NAV BAR */}
       <View className="flex-row items-center justify-between px-4 py-3">
-        <TouchableOpacity onPress={() => router.back()} className="w-10">
+        <TouchableOpacity onPress={() => safeBack(router, '/(tabs)/home')} className="w-10">
           <Ionicons name="arrow-back" size={24} color="#e0e0e0" />
         </TouchableOpacity>
         <View className="flex-1 items-center">
@@ -121,7 +122,7 @@ export default function ProfileScreen() {
         <View className="mx-4 mb-6 mt-2 bg-[#131316] rounded-xl overflow-hidden border border-transparent">
           {/* Top Info */}
           <View className="p-4 flex-row items-start">
-            <View className="w-16 h-16 rounded-full bg-[#1a1a1a] items-center justify-center relative border border-[#222]">
+            <View className="w-16 h-16 rounded-full bg-[#1a1a1a] items-center justify-center relative border border-[#2A2B2F]">
               <Ionicons name="bar-chart" size={28} color="#f97316" />
               <View className="absolute bottom-0 right-0 w-6 h-6 bg-white rounded-full items-center justify-center border-2 border-[#131316]">
                 <Ionicons name="camera" size={12} color="#000" />
@@ -136,10 +137,10 @@ export default function ProfileScreen() {
                   <Text className="text-[#f97316] text-[9px] font-bold">Verified</Text>
                 </View>
               </View>
-              <Text className="text-[#888] text-[12px] mt-1">{session?.email ?? 'guesttrader@email.com'}</Text>
+              <Text className="text-[#8A8D93] text-[12px] mt-1">{session?.email ?? 'guesttrader@email.com'}</Text>
               <View className="flex-row items-center mt-1">
-                <Text className="text-[#666] text-[11px]">Client ID: {session?.clientId ?? 'TID12345678'}</Text>
-                <Ionicons name="copy-outline" size={12} color="#666" style={{ marginLeft: 6 }} />
+                <Text className="text-[#8A8D93] text-[11px]">Client ID: {session?.clientId ?? 'TID12345678'}</Text>
+                <Ionicons name="copy-outline" size={12} color="#8A8D93" style={{ marginLeft: 6 }} />
               </View>
               <View className="self-start flex-row items-center bg-[#2d1b4e]/40 rounded-full px-2.5 py-1 mt-2">
                 <Ionicons name="diamond" size={10} color="#a855f7" style={{ marginRight: 4 }} />
@@ -153,17 +154,17 @@ export default function ProfileScreen() {
           </View>
 
           {/* Bottom Stats */}
-          <View className="flex-row py-4 border-t border-[#1e1e1e]">
-            <View className="flex-1 items-center border-r border-[#222] px-1">
-              <Text className="text-[#666] text-[10px] mb-1.5">Total Equity</Text>
+          <View className="flex-row py-4 border-t border-[#2A2B2F]">
+            <View className="flex-1 items-center border-r border-[#2A2B2F] px-1">
+              <Text className="text-[#8A8D93] text-[10px] mb-1.5">Total Equity</Text>
               <Text className="text-white text-[13px] font-bold">PKR {formatPortfolioRs(summary.totalValue)}</Text>
             </View>
-            <View className="flex-1 items-center border-r border-[#222] px-1">
-              <Text className="text-[#666] text-[10px] mb-1.5">Buying Power</Text>
+            <View className="flex-1 items-center border-r border-[#2A2B2F] px-1">
+              <Text className="text-[#8A8D93] text-[10px] mb-1.5">Buying Power</Text>
               <Text className="text-white text-[13px] font-bold">PKR {formatPortfolioRs(summary.buyingPower)}</Text>
             </View>
             <View className="flex-1 items-center px-1">
-              <Text className="text-[#666] text-[10px] mb-1.5">Total Return</Text>
+              <Text className="text-[#8A8D93] text-[10px] mb-1.5">Total Return</Text>
               <Text className={`text-[13px] font-bold ${returnPositive ? 'text-[#22c55e]' : 'text-[#ef4444]'}`}>
                 {returnPositive ? '+' : ''}{summary.totalReturnPct}%
               </Text>
@@ -180,7 +181,7 @@ export default function ProfileScreen() {
               activeOpacity={0.7}
               onPress={action.onPress}
             >
-              <View className="w-12 h-12 rounded-full bg-[#1a1a1a] items-center justify-center mb-2 border border-[#222] relative">
+              <View className="w-12 h-12 rounded-full bg-[#1a1a1a] items-center justify-center mb-2 border border-[#2A2B2F] relative">
                 <Ionicons name={action.icon} size={20} color="#f97316" />
                 {action.badge && action.badge > 0 ? (
                   <View className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 bg-[#f97316] rounded-full items-center justify-center border border-[#131316]">

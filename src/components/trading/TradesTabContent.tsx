@@ -76,12 +76,12 @@ export const TradesTabContent: React.FC<TradesTabContentProps> = ({ stock }) => 
       <View className="bg-[#111214] border border-[#2A2B2F] rounded-xl p-4 mb-4">
         <Text className="text-[#9CA3AF] text-[12px] font-semibold mb-3">Trade Flow</Text>
         <View className="flex-row justify-between mb-1.5">
-          <Text className="text-[#00C853] text-[11px] font-medium">Buy Volume {buyPct}%</Text>
-          <Text className="text-[#FF3B30] text-[11px] font-medium">Sell Volume {sellPct}%</Text>
+          <Text className="text-[#0ECB81] text-[11px] font-medium">Buy Volume {buyPct}%</Text>
+          <Text className="text-[#F6465D] text-[11px] font-medium">Sell Volume {sellPct}%</Text>
         </View>
         <View className="h-2 w-full bg-[#2A2B2F] rounded-full overflow-hidden flex-row">
-          <View style={{ width: `${buyPct}%` }} className="h-full bg-[#00C853]" />
-          <View style={{ width: `${sellPct}%` }} className="h-full bg-[#FF3B30]" />
+          <View style={{ width: `${buyPct}%` }} className="h-full bg-[#0ECB81]" />
+          <View style={{ width: `${sellPct}%` }} className="h-full bg-[#F6465D]" />
         </View>
       </View>
 
@@ -116,11 +116,11 @@ export const TradesTabContent: React.FC<TradesTabContentProps> = ({ stock }) => 
 
         {filteredTrades.map((trade) => {
           const isBuy = trade.type === 'buy';
-          const sideColor = isBuy ? 'text-[#00C853]' : 'text-[#FF3B30]';
+          const sideColor = isBuy ? 'text-[#0ECB81]' : 'text-[#F6465D]';
           const isLarge = trade.qty >= LARGE_TRADE_QTY;
 
           return (
-            <View key={trade.id} className="flex-row items-center py-2.5 border-b border-[#141414]">
+            <View key={trade.id} className="flex-row items-center py-2.5 border-b border-[#2A2B2F]">
               <Text className={`text-[12px] font-semibold flex-[1.1] ${sideColor}`}>
                 {trade.price.toFixed(2)}
               </Text>

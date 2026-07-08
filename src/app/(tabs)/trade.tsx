@@ -167,7 +167,7 @@ export default function TradeScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#050505]" edges={['top']}>
-      <AppHeader />
+      <AppHeader title="Trade" />
 
       <TradeSearchBar value={draftQuery} onChangeText={setDraftQuery} />
 

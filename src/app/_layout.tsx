@@ -12,11 +12,16 @@ import { AppAlertProvider } from '../context/AppAlertContext';
 import { TransferSheetProvider } from '../context/TransferSheetContext';
 import { AlertSheetProvider } from '../context/AlertSheetContext';
 import { SearchProvider } from '../context/SearchContext';
+import { AppMenuProvider } from '../context/AppMenuContext';
+import { PostsProvider } from '../context/PostsContext';
 import { PortfolioProvider } from '../context/PortfolioContext';
 import { FuturesProvider } from '../context/FuturesContext';
+import { FuturesCloseSheetProvider } from '../context/FuturesCloseSheetContext';
 import { PriceAlertsProvider } from '../context/PriceAlertsContext';
 import { NotificationsProvider } from '../context/NotificationsContext';
 import { OrdersProvider } from '../context/OrdersContext';
+import { EditOrderSheetProvider } from '../context/EditOrderSheetContext';
+import { OrderDetailSheetProvider } from '../context/OrderDetailSheetContext';
 import { PriceAlertMonitor } from '../components/system/PriceAlertMonitor';
 import { OrderFillMonitor } from '../components/system/OrderFillMonitor';
 import { FuturesOrderFillMonitor } from '../components/system/FuturesOrderFillMonitor';
@@ -52,11 +57,16 @@ export default function RootLayout() {
         <WatchlistProvider>
           <PortfolioProvider>
             <FuturesProvider>
+            <FuturesCloseSheetProvider>
             <SearchProvider>
+            <AppMenuProvider>
+            <PostsProvider>
             <PriceAlertsProvider>
             <AlertSheetProvider>
             <NotificationsProvider>
             <OrdersProvider>
+            <EditOrderSheetProvider>
+            <OrderDetailSheetProvider>
             <TransferSheetProvider>
             <PriceAlertMonitor />
             <OrderFillMonitor />
@@ -66,9 +76,8 @@ export default function RootLayout() {
               <Stack.Screen name="login" />
               <Stack.Screen name="(tabs)" />
               <Stack.Screen name="(account)" />
+              {/* Primary screens */}
               <Stack.Screen name="markets" />
-              <Stack.Screen name="watchlist" />
-              <Stack.Screen name="news" />
               <Stack.Screen name="stock/[symbol]" />
               <Stack.Screen name="spot/[symbol]" />
               <Stack.Screen
@@ -76,25 +85,34 @@ export default function RootLayout() {
                 options={{ presentation: 'card', contentStyle: { backgroundColor: COLORS.background } }}
               />
               <Stack.Screen name="orders/index" />
-              <Stack.Screen name="orders/open" />
-              <Stack.Screen name="orders/history" />
-              <Stack.Screen name="orders/[id]" />
-              <Stack.Screen name="orders/edit/[id]" />
               <Stack.Screen name="portfolio/holdings" />
               <Stack.Screen name="portfolio/activity" />
               <Stack.Screen name="portfolio/holding/[symbol]" />
-              <Stack.Screen name="futures/positions" />
               <Stack.Screen name="futures/position/[id]" />
-              <Stack.Screen name="futures/close-review" />
-              <Stack.Screen name="futures/close-success" />
               <Stack.Screen name="news/[id]" />
+              <Stack.Screen name="community/compose" />
+              {/* Legacy deep links — redirect or open sheet, then exit */}
+              <Stack.Screen name="watchlist" options={{ animation: 'none' }} />
+              <Stack.Screen name="news" options={{ animation: 'none' }} />
+              <Stack.Screen name="orders/open" options={{ animation: 'none' }} />
+              <Stack.Screen name="orders/history" options={{ animation: 'none' }} />
+              <Stack.Screen name="orders/[id]" options={{ animation: 'none' }} />
+              <Stack.Screen name="orders/edit/[id]" options={{ animation: 'none' }} />
+              <Stack.Screen name="futures/positions" options={{ animation: 'none' }} />
+              <Stack.Screen name="futures/close-review" options={{ animation: 'none' }} />
+              <Stack.Screen name="futures/close-success" options={{ animation: 'none' }} />
             </Stack>
             </TransferSheetProvider>
+            </OrderDetailSheetProvider>
+            </EditOrderSheetProvider>
             </OrdersProvider>
             </NotificationsProvider>
             </AlertSheetProvider>
             </PriceAlertsProvider>
+            </PostsProvider>
+            </AppMenuProvider>
             </SearchProvider>
+            </FuturesCloseSheetProvider>
           </FuturesProvider>
           </PortfolioProvider>
         </WatchlistProvider>

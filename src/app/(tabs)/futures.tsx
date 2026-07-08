@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, ScrollView } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppHeader } from '../../components/ui/AppHeader';
 import { FuturesContractHeader } from '../../components/futures/FuturesContractHeader';
@@ -14,6 +14,7 @@ import { FuturesPortfolioSection } from '../../components/futures/FuturesPortfol
 import { FuturesLeverageModal } from '../../components/futures/FuturesLeverageModal';
 import { FuturesContractSelectorModal } from '../../components/futures/FuturesContractSelectorModal';
 import { useFutures } from '../../context/FuturesContext';
+import { useFuturesCloseSheet } from '../../context/FuturesCloseSheetContext';
 import { useAppAlert } from '../../context/AppAlertContext';
 import {
   DEFAULT_FUTURES_CONTRACT,
@@ -31,8 +32,8 @@ import {
 } from '../../utils/futuresTradingPrefs';
 
 export default function FuturesScreen() {
-  const router = useRouter();
   const { contract: contractParam } = useLocalSearchParams<{ contract?: string }>();
+  const { openCloseSheet } = useFuturesCloseSheet();
   const {
     contracts,
     marginAvailable,
@@ -161,7 +162,7 @@ export default function FuturesScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#050505]" edges={['top']}>
-      <AppHeader />
+      <AppHeader title="Futures" />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -183,12 +184,7 @@ export default function FuturesScreen() {
           openOrders={openOrders}
           orderHistory={orderHistory}
           marginAvailable={marginAvailable}
-          onClosePosition={(position) =>
-            router.push({
-              pathname: '/futures/close-review',
-              params: { data: JSON.stringify(position) },
-            })
-          }
+          onClosePosition={(position) => openCloseSheet(position)}
           onCancelOrder={(order) =>
             showAlert(
               'Cancel Order',

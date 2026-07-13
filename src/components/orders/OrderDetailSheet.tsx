@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import {
   View,
   Text,
@@ -26,21 +27,25 @@ const MODIFIABLE_STATUSES = ['Pending', 'Partially Filled', 'Queued'];
 const Row = ({
   label,
   value,
-  valueColor = COLORS.text,
+  valueColor,
 }: {
   label: string;
   value: string | number;
   valueColor?: string;
 }) => (
-  <View className="flex-row justify-between py-3 border-b border-[#25272D]">
-    <Text className="text-[#8A8D93] text-sm">{label}</Text>
-    <Text className="text-sm font-semibold" style={{ color: valueColor }}>
+  <View className="flex-row justify-between py-3 border-b border-app-border">
+    <Text className="text-app-muted text-sm">{label}</Text>
+    <Text
+      className={`text-sm font-semibold ${valueColor ? '' : 'text-app-text'}`}
+      style={valueColor ? { color: valueColor } : undefined}
+    >
       {value}
     </Text>
   </View>
 );
 
 export const OrderDetailSheet: React.FC<OrderDetailSheetProps> = ({ visible, orderId, onClose }) => {
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { getOrder, cancelOrder } = useOrders();
   const { showAlert } = useAppAlert();
@@ -86,17 +91,17 @@ export const OrderDetailSheet: React.FC<OrderDetailSheetProps> = ({ visible, ord
         <Pressable className="flex-1" onPress={handleClose} />
 
         <View
-          className="rounded-t-3xl border-t border-[#25272D] max-h-[90%]"
-          style={{ backgroundColor: COLORS.sheet, paddingBottom: Math.max(insets.bottom, 16) }}
+          className="rounded-t-3xl border-t border-app-border max-h-[90%]"
+          style={{ backgroundColor: colors.sheet, paddingBottom: Math.max(insets.bottom, 16) }}
         >
           <View className="items-center pt-2.5 pb-1">
-            <View className="w-10 h-1 rounded-full bg-[#3A3D44]" />
+            <View className="w-10 h-1 rounded-full bg-app-border" />
           </View>
 
-          <View className="flex-row items-center justify-between px-5 py-2.5 border-b border-[#25272D]">
-            <Text className="text-white text-[16px] font-bold">Order Details</Text>
+          <View className="flex-row items-center justify-between px-5 py-2.5 border-b border-app-border">
+            <Text className="text-app-text text-[16px] font-bold">Order Details</Text>
             <TouchableOpacity onPress={handleClose} hitSlop={8}>
-              <Ionicons name="close" size={22} color="#8A8D93" />
+              <Ionicons name="close" size={22} color={colors.muted} />
             </TouchableOpacity>
           </View>
 
@@ -107,13 +112,13 @@ export const OrderDetailSheet: React.FC<OrderDetailSheetProps> = ({ visible, ord
           >
             {!order ? (
               <View className="py-10 items-center">
-                <Text className="text-[#8A8D93] text-sm">Order not found</Text>
+                <Text className="text-app-muted text-sm">Order not found</Text>
               </View>
             ) : (
               <>
-                <View className="bg-[#111214] border border-[#2A2B2F] rounded-xl p-4 mb-4">
+                <View className="bg-app-card border border-app-border rounded-xl p-4 mb-4">
                   <View className="flex-row justify-between items-center mb-2">
-                    <Text className="text-white text-xl font-bold">{order.symbol}</Text>
+                    <Text className="text-app-text text-xl font-bold">{order.symbol}</Text>
                     <View
                       className="px-3 py-1 rounded-full border"
                       style={{
@@ -130,13 +135,13 @@ export const OrderDetailSheet: React.FC<OrderDetailSheetProps> = ({ visible, ord
                     </View>
                   </View>
                   <View className="flex-row justify-between items-center">
-                    <Text className="text-[#8A8D93] text-sm flex-1 mr-2">{order.companyName}</Text>
-                    <Text className="text-[#9CA3AF] text-sm font-semibold">{order.type} Order</Text>
+                    <Text className="text-app-muted text-sm flex-1 mr-2">{order.companyName}</Text>
+                    <Text className="text-app-muted text-sm font-semibold">{order.type} Order</Text>
                   </View>
                 </View>
 
-                <View className="bg-[#111214] border border-[#2A2B2F] rounded-xl p-4 mb-4">
-                  <Text className="text-white text-base font-bold mb-1">Summary</Text>
+                <View className="bg-app-card border border-app-border rounded-xl p-4 mb-4">
+                  <Text className="text-app-text text-base font-bold mb-1">Summary</Text>
                   <Row label="Order ID" value={order.id} />
                   <Row label="Quantity" value={order.quantity.toLocaleString()} />
                   <Row label="Filled" value={order.filledQty.toLocaleString()} valueColor={COLORS.buy} />
@@ -152,28 +157,28 @@ export const OrderDetailSheet: React.FC<OrderDetailSheetProps> = ({ visible, ord
                   <Row label="Created" value={`${order.date} · ${order.createdTime}`} />
                 </View>
 
-                <View className="bg-[#111214] border border-[#2A2B2F] rounded-xl p-4 mb-4">
-                  <Text className="text-white text-base font-bold mb-3">Timeline</Text>
+                <View className="bg-app-card border border-app-border rounded-xl p-4 mb-4">
+                  <Text className="text-app-text text-base font-bold mb-3">Timeline</Text>
                   {order.timeline.map((event, index) => (
                     <View key={`${event.title}-${index}`} className="flex-row mb-3">
                       <View className="items-center mr-3">
                         <View
                           className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: event.isCompleted ? COLORS.buy : '#333' }}
+                          style={{ backgroundColor: event.isCompleted ? COLORS.buy : colors.border }}
                         />
                         {index < order.timeline.length - 1 && (
-                          <View className="w-0.5 flex-1 bg-[#333] mt-1" />
+                          <View className="w-0.5 flex-1 bg-app-border mt-1" />
                         )}
                       </View>
                       <View className="flex-1">
                         <Text
                           className="text-sm font-semibold"
-                          style={{ color: event.isActive ? COLORS.primary : COLORS.text }}
+                          style={{ color: event.isActive ? COLORS.primary : colors.text }}
                         >
                           {event.title}
                         </Text>
                         {event.time ? (
-                          <Text className="text-[#5C6068] text-xs mt-0.5">{event.time}</Text>
+                          <Text className="text-app-muted text-xs mt-0.5">{event.time}</Text>
                         ) : null}
                       </View>
                     </View>
@@ -184,9 +189,9 @@ export const OrderDetailSheet: React.FC<OrderDetailSheetProps> = ({ visible, ord
                   <View className="flex-row gap-3 mb-2">
                     <TouchableOpacity
                       onPress={handleModify}
-                      className="flex-1 py-3.5 rounded-xl border border-[#2A2B2F] items-center bg-[#111214]"
+                      className="flex-1 py-3.5 rounded-xl border border-app-border items-center bg-app-card"
                     >
-                      <Text className="text-white font-semibold">Modify</Text>
+                      <Text className="text-app-text font-semibold">Modify</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={handleCancel}

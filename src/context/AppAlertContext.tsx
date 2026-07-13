@@ -86,7 +86,7 @@ export const AppAlertProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         onRequestClose={() => dismiss()}
       >
         <View className="flex-1 bg-black/70 items-center justify-center px-10">
-          <View className="w-full bg-[#161616] rounded-2xl border border-[#2A2B2F] overflow-hidden">
+          <View className="w-full bg-app-sheet rounded-2xl border border-app-border overflow-hidden">
             <View className="items-center pt-6 px-5">
               <View
                 className="w-12 h-12 rounded-full items-center justify-center mb-3"
@@ -94,15 +94,15 @@ export const AppAlertProvider: React.FC<{ children: React.ReactNode }> = ({ chil
               >
                 <Ionicons name={tone.icon} size={26} color={tone.color} />
               </View>
-              <Text className="text-white text-[16px] font-bold text-center">{state?.title}</Text>
+              <Text className="text-app-text text-[16px] font-bold text-center">{state?.title}</Text>
               {state?.message ? (
-                <Text className="text-[#9CA3AF] text-[13px] text-center mt-2 leading-5">
+                <Text className="text-app-muted text-[13px] text-center mt-2 leading-5">
                   {state.message}
                 </Text>
               ) : null}
             </View>
 
-            <View className={`mt-5 ${isRow ? 'flex-row' : ''} border-t border-[#2A2B2F]`}>
+            <View className={`mt-5 ${isRow ? 'flex-row' : ''} border-t border-app-border`}>
               {buttons.map((btn, idx) => {
                 const color =
                   btn.style === 'destructive'
@@ -116,8 +116,8 @@ export const AppAlertProvider: React.FC<{ children: React.ReactNode }> = ({ chil
                     onPress={() => dismiss(btn.onPress)}
                     activeOpacity={0.7}
                     className={`py-4 items-center justify-center ${isRow ? 'flex-1' : ''} ${
-                      isRow && idx === 1 ? 'border-l border-[#2A2B2F]' : ''
-                    } ${!isRow && idx > 0 ? 'border-t border-[#2A2B2F]' : ''}`}
+                      isRow && idx === 1 ? 'border-l border-app-border' : ''
+                    } ${!isRow && idx > 0 ? 'border-t border-app-border' : ''}`}
                   >
                     <Text
                       className="text-[15px]"

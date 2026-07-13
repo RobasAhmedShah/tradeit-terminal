@@ -105,7 +105,7 @@ export default function TradeScreen() {
 
   const header = useMemo(
     () => (
-      <View className="bg-[#050505]">
+      <View className="bg-app-bg">
         <View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-4">
             {MARKET_FILTERS.map((filter) => (
@@ -150,8 +150,8 @@ export default function TradeScreen() {
   const renderEmpty = () => (
     <View className="items-center justify-center px-8 py-10">
       <Ionicons name="search-outline" size={40} color="#2A2B2F" />
-      <Text className="text-white text-base font-semibold mt-4 text-center">No stocks found</Text>
-      <Text className="text-[#9CA3AF] text-sm mt-2 text-center">
+      <Text className="text-app-text text-base font-semibold mt-4 text-center">No stocks found</Text>
+      <Text className="text-app-muted text-sm mt-2 text-center">
         {draftQuery.trim()
           ? `No results for "${draftQuery.trim()}". Try another symbol or company name.`
           : 'No stocks match the selected filters. Try a different filter.'}
@@ -166,7 +166,7 @@ export default function TradeScreen() {
   }, [draftQuery]);
 
   return (
-    <SafeAreaView className="flex-1 bg-[#050505]" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-app-bg" edges={['top']}>
       <AppHeader title="Trade" />
 
       <TradeSearchBar value={draftQuery} onChangeText={setDraftQuery} />

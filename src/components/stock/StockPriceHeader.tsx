@@ -16,14 +16,14 @@ export const StockPriceHeader: React.FC<StockPriceHeaderProps> = ({ stock }) => 
     <View className="px-4 py-3">
       <View className="flex-row items-baseline">
         <Text className={`${changeColor} text-5xl font-bold`}>{stock.price.toFixed(2)}</Text>
-        <Text className="text-[#9CA3AF] text-base ml-2 font-medium">PKR</Text>
+        <Text className="text-app-muted text-base ml-2 font-medium">PKR</Text>
       </View>
       
       <View className="flex-row items-center mt-1">
         <Text className={`${changeColor} text-base font-semibold`}>
           {sign}{stock.changeValue?.toFixed(2)} ({sign}{stock.changePercent.toFixed(2)}%)
         </Text>
-        <Text className="text-[#9CA3AF] text-sm ml-2">Today</Text>
+        <Text className="text-app-muted text-sm ml-2">Today</Text>
       </View>
 
       {stock.isShariahCompliant && (

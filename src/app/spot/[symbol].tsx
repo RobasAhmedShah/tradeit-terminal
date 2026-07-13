@@ -46,15 +46,15 @@ export default function SpotTradingScreen() {
 
   if (!stock) {
     return (
-      <SafeAreaView className="flex-1 bg-[#050505] justify-center items-center">
-        <Text className="text-white text-lg">Stock not found.</Text>
+      <SafeAreaView className="flex-1 bg-app-bg justify-center items-center">
+        <Text className="text-app-text text-lg">Stock not found.</Text>
       </SafeAreaView>
     );
   }
 
   if (booting) {
     return (
-      <SafeAreaView className="flex-1 bg-[#050505]" edges={['top', 'bottom']}>
+      <SafeAreaView className="flex-1 bg-app-bg" edges={['top', 'bottom']}>
         <SpotTradingHeader />
         <SpotTradeSkeleton />
       </SafeAreaView>
@@ -62,7 +62,7 @@ export default function SpotTradingScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#050505]" edges={['top', 'bottom']}>
+    <SafeAreaView className="flex-1 bg-app-bg" edges={['top', 'bottom']}>
       <SpotTradingHeader />
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import {
   View,
   Text,
@@ -37,15 +38,19 @@ const Row = ({
   value: string;
   valueColor?: string;
 }) => (
-  <View className="flex-row justify-between py-3 border-b border-[#2A2B2F]">
-    <Text className="text-[#9CA3AF] text-sm font-semibold">{label}</Text>
-    <Text className="text-sm font-semibold" style={{ color: valueColor ?? COLORS.text }}>
+  <View className="flex-row justify-between py-3 border-b border-app-border">
+    <Text className="text-app-muted text-sm font-semibold">{label}</Text>
+    <Text
+      className={`text-sm font-semibold ${valueColor ? '' : 'text-app-text'}`}
+      style={valueColor ? { color: valueColor } : undefined}
+    >
       {value}
     </Text>
   </View>
 );
 
 export const FuturesCloseSheet: React.FC<FuturesCloseSheetProps> = ({ visible, position, onClose }) => {
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { closePosition } = useFutures();
   const [step, setStep] = useState<'review' | 'success'>('review');
@@ -92,19 +97,19 @@ export const FuturesCloseSheet: React.FC<FuturesCloseSheetProps> = ({ visible, p
         <Pressable className="flex-1" onPress={step === 'review' ? handleDismiss : undefined} />
 
         <View
-          className="rounded-t-3xl border-t border-[#25272D] max-h-[88%]"
-          style={{ backgroundColor: COLORS.sheet, paddingBottom: Math.max(insets.bottom, 16) }}
+          className="rounded-t-3xl border-t border-app-border max-h-[88%]"
+          style={{ backgroundColor: colors.sheet, paddingBottom: Math.max(insets.bottom, 16) }}
         >
           <View className="items-center pt-2.5 pb-1">
-            <View className="w-10 h-1 rounded-full bg-[#3A3D44]" />
+            <View className="w-10 h-1 rounded-full bg-app-border" />
           </View>
 
-          <View className="flex-row items-center justify-between px-5 py-2.5 border-b border-[#25272D]">
-            <Text className="text-white text-[16px] font-bold">
+          <View className="flex-row items-center justify-between px-5 py-2.5 border-b border-app-border">
+            <Text className="text-app-text text-[16px] font-bold">
               {step === 'review' ? 'Close Position' : 'Position Closed'}
             </Text>
             <TouchableOpacity onPress={handleDismiss} hitSlop={8}>
-              <Ionicons name="close" size={22} color="#8A8D93" />
+              <Ionicons name="close" size={22} color={colors.muted} />
             </TouchableOpacity>
           </View>
 
@@ -115,11 +120,11 @@ export const FuturesCloseSheet: React.FC<FuturesCloseSheetProps> = ({ visible, p
           >
             {step === 'review' ? (
               <>
-                <Text className="text-[#8A8D93] text-xs text-center mb-4">
+                <Text className="text-app-muted text-xs text-center mb-4">
                   You are closing your {position.side.toLowerCase()} position at market price
                 </Text>
 
-                <View className="bg-[#111214] rounded-xl p-4 mb-4 border border-[#2A2B2F]">
+                <View className="bg-app-card rounded-xl p-4 mb-4 border border-app-border">
                   <Row label="Contract" value={position.symbol} />
                   <Row
                     label="Position Side"
@@ -131,7 +136,7 @@ export const FuturesCloseSheet: React.FC<FuturesCloseSheetProps> = ({ visible, p
                   <Row label="Entry Price" value={formatFuturesPrice(position.entryPrice)} />
                   <Row label="Close Price (Mark)" value={formatFuturesPrice(position.markPrice)} />
                   <View className="flex-row justify-between pt-3">
-                    <Text className="text-white text-sm font-bold">Est. Realized PnL</Text>
+                    <Text className="text-app-text text-sm font-bold">Est. Realized PnL</Text>
                     <Text
                       className="text-sm font-bold"
                       style={{ color: position.unrealizedPnl >= 0 ? COLORS.buy : COLORS.sell }}
@@ -142,10 +147,10 @@ export const FuturesCloseSheet: React.FC<FuturesCloseSheetProps> = ({ visible, p
                   </View>
                 </View>
 
-                <View className="bg-[#111214] rounded-xl p-4 mb-5 border border-[#2A2B2F]">
+                <View className="bg-app-card rounded-xl p-4 mb-5 border border-app-border">
                   <View className="flex-row justify-between">
-                    <Text className="text-[#9CA3AF] text-xs">Est. Close Value</Text>
-                    <Text className="text-white text-xs font-semibold">{formatFuturesPrice(estProceeds)}</Text>
+                    <Text className="text-app-muted text-xs">Est. Close Value</Text>
+                    <Text className="text-app-text text-xs font-semibold">{formatFuturesPrice(estProceeds)}</Text>
                   </View>
                 </View>
 
@@ -154,7 +159,7 @@ export const FuturesCloseSheet: React.FC<FuturesCloseSheetProps> = ({ visible, p
                   className="py-3.5 rounded-xl items-center mb-3"
                   style={{ backgroundColor: COLORS.sell }}
                 >
-                  <Text className="text-white font-bold text-base">Confirm Close</Text>
+                  <Text className="text-app-text font-bold text-base">Confirm Close</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -173,19 +178,19 @@ export const FuturesCloseSheet: React.FC<FuturesCloseSheetProps> = ({ visible, p
                   >
                     <Ionicons name="checkmark" size={28} color={COLORS.buy} />
                   </View>
-                  <Text className="text-white text-lg font-bold mb-1">Position Closed</Text>
-                  <Text className="text-[#8A8D93] text-xs text-center">
+                  <Text className="text-app-text text-lg font-bold mb-1">Position Closed</Text>
+                  <Text className="text-app-muted text-xs text-center">
                     Your {result?.side.toLowerCase()} {result?.symbol} position has been closed at market
                   </Text>
                 </View>
 
                 {result && (
-                  <View className="bg-[#111214] rounded-xl p-4 mb-5 border border-[#2A2B2F]">
+                  <View className="bg-app-card rounded-xl p-4 mb-5 border border-app-border">
                     <Row label="Contract" value={result.symbol} />
                     <Row label="Closed Size" value={`${result.sizeLots} lots`} />
                     <Row label="Close Price" value={formatFuturesPrice(result.closePrice)} />
                     <View className="flex-row justify-between pt-3">
-                      <Text className="text-white text-sm font-bold">Realized PnL</Text>
+                      <Text className="text-app-text text-sm font-bold">Realized PnL</Text>
                       <Text
                         className="text-sm font-bold"
                         style={{ color: isProfit ? COLORS.buy : COLORS.sell }}

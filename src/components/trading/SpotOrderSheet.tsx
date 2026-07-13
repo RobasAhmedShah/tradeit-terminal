@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import { View, Text, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -56,16 +57,19 @@ const SELL = '#F6465D';
 function DetailRow({
   label,
   value,
-  valueColor = '#FFFFFF',
+  valueColor,
 }: {
   label: string;
   value: string;
   valueColor?: string;
 }) {
   return (
-    <View className="flex-row justify-between py-2.5 border-b border-[#25272D]">
-      <Text className="text-[#8A8D93] text-[13px] font-semibold">{label}</Text>
-      <Text className="text-[13px] font-semibold" style={{ color: valueColor }}>
+    <View className="flex-row justify-between py-2.5 border-b border-app-border">
+      <Text className="text-app-muted text-[13px] font-semibold">{label}</Text>
+      <Text
+        className={`text-[13px] font-semibold ${valueColor ? '' : 'text-app-text'}`}
+        style={valueColor ? { color: valueColor } : undefined}
+      >
         {value}
       </Text>
     </View>
@@ -74,6 +78,7 @@ function DetailRow({
 
 export const SpotOrderSheet: React.FC<SpotOrderSheetProps> = ({ visible, order, onClose }) => {
   const router = useRouter();
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { applySpotTrade } = usePortfolio();
   const { addPendingOrder: addOrderToHub } = useOrders();
@@ -204,21 +209,21 @@ export const SpotOrderSheet: React.FC<SpotOrderSheetProps> = ({ visible, order, 
         )}
 
         <View
-          className="bg-[#161719] rounded-t-3xl border-t border-[#25272D] max-h-[90%]"
+          className="bg-app-sheet rounded-t-3xl border-t border-app-border max-h-[90%]"
           style={{ paddingBottom: Math.max(insets.bottom, 0) }}
         >
           {/* Grabber */}
           <View className="items-center pt-3 pb-1">
-            <View className="w-10 h-1 rounded-full bg-[#3A3D44]" />
+            <View className="w-10 h-1 rounded-full bg-app-border" />
           </View>
 
           {/* ── REVIEW ── */}
           {phase === 'review' && (
             <>
               <View className="flex-row items-center justify-between px-5 py-3">
-                <Text className="text-white text-[16px] font-bold">Confirm Order</Text>
+                <Text className="text-app-text text-[16px] font-bold">Confirm Order</Text>
                 <TouchableOpacity onPress={onClose} className="w-8 h-8 items-center justify-center">
-                  <Ionicons name="close" size={22} color="#8A8D93" />
+                  <Ionicons name="close" size={22} color={colors.muted} />
                 </TouchableOpacity>
               </View>
 
@@ -227,7 +232,7 @@ export const SpotOrderSheet: React.FC<SpotOrderSheetProps> = ({ visible, order, 
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingBottom: 24 }}
               >
-                <View className="flex-row items-center bg-[#1C1E22] rounded-2xl p-3.5 mb-4 border border-[#25272D]">
+                <View className="flex-row items-center bg-app-input rounded-2xl p-3.5 mb-4 border border-app-border">
                   <View
                     className="w-10 h-10 rounded-full items-center justify-center mr-3"
                     style={{ backgroundColor: `${sideColor}1A`, borderWidth: 1, borderColor: `${sideColor}33` }}
@@ -237,8 +242,8 @@ export const SpotOrderSheet: React.FC<SpotOrderSheetProps> = ({ visible, order, 
                     </Text>
                   </View>
                   <View className="flex-1">
-                    <Text className="text-white font-bold text-[15px]">{order.symbol}</Text>
-                    <Text className="text-[#8A8D93] text-[11px]" numberOfLines={1}>
+                    <Text className="text-app-text font-bold text-[15px]">{order.symbol}</Text>
+                    <Text className="text-app-muted text-[11px]" numberOfLines={1}>
                       {order.companyName}
                     </Text>
                   </View>
@@ -249,7 +254,7 @@ export const SpotOrderSheet: React.FC<SpotOrderSheetProps> = ({ visible, order, 
                   </View>
                 </View>
 
-                <View className="bg-[#1C1E22] rounded-2xl px-4 py-1 mb-4 border border-[#25272D]">
+                <View className="bg-app-input rounded-2xl px-4 py-1 mb-4 border border-app-border">
                   <DetailRow label="Order Type" value={orderType} />
                   <DetailRow label="Quantity" value={`${order.quantity.toLocaleString()} Shares`} />
                   {orderType === 'Stop Limit' && (
@@ -260,25 +265,25 @@ export const SpotOrderSheet: React.FC<SpotOrderSheetProps> = ({ visible, order, 
                     value={`Rs ${order.price.toFixed(2)}`}
                   />
                   <View className="flex-row justify-between py-2.5">
-                    <Text className="text-[#8A8D93] text-[13px] font-semibold">Est. Fees</Text>
-                    <Text className="text-white text-[13px] font-semibold">
+                    <Text className="text-app-muted text-[13px] font-semibold">Est. Fees</Text>
+                    <Text className="text-app-text text-[13px] font-semibold">
                       Rs {totalFees > 0 ? totalFees.toFixed(2) : '1.35'}
                     </Text>
                   </View>
                 </View>
 
-                <View className="bg-[#1C1E22] rounded-2xl px-4 py-1 mb-4 border border-[#25272D]">
+                <View className="bg-app-input rounded-2xl px-4 py-1 mb-4 border border-app-border">
                   <DetailRow label="Estimated Cost" value={`Rs ${estCost.toFixed(2)}`} />
                   <DetailRow label="Buying Power" value={`Rs ${order.availableBalance.toLocaleString(undefined, { maximumFractionDigits: 2 })}`} />
                   <View className="flex-row justify-between py-2.5">
-                    <Text className="text-white text-[14px] font-bold">Total</Text>
+                    <Text className="text-app-text text-[14px] font-bold">Total</Text>
                     <Text className="text-[15px] font-bold" style={{ color: ACCENT }}>
                       Rs {order.totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </Text>
                   </View>
                 </View>
 
-                <Text className="text-[#5C6068] text-[11px] text-center mb-4 leading-4">
+                <Text className="text-app-muted text-[11px] text-center mb-4 leading-4">
                   After order, buying power ≈ Rs{' '}
                   {afterOrder.toLocaleString(undefined, { maximumFractionDigits: 2 })}. Investments are subject to
                   market risk.
@@ -293,7 +298,7 @@ export const SpotOrderSheet: React.FC<SpotOrderSheetProps> = ({ visible, order, 
                   <Text className="text-black font-bold text-[15px]">Confirm {sideDisplay}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={onClose} activeOpacity={0.7} className="py-2 items-center">
-                  <Text className="text-[#8A8D93] font-semibold text-[13px]">Edit Order</Text>
+                  <Text className="text-app-muted font-semibold text-[13px]">Edit Order</Text>
                 </TouchableOpacity>
               </ScrollView>
             </>
@@ -302,7 +307,7 @@ export const SpotOrderSheet: React.FC<SpotOrderSheetProps> = ({ visible, order, 
           {/* ── PROCESSING ── */}
           {phase === 'processing' && (
             <View className="px-6 pt-4 pb-10 items-center">
-              <View className="w-16 h-16 rounded-full border-4 border-[#25272D] items-center justify-center mb-6 mt-2">
+              <View className="w-16 h-16 rounded-full border-4 border-app-border items-center justify-center mb-6 mt-2">
                 <Animated.View
                   style={[
                     {
@@ -317,8 +322,8 @@ export const SpotOrderSheet: React.FC<SpotOrderSheetProps> = ({ visible, order, 
                   ]}
                 />
               </View>
-              <Text className="text-white text-[17px] font-bold mb-1">Sending to exchange...</Text>
-              <Text className="text-[#8A8D93] text-[12px] mb-6">Please do not close the app</Text>
+              <Text className="text-app-text text-[17px] font-bold mb-1">Sending to exchange...</Text>
+              <Text className="text-app-muted text-[12px] mb-6">Please do not close the app</Text>
 
               <View className="w-full">
                 {STEPS.map((step, index) => {
@@ -328,11 +333,15 @@ export const SpotOrderSheet: React.FC<SpotOrderSheetProps> = ({ visible, order, 
                     <View key={step} className="flex-row items-center mb-3.5">
                       <View
                         className="w-3.5 h-3.5 rounded-full mr-3"
-                        style={{ backgroundColor: done ? BUY : active ? ACCENT : '#333' }}
+                        style={{
+                          backgroundColor: done ? BUY : active ? ACCENT : colors.border,
+                        }}
                       />
                       <Text
                         className="text-[13px] font-semibold"
-                        style={{ color: done ? BUY : active ? ACCENT : '#444' }}
+                        style={{
+                          color: done ? BUY : active ? ACCENT : colors.muted,
+                        }}
                       >
                         {step}
                       </Text>
@@ -357,22 +366,22 @@ export const SpotOrderSheet: React.FC<SpotOrderSheetProps> = ({ visible, order, 
                 >
                   <Ionicons name="checkmark" size={34} color={sideColor} />
                 </View>
-                <Text className="text-white text-[20px] font-bold mb-1">
+                <Text className="text-app-text text-[20px] font-bold mb-1">
                   {isPending ? 'Order Submitted!' : 'Order Placed!'}
                 </Text>
-                <Text className="text-[#8A8D93] text-[13px] mb-3 text-center">
+                <Text className="text-app-muted text-[13px] mb-3 text-center">
                   {isPending
                     ? `Your ${sideDisplay.toLowerCase()} order is pending on PSX`
                     : `Your ${sideDisplay.toLowerCase()} order is live on PSX`}
                 </Text>
-                <View className="bg-[#1C1E22] px-3.5 py-1.5 rounded-full border border-[#25272D]">
-                  <Text className="text-[#8A8D93] text-[11px] font-semibold">
+                <View className="bg-app-input px-3.5 py-1.5 rounded-full border border-app-border">
+                  <Text className="text-app-muted text-[11px] font-semibold">
                     Order ID {String(finalData?.orderId ?? '')}
                   </Text>
                 </View>
               </View>
 
-              <View className="bg-[#1C1E22] rounded-2xl px-4 py-1 mb-6 border border-[#25272D]">
+              <View className="bg-app-input rounded-2xl px-4 py-1 mb-6 border border-app-border">
                 <DetailRow label="Stock" value={`${order.symbol} · ${order.quantity.toLocaleString()} sh`} />
                 <DetailRow label="Type" value={`${sideDisplay} · ${orderType}`} valueColor={sideColor} />
                 <DetailRow label="Price" value={`Rs ${order.price.toFixed(2)}`} />
@@ -381,7 +390,7 @@ export const SpotOrderSheet: React.FC<SpotOrderSheetProps> = ({ visible, order, 
                   value={`Rs ${order.totalCost.toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
                 />
                 <View className="flex-row justify-between py-2.5">
-                  <Text className="text-[#8A8D93] text-[13px] font-semibold">Status</Text>
+                  <Text className="text-app-muted text-[13px] font-semibold">Status</Text>
                   <Text className="text-[13px] font-semibold" style={{ color: BUY }}>
                     ● {String(finalData?.status ?? '')}
                   </Text>
@@ -415,7 +424,7 @@ export const SpotOrderSheet: React.FC<SpotOrderSheetProps> = ({ visible, order, 
               )}
 
               <TouchableOpacity onPress={() => onClose()} activeOpacity={0.7} className="py-2.5 items-center">
-                <Text className="text-[#8A8D93] font-semibold text-[13px]">Done</Text>
+                <Text className="text-app-muted font-semibold text-[13px]">Done</Text>
               </TouchableOpacity>
             </ScrollView>
           )}

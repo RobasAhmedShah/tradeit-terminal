@@ -12,6 +12,7 @@ import Animated, {
   withDelay,
 } from 'react-native-reanimated';
 import { usePortfolio } from '../../context/PortfolioContext';
+import { useTheme } from '../../context/ThemeContext';
 import { useAppAlert } from '../../context/AppAlertContext';
 import { formatPortfolioRs } from '../../data/mockPortfolio';
 import { safeBack } from '../../utils/navigation';
@@ -48,6 +49,7 @@ const PROGRESS_LABELS = ['Method', 'Bank', 'Amount', 'Review'];
 type Step = 1 | 2 | 3 | 4 | 5 | 6;
 
 function WithdrawSuccessHero() {
+  const { colors } = useTheme();
   const ringScale = useSharedValue(0.5);
   const ringOpacity = useSharedValue(0);
   const iconScale = useSharedValue(0);
@@ -101,7 +103,7 @@ function WithdrawSuccessHero() {
               width: 70,
               height: 70,
               borderRadius: 35,
-              backgroundColor: '#0d2010',
+              backgroundColor: 'rgba(14,203,129,0.12)',
               alignItems: 'center',
               justifyContent: 'center',
             },
@@ -112,10 +114,10 @@ function WithdrawSuccessHero() {
         </Animated.View>
       </Animated.View>
       <Animated.View style={[{ alignItems: 'center', marginTop: 16 }, contentStyle]}>
-        <Text style={{ color: '#fff', fontSize: 22, fontWeight: '700', textAlign: 'center' }}>
+        <Text style={{ color: colors.text, fontSize: 22, fontWeight: '700', textAlign: 'center' }}>
           Withdrawal Request Submitted!
         </Text>
-        <Text style={{ color: '#555', fontSize: 13, textAlign: 'center', marginTop: 6, marginBottom: 24, lineHeight: 20 }}>
+        <Text style={{ color: colors.muted, fontSize: 13, textAlign: 'center', marginTop: 6, marginBottom: 24, lineHeight: 20 }}>
           Your withdrawal request has been submitted{'\n'}successfully.
         </Text>
       </Animated.View>
@@ -125,6 +127,7 @@ function WithdrawSuccessHero() {
 
 export default function WithdrawScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { withdrawCash, summary } = usePortfolio();
   const { showAlert } = useAppAlert();
@@ -202,20 +205,20 @@ export default function WithdrawScreen() {
 
   // ── Shared: NavBar ────────────────────────────────────────────────────────
   const renderNavBar = () => (
-    <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: '#1e1e1e' }}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: colors.border }}>
       <TouchableOpacity onPress={goBack} style={{ width: 36 }}>
-        <Ionicons name="arrow-back" size={20} color="#fff" />
+        <Ionicons name="arrow-back" size={20} color={colors.text} />
       </TouchableOpacity>
       <View style={{ flex: 1, alignItems: 'center' }}>
-        <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>Withdraw</Text>
+        <Text style={{ color: colors.text, fontSize: 16, fontWeight: '600' }}>Withdraw</Text>
       </View>
       {step === 6 ? (
         <TouchableOpacity onPress={() => safeBack(router, '/(tabs)/portfolio')} style={{ width: 36, alignItems: 'flex-end' }}>
-          <Ionicons name="close" size={20} color="#555" />
+          <Ionicons name="close" size={20} color={colors.muted} />
         </TouchableOpacity>
       ) : (
         <TouchableOpacity style={{ width: 36, alignItems: 'flex-end' }}>
-          <Ionicons name="help-circle-outline" size={20} color="#555" />
+          <Ionicons name="help-circle-outline" size={20} color={colors.muted} />
         </TouchableOpacity>
       )}
     </View>
@@ -232,7 +235,7 @@ export default function WithdrawScreen() {
           return (
             <React.Fragment key={label}>
               {idx > 0 && (
-                <View style={{ flex: 1, height: 1.5, backgroundColor: idx <= progressIndex ? '#f97316' : '#1e1e1e' }} />
+                <View style={{ flex: 1, height: 1.5, backgroundColor: idx <= progressIndex ? '#f97316' : colors.border }} />
               )}
               <View style={{ alignItems: 'center' }}>
                 <View style={{
@@ -240,14 +243,14 @@ export default function WithdrawScreen() {
                   alignItems: 'center', justifyContent: 'center',
                   backgroundColor: isCompleted ? '#f97316' : 'transparent',
                   borderWidth: isCompleted ? 0 : isCurrent ? 2 : 1.5,
-                  borderColor: isCompleted ? '#f97316' : isCurrent ? '#f97316' : '#333',
+                  borderColor: isCompleted ? '#f97316' : isCurrent ? '#f97316' : colors.border,
                 }}>
                   {isCompleted
                     ? <Ionicons name="checkmark" size={14} color="#fff" />
-                    : <Text style={{ color: isCurrent ? '#f97316' : '#333', fontSize: 11, fontWeight: '700' }}>{idx + 1}</Text>
+                    : <Text style={{ color: isCurrent ? '#f97316' : colors.mutedDarker, fontSize: 11, fontWeight: '700' }}>{idx + 1}</Text>
                   }
                 </View>
-                <Text style={{ fontSize: 9, marginTop: 4, color: isCurrent ? '#f97316' : '#444', fontWeight: isCurrent ? '600' : '400' }}>
+                <Text style={{ fontSize: 9, marginTop: 4, color: isCurrent ? '#f97316' : colors.muted, fontWeight: isCurrent ? '600' : '400' }}>
                   {label}
                 </Text>
               </View>
@@ -284,14 +287,14 @@ export default function WithdrawScreen() {
     else if (step === 5) { label = 'Verify & Continue'; onPress = () => setStep(6); }
 
     return (
-      <View style={{ paddingHorizontal: 14, paddingTop: 10, paddingBottom: Math.max(insets.bottom, 12), borderTopWidth: 0.5, borderTopColor: '#1e1e1e', backgroundColor: '#050505' }}>
+      <View style={{ paddingHorizontal: 14, paddingTop: 10, paddingBottom: Math.max(insets.bottom, 12), borderTopWidth: 0.5, borderTopColor: colors.border, backgroundColor: 'transparent' }}>
         <TouchableOpacity
           onPress={onPress}
           disabled={disabled}
           activeOpacity={0.85}
           style={{ backgroundColor: '#f97316', borderRadius: 100, paddingVertical: 15, opacity: disabled ? 0.4 : 1 }}
         >
-          <Text style={{ color: '#fff', fontSize: 15, fontWeight: '700', textAlign: 'center' }}>{label}</Text>
+          <Text style={{ color: '#000', fontSize: 15, fontWeight: '700', textAlign: 'center' }}>{label}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -301,18 +304,18 @@ export default function WithdrawScreen() {
   const renderStep1 = () => (
     <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }}>
       {/* Balance Block */}
-      <View style={{ paddingHorizontal: 14, paddingTop: 16, paddingBottom: 14, borderBottomWidth: 0.5, borderBottomColor: '#1e1e1e', marginBottom: 14 }}>
-        <Text style={{ color: '#555', fontSize: 11, fontWeight: '500', marginBottom: 4 }}>Total Balance</Text>
+      <View style={{ paddingHorizontal: 14, paddingTop: 16, paddingBottom: 14, borderBottomWidth: 0.5, borderBottomColor: colors.border, marginBottom: 14 }}>
+        <Text style={{ color: colors.muted, fontSize: 11, fontWeight: '500', marginBottom: 4 }}>Total Balance</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Text style={{ color: '#fff', fontSize: 26, fontWeight: '700', letterSpacing: -0.5 }}>{balanceLabel}</Text>
-          <Ionicons name="eye-outline" size={16} color="#555" style={{ marginLeft: 8 }} />
+          <Text style={{ color: colors.text, fontSize: 26, fontWeight: '700', letterSpacing: -0.5 }}>{balanceLabel}</Text>
+          <Ionicons name="eye-outline" size={16} color={colors.muted} style={{ marginLeft: 8 }} />
         </View>
-        <Text style={{ color: '#555', fontSize: 11, marginTop: 6 }}>Spot wallet · available to withdraw</Text>
+        <Text style={{ color: colors.muted, fontSize: 11, marginTop: 6 }}>Spot wallet · available to withdraw</Text>
         <Text style={{ color: '#f97316', fontSize: 13, fontWeight: '600', marginTop: 2 }}>{availableLabel}</Text>
       </View>
 
       {/* Method Selection */}
-      <Text style={{ color: '#e0e0e0', fontSize: 13, fontWeight: '600', marginHorizontal: 14, marginBottom: 10 }}>Choose Withdrawal Method</Text>
+      <Text style={{ color: colors.text, fontSize: 13, fontWeight: '600', marginHorizontal: 14, marginBottom: 10 }}>Choose Withdrawal Method</Text>
       {METHODS.map((method) => {
         const isSelected = selectedMethod === method.id;
         return (
@@ -320,27 +323,27 @@ export default function WithdrawScreen() {
             key={method.id}
             onPress={() => setSelectedMethod(method.id)}
             style={{
-              backgroundColor: '#161616', borderRadius: 12, marginHorizontal: 14, marginBottom: 8, padding: 14,
+              backgroundColor: colors.card, borderRadius: 12, marginHorizontal: 14, marginBottom: 8, padding: 14,
               flexDirection: 'row', alignItems: 'center',
-              borderWidth: 1.5, borderColor: isSelected ? '#f97316' : '#1e1e1e',
+              borderWidth: 1.5, borderColor: isSelected ? '#f97316' : colors.border,
             }}
           >
-            <View style={{ width: 40, height: 40, borderRadius: 8, backgroundColor: '#1e1e1e', alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ width: 40, height: 40, borderRadius: 8, backgroundColor: colors.cardSoft, alignItems: 'center', justifyContent: 'center' }}>
               <Ionicons name={method.icon as any} size={20} color={method.color} />
             </View>
             <View style={{ flex: 1, marginLeft: 12 }}>
-              <Text style={{ color: '#fff', fontSize: 13, fontWeight: '600' }}>{method.title}</Text>
-              <Text style={{ color: '#555', fontSize: 11, marginTop: 2 }}>{method.sub}</Text>
+              <Text style={{ color: colors.text, fontSize: 13, fontWeight: '600' }}>{method.title}</Text>
+              <Text style={{ color: colors.muted, fontSize: 11, marginTop: 2 }}>{method.sub}</Text>
             </View>
-            <Ionicons name="chevron-forward" size={16} color="#333" />
+            <Ionicons name="chevron-forward" size={16} color={colors.mutedDarker} />
           </TouchableOpacity>
         );
       })}
 
       {/* Info Notice */}
-      <View style={{ marginHorizontal: 14, marginTop: 6, backgroundColor: '#111111', borderRadius: 10, padding: 12, flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
-        <Ionicons name="information-circle-outline" size={14} color="#555" style={{ marginTop: 1 }} />
-        <Text style={{ color: '#555', fontSize: 11, lineHeight: 17, flex: 1 }}>
+      <View style={{ marginHorizontal: 14, marginTop: 6, backgroundColor: colors.cardSoft, borderRadius: 10, padding: 12, flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
+        <Ionicons name="information-circle-outline" size={14} color={colors.muted} style={{ marginTop: 1 }} />
+        <Text style={{ color: colors.muted, fontSize: 11, lineHeight: 17, flex: 1 }}>
           Withdrawals are sent from your Spot wallet only. Transfer funds from Futures to Spot first if needed. Usually processed within 24 hours on working days.
         </Text>
       </View>
@@ -351,7 +354,7 @@ export default function WithdrawScreen() {
   const renderStep2 = () => (
     <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 14, paddingBottom: 20 }}>
       {renderProgress()}
-      <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600', marginTop: 4, marginBottom: 14 }}>Select Bank Account</Text>
+      <Text style={{ color: colors.text, fontSize: 16, fontWeight: '600', marginTop: 4, marginBottom: 14 }}>Select Bank Account</Text>
 
       {BANKS.map((bank) => {
         const isSelected = selectedBank === bank.id;
@@ -360,13 +363,13 @@ export default function WithdrawScreen() {
             key={bank.id}
             onPress={() => setSelectedBank(bank.id)}
             style={{
-              backgroundColor: '#161616', borderRadius: 12, padding: 14, marginBottom: 8,
+              backgroundColor: colors.card, borderRadius: 12, padding: 14, marginBottom: 8,
               flexDirection: 'row', alignItems: 'center',
-              borderWidth: 1.5, borderColor: isSelected ? '#f97316' : '#1e1e1e',
+              borderWidth: 1.5, borderColor: isSelected ? '#f97316' : colors.border,
             }}
           >
             {/* Radio */}
-            <View style={{ width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', borderWidth: isSelected ? 2 : 1.5, borderColor: isSelected ? '#f97316' : '#333' }}>
+            <View style={{ width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', borderWidth: isSelected ? 2 : 1.5, borderColor: isSelected ? '#f97316' : colors.border }}>
               {isSelected && <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: '#f97316' }} />}
             </View>
             {/* Logo */}
@@ -375,12 +378,12 @@ export default function WithdrawScreen() {
             </View>
             {/* Info */}
             <View style={{ flex: 1, marginLeft: 10 }}>
-              <Text style={{ color: '#fff', fontSize: 13, fontWeight: '600' }}>{bank.name}</Text>
-              <Text style={{ color: '#555', fontSize: 11, marginTop: 2 }}>{bank.number}</Text>
-              <Text style={{ color: '#555', fontSize: 11, marginTop: 1 }}>{bank.holder}</Text>
+              <Text style={{ color: colors.text, fontSize: 13, fontWeight: '600' }}>{bank.name}</Text>
+              <Text style={{ color: colors.muted, fontSize: 11, marginTop: 2 }}>{bank.number}</Text>
+              <Text style={{ color: colors.muted, fontSize: 11, marginTop: 1 }}>{bank.holder}</Text>
             </View>
             {/* Verified badge */}
-            <View style={{ backgroundColor: '#0d2010', borderRadius: 4, paddingVertical: 2, paddingHorizontal: 7 }}>
+            <View style={{ backgroundColor: 'rgba(14,203,129,0.12)', borderRadius: 4, paddingVertical: 2, paddingHorizontal: 7 }}>
               <Text style={{ color: '#22c55e', fontSize: 9, fontWeight: '600' }}>Verified</Text>
             </View>
           </TouchableOpacity>
@@ -389,11 +392,11 @@ export default function WithdrawScreen() {
 
       {/* Add New Bank */}
       <TouchableOpacity style={{
-        backgroundColor: 'transparent', borderWidth: 1.5, borderColor: '#333', borderStyle: 'dashed',
+        backgroundColor: 'transparent', borderWidth: 1.5, borderColor: colors.border, borderStyle: 'dashed',
         borderRadius: 12, padding: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
       }}>
-        <Ionicons name="add" size={16} color="#555" />
-        <Text style={{ color: '#555', fontSize: 13, fontWeight: '500' }}>Add New Bank Account</Text>
+        <Ionicons name="add" size={16} color={colors.muted} />
+        <Text style={{ color: colors.muted, fontSize: 13, fontWeight: '500' }}>Add New Bank Account</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -402,17 +405,17 @@ export default function WithdrawScreen() {
   const renderStep3 = () => (
     <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 14, paddingBottom: 20 }}>
       {renderProgress()}
-      <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600', marginTop: 4, marginBottom: 16 }}>Enter Withdrawal Amount</Text>
+      <Text style={{ color: colors.text, fontSize: 16, fontWeight: '600', marginTop: 4, marginBottom: 16 }}>Enter Withdrawal Amount</Text>
 
       {/* Balance Row */}
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-        <Text style={{ color: '#555', fontSize: 12 }}>Available Balance</Text>
+        <Text style={{ color: colors.muted, fontSize: 12 }}>Available Balance</Text>
         <Text style={{ color: '#22c55e', fontSize: 12, fontWeight: '600' }}>{availableLabel}</Text>
       </View>
 
       {/* Amount Input */}
-      <Text style={{ color: '#555', fontSize: 12, marginBottom: 6 }}>Amount (PKR)</Text>
-      <View style={{ backgroundColor: '#161616', borderRadius: 10, paddingVertical: 16, paddingHorizontal: 14, borderWidth: 1.5, borderColor: amount ? '#f97316' : '#1e1e1e' }}>
+      <Text style={{ color: colors.muted, fontSize: 12, marginBottom: 6 }}>Amount (PKR)</Text>
+      <View style={{ backgroundColor: colors.card, borderRadius: 10, paddingVertical: 16, paddingHorizontal: 14, borderWidth: 1.5, borderColor: amount ? '#f97316' : colors.border }}>
         <TextInput
           value={amount}
           onChangeText={(text) => {
@@ -421,21 +424,21 @@ export default function WithdrawScreen() {
             setSelectedQuickAmount(null);
           }}
           placeholder="0"
-          placeholderTextColor="#333"
+          placeholderTextColor={colors.mutedDarker}
           keyboardType="numeric"
-          style={{ fontSize: 28, fontWeight: '700', color: '#fff' }}
+          style={{ fontSize: 28, fontWeight: '700', color: colors.text }}
         />
       </View>
-      <Text style={{ color: '#555', fontSize: 11, marginTop: 8 }}>Minimum Withdrawal: PKR 10</Text>
+      <Text style={{ color: colors.muted, fontSize: 11, marginTop: 8 }}>Minimum Withdrawal: PKR 10</Text>
       {exceedsBalance && parsedAmount > 0 && (
         <Text style={{ color: '#ef4444', fontSize: 11, marginTop: 6 }}>
           Amount exceeds available balance ({availableLabel}).
         </Text>
       )}
-      <Text style={{ color: '#555', fontSize: 11, marginTop: 2 }}>Daily Limit: PKR 500,000.00</Text>
+      <Text style={{ color: colors.muted, fontSize: 11, marginTop: 2 }}>Daily Limit: PKR 500,000.00</Text>
 
       {/* Quick Amounts */}
-      <Text style={{ color: '#e0e0e0', fontSize: 12, fontWeight: '600', marginTop: 16, marginBottom: 8 }}>Quick Amounts</Text>
+      <Text style={{ color: colors.text, fontSize: 12, fontWeight: '600', marginTop: 16, marginBottom: 8 }}>Quick Amounts</Text>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
         {QUICK_AMOUNTS.map((qa) => {
           const isSelected = selectedQuickAmount === qa;
@@ -445,11 +448,11 @@ export default function WithdrawScreen() {
               onPress={() => { setSelectedQuickAmount(qa); setAmount(qa.toString()); }}
               style={{
                 flexBasis: '31%', paddingVertical: 10, borderRadius: 8, alignItems: 'center',
-                backgroundColor: isSelected ? '#f97316' : '#161616',
-                borderWidth: 1, borderColor: isSelected ? '#f97316' : '#1e1e1e',
+                backgroundColor: isSelected ? '#f97316' : colors.cardSoft,
+                borderWidth: 1, borderColor: isSelected ? '#f97316' : colors.border,
               }}
             >
-              <Text style={{ color: isSelected ? '#fff' : '#8A8D93', fontSize: 12, fontWeight: '500' }}>
+              <Text style={{ color: isSelected ? '#fff' : colors.muted, fontSize: 12, fontWeight: '500' }}>
                 +{qa.toLocaleString()}
               </Text>
             </TouchableOpacity>
@@ -457,9 +460,9 @@ export default function WithdrawScreen() {
         })}
         <TouchableOpacity
           onPress={() => { setAmount('12456789'); setSelectedQuickAmount(null); }}
-          style={{ flexBasis: '31%', paddingVertical: 10, borderRadius: 8, alignItems: 'center', backgroundColor: '#161616', borderWidth: 1, borderColor: '#1e1e1e' }}
+          style={{ flexBasis: '31%', paddingVertical: 10, borderRadius: 8, alignItems: 'center', backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border }}
         >
-          <Text style={{ color: '#8A8D93', fontSize: 12, fontWeight: '500' }}>Max</Text>
+          <Text style={{ color: colors.muted, fontSize: 12, fontWeight: '500' }}>Max</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -469,59 +472,59 @@ export default function WithdrawScreen() {
   const renderStep4 = () => (
     <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 14, paddingBottom: 20 }}>
       {renderProgress()}
-      <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600', marginTop: 4, marginBottom: 14 }}>Review Withdrawal Details</Text>
+      <Text style={{ color: colors.text, fontSize: 16, fontWeight: '600', marginTop: 4, marginBottom: 14 }}>Review Withdrawal Details</Text>
 
-      <View style={{ backgroundColor: '#161616', borderRadius: 12, padding: 14 }}>
+      <View style={{ backgroundColor: colors.card, borderRadius: 12, padding: 14 }}>
         {/* Source wallet */}
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: '#1e1e1e' }}>
-          <Text style={{ color: '#555', fontSize: 12, flex: 1 }}>From</Text>
-          <Text style={{ color: '#fff', fontSize: 12, fontWeight: '600' }}>Spot Wallet</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: colors.border }}>
+          <Text style={{ color: colors.muted, fontSize: 12, flex: 1 }}>From</Text>
+          <Text style={{ color: colors.text, fontSize: 12, fontWeight: '600' }}>Spot Wallet</Text>
         </View>
 
         {/* Withdrawal Method */}
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: '#1e1e1e' }}>
-          <Text style={{ color: '#555', fontSize: 12, flex: 1 }}>Withdrawal Method</Text>
-          <Text style={{ color: '#fff', fontSize: 12, fontWeight: '600' }}>Bank Transfer</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: colors.border }}>
+          <Text style={{ color: colors.muted, fontSize: 12, flex: 1 }}>Withdrawal Method</Text>
+          <Text style={{ color: colors.text, fontSize: 12, fontWeight: '600' }}>Bank Transfer</Text>
         </View>
 
         {/* Bank Account */}
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: '#1e1e1e' }}>
-          <Text style={{ color: '#555', fontSize: 12, flex: 1 }}>Bank Account</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: colors.border }}>
+          <Text style={{ color: colors.muted, fontSize: 12, flex: 1 }}>Bank Account</Text>
           <View style={{ alignItems: 'flex-end' }}>
-            <Text style={{ color: '#fff', fontSize: 12, fontWeight: '600' }}>{selectedBankData.name}</Text>
-            <Text style={{ color: '#555', fontSize: 11, marginTop: 1 }}>{selectedBankData.number}</Text>
+            <Text style={{ color: colors.text, fontSize: 12, fontWeight: '600' }}>{selectedBankData.name}</Text>
+            <Text style={{ color: colors.muted, fontSize: 11, marginTop: 1 }}>{selectedBankData.number}</Text>
           </View>
         </View>
 
         {/* Account Holder */}
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: '#1e1e1e' }}>
-          <Text style={{ color: '#555', fontSize: 12, flex: 1 }}>Account Holder</Text>
-          <Text style={{ color: '#fff', fontSize: 12, fontWeight: '500' }}>{selectedBankData.holder}</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: colors.border }}>
+          <Text style={{ color: colors.muted, fontSize: 12, flex: 1 }}>Account Holder</Text>
+          <Text style={{ color: colors.text, fontSize: 12, fontWeight: '500' }}>{selectedBankData.holder}</Text>
         </View>
 
         {/* Amount */}
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: '#1e1e1e' }}>
-          <Text style={{ color: '#555', fontSize: 12, flex: 1 }}>Amount</Text>
-          <Text style={{ color: '#fff', fontSize: 12, fontWeight: '500' }}>{displayAmount}</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: colors.border }}>
+          <Text style={{ color: colors.muted, fontSize: 12, flex: 1 }}>Amount</Text>
+          <Text style={{ color: colors.text, fontSize: 12, fontWeight: '500' }}>{displayAmount}</Text>
         </View>
 
         {/* Processing Fee */}
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: '#1e1e1e' }}>
-          <Text style={{ color: '#555', fontSize: 12, flex: 1 }}>Processing Fee</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: colors.border }}>
+          <Text style={{ color: colors.muted, fontSize: 12, flex: 1 }}>Processing Fee</Text>
           <Text style={{ color: '#22c55e', fontSize: 12, fontWeight: '600' }}>{WITHDRAW_MOCK.processingFee}</Text>
         </View>
 
         {/* You Will Receive — no bottom border */}
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10 }}>
-          <Text style={{ color: '#e0e0e0', fontSize: 13, fontWeight: '600', flex: 1 }}>You Will Receive</Text>
+          <Text style={{ color: colors.text, fontSize: 13, fontWeight: '600', flex: 1 }}>You Will Receive</Text>
           <Text style={{ color: '#22c55e', fontSize: 14, fontWeight: '700' }}>{displayAmount}</Text>
         </View>
       </View>
 
       {/* Warning */}
-      <View style={{ marginTop: 12, backgroundColor: '#111111', borderRadius: 10, padding: 12, flexDirection: 'row', gap: 8 }}>
-        <Ionicons name="information-circle-outline" size={14} color="#555" style={{ marginTop: 1 }} />
-        <Text style={{ color: '#555', fontSize: 11, flex: 1, lineHeight: 17 }}>
+      <View style={{ marginTop: 12, backgroundColor: colors.cardSoft, borderRadius: 10, padding: 12, flexDirection: 'row', gap: 8 }}>
+        <Ionicons name="information-circle-outline" size={14} color={colors.muted} style={{ marginTop: 1 }} />
+        <Text style={{ color: colors.muted, fontSize: 11, flex: 1, lineHeight: 17 }}>
           Withdrawals are processed within 24 hours on working days. Make sure bank details are correct.
         </Text>
       </View>
@@ -533,8 +536,8 @@ export default function WithdrawScreen() {
     <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 14, paddingBottom: 20 }}>
       {/* Header */}
       <View style={{ alignItems: 'center', paddingTop: 30, paddingBottom: 24 }}>
-        <Text style={{ color: '#fff', fontSize: 22, fontWeight: '700', textAlign: 'center', marginBottom: 8 }}>Confirm Withdrawal</Text>
-        <Text style={{ color: '#555', fontSize: 13, textAlign: 'center', lineHeight: 20 }}>
+        <Text style={{ color: colors.text, fontSize: 22, fontWeight: '700', textAlign: 'center', marginBottom: 8 }}>Confirm Withdrawal</Text>
+        <Text style={{ color: colors.muted, fontSize: 13, textAlign: 'center', lineHeight: 20 }}>
           Enter the 6-digit code sent to your{'\n'}registered mobile number {WITHDRAW_MOCK.maskedPhone}
         </Text>
       </View>
@@ -547,8 +550,8 @@ export default function WithdrawScreen() {
             <View
               key={idx}
               style={{
-                width: 44, height: 52, backgroundColor: '#161616', borderRadius: 10,
-                borderWidth: 1.5, borderColor: isActive ? '#f97316' : '#1e1e1e',
+                width: 44, height: 52, backgroundColor: colors.card, borderRadius: 10,
+                borderWidth: 1.5, borderColor: isActive ? '#f97316' : colors.border,
                 justifyContent: 'center', alignItems: 'center',
               }}
             >
@@ -560,7 +563,7 @@ export default function WithdrawScreen() {
                 keyboardType="numeric"
                 maxLength={1}
                 selectTextOnFocus
-                style={{ textAlign: 'center', fontSize: 22, fontWeight: '700', color: '#fff', width: '100%', height: '100%' }}
+                style={{ textAlign: 'center', fontSize: 22, fontWeight: '700', color: colors.text, width: '100%', height: '100%' }}
               />
             </View>
           );
@@ -575,16 +578,16 @@ export default function WithdrawScreen() {
           </TouchableOpacity>
         ) : (
           <>
-            <Text style={{ color: '#555', fontSize: 13 }}>Resend Code in</Text>
+            <Text style={{ color: colors.muted, fontSize: 13 }}>Resend Code in</Text>
             <Text style={{ color: '#f97316', fontSize: 13, fontWeight: '600' }}>{formatResendTime()}</Text>
           </>
         )}
       </View>
 
       {/* Security Notice */}
-      <View style={{ marginTop: 20, backgroundColor: '#111111', borderRadius: 10, padding: 12, flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
+      <View style={{ marginTop: 20, backgroundColor: colors.cardSoft, borderRadius: 10, padding: 12, flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
         <Ionicons name="shield-checkmark-outline" size={16} color="#22c55e" style={{ marginTop: 1 }} />
-        <Text style={{ color: '#555', fontSize: 12, flex: 1, lineHeight: 17 }}>
+        <Text style={{ color: colors.muted, fontSize: 12, flex: 1, lineHeight: 17 }}>
           For your security, please do not share your verification code with anyone.
         </Text>
       </View>
@@ -608,28 +611,28 @@ export default function WithdrawScreen() {
         <WithdrawSuccessHero />
 
         {/* Receipt Card */}
-        <View style={{ backgroundColor: '#161616', borderRadius: 12, padding: 14 }}>
+        <View style={{ backgroundColor: colors.card, borderRadius: 12, padding: 14 }}>
           {receiptRows.map((row, idx) => (
-            <View key={row.label} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 9, borderBottomWidth: idx < receiptRows.length - 1 ? 0.5 : 0, borderBottomColor: '#111111' }}>
-              <Text style={{ color: '#555', fontSize: 12 }}>{row.label}</Text>
+            <View key={row.label} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 9, borderBottomWidth: idx < receiptRows.length - 1 ? 0.5 : 0, borderBottomColor: colors.border }}>
+              <Text style={{ color: colors.muted, fontSize: 12 }}>{row.label}</Text>
               {row.isStatus ? (
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
                   <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#f97316' }} />
-                  <View style={{ backgroundColor: '#1a0e00', borderRadius: 5, paddingVertical: 3, paddingHorizontal: 8 }}>
+                  <View style={{ backgroundColor: colors.primaryTint, borderRadius: 5, paddingVertical: 3, paddingHorizontal: 8 }}>
                     <Text style={{ color: '#f97316', fontSize: 11, fontWeight: '600' }}>Pending</Text>
                   </View>
                 </View>
               ) : (
-                <Text style={{ color: '#e0e0e0', fontSize: 12, fontWeight: '500', ...(row.valueStyle ?? {}) }}>{row.value}</Text>
+                <Text style={{ color: colors.text, fontSize: 12, fontWeight: '500', ...(row.valueStyle ?? {}) }}>{row.value}</Text>
               )}
             </View>
           ))}
         </View>
 
         {/* Info Notice */}
-        <View style={{ backgroundColor: '#111111', borderRadius: 10, padding: 12, marginTop: 12, flexDirection: 'row', gap: 8 }}>
-          <Ionicons name="information-circle-outline" size={14} color="#555" style={{ marginTop: 1 }} />
-          <Text style={{ color: '#555', fontSize: 11, flex: 1, lineHeight: 17 }}>
+        <View style={{ backgroundColor: colors.cardSoft, borderRadius: 10, padding: 12, marginTop: 12, flexDirection: 'row', gap: 8 }}>
+          <Ionicons name="information-circle-outline" size={14} color={colors.muted} style={{ marginTop: 1 }} />
+          <Text style={{ color: colors.muted, fontSize: 11, flex: 1, lineHeight: 17 }}>
             You will receive a notification once your withdrawal has been processed.
           </Text>
         </View>
@@ -640,13 +643,13 @@ export default function WithdrawScreen() {
             onPress={() => router.replace({ pathname: '/orders', params: { tab: 'spot', view: 'history' } })}
             style={{ backgroundColor: '#f97316', borderRadius: 100, paddingVertical: 15, marginBottom: 10 }}
           >
-            <Text style={{ color: '#fff', fontSize: 14, fontWeight: '700', textAlign: 'center' }}>View Withdrawal History</Text>
+            <Text style={{ color: '#000', fontSize: 14, fontWeight: '700', textAlign: 'center' }}>View Withdrawal History</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => router.replace('/(tabs)/portfolio')}
             style={{ paddingVertical: 14, marginBottom: 30 }}
           >
-            <Text style={{ color: '#8A8D93', fontSize: 14, fontWeight: '500', textAlign: 'center' }}>Back to Portfolio</Text>
+            <Text style={{ color: colors.muted, fontSize: 14, fontWeight: '500', textAlign: 'center' }}>Back to Portfolio</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -655,7 +658,7 @@ export default function WithdrawScreen() {
 
   // ── Main ──────────────────────────────────────────────────────────────────
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#050505' }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }} edges={['top']}>
       {renderNavBar()}
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View style={{ flex: 1 }}>

@@ -17,7 +17,7 @@ interface StockDetailTabsProps {
 
 export const StockDetailTabs: React.FC<StockDetailTabsProps> = ({ activeTab, onTabChange }) => {
   return (
-    <View className="border-b border-[#2A2B2F] bg-[#050505]">
+    <View className="border-b border-app-border bg-app-bg">
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16 }}>
         {STOCK_DETAIL_TABS.map((tab) => {
           const isActive = activeTab === tab;
@@ -28,7 +28,7 @@ export const StockDetailTabs: React.FC<StockDetailTabsProps> = ({ activeTab, onT
               className={`py-3.5 mr-6 border-b-2 ${isActive ? 'border-[#FF8A00]' : 'border-transparent'}`}
             >
               <Text
-                className={`text-[13px] font-semibold ${isActive ? 'text-[#FF8A00]' : 'text-[#9CA3AF]'}`}
+                className={`text-[13px] font-semibold ${isActive ? 'text-[#FF8A00]' : 'text-app-muted'}`}
               >
                 {tab}
               </Text>

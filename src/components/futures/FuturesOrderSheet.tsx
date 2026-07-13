@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import { View, Text, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -61,16 +62,19 @@ const SHORT = '#F6465D';
 function DetailRow({
   label,
   value,
-  valueColor = '#FFFFFF',
+  valueColor,
 }: {
   label: string;
   value: string;
   valueColor?: string;
 }) {
   return (
-    <View className="flex-row justify-between py-2.5 border-b border-[#25272D]">
-      <Text className="text-[#8A8D93] text-[13px] font-semibold">{label}</Text>
-      <Text className="text-[13px] font-semibold" style={{ color: valueColor }}>
+    <View className="flex-row justify-between py-2.5 border-b border-app-border">
+      <Text className="text-app-muted text-[13px] font-semibold">{label}</Text>
+      <Text
+        className={`text-[13px] font-semibold ${valueColor ? '' : 'text-app-text'}`}
+        style={valueColor ? { color: valueColor } : undefined}
+      >
         {value}
       </Text>
     </View>
@@ -79,6 +83,7 @@ function DetailRow({
 
 export const FuturesOrderSheet: React.FC<FuturesOrderSheetProps> = ({ visible, order, onClose }) => {
   const router = useRouter();
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { fulfillFuturesOrder } = useFutures();
   const { pushNotification } = useNotifications();
@@ -192,25 +197,25 @@ export const FuturesOrderSheet: React.FC<FuturesOrderSheetProps> = ({ visible, o
         {phase === 'review' && <TouchableOpacity className="flex-1" activeOpacity={1} onPress={onClose} />}
 
         <View
-          className="bg-[#161719] rounded-t-3xl border-t border-[#25272D] max-h-[90%]"
+          className="bg-app-sheet rounded-t-3xl border-t border-app-border max-h-[90%]"
           style={{ paddingBottom: Math.max(insets.bottom, 0) }}
         >
           <View className="items-center pt-3 pb-1">
-            <View className="w-10 h-1 rounded-full bg-[#3A3D44]" />
+            <View className="w-10 h-1 rounded-full bg-app-border" />
           </View>
 
           {/* ── REVIEW ── */}
           {phase === 'review' && (
             <>
               <View className="flex-row items-center justify-between px-5 py-3">
-                <Text className="text-white text-[16px] font-bold">Confirm {order.futuresSide} Order</Text>
+                <Text className="text-app-text text-[16px] font-bold">Confirm {order.futuresSide} Order</Text>
                 <TouchableOpacity onPress={onClose} className="w-8 h-8 items-center justify-center">
-                  <Ionicons name="close" size={22} color="#8A8D93" />
+                  <Ionicons name="close" size={22} color={colors.muted} />
                 </TouchableOpacity>
               </View>
 
               <ScrollView className="px-5" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
-                <View className="flex-row items-center bg-[#1C1E22] rounded-2xl p-3.5 mb-4 border border-[#25272D]">
+                <View className="flex-row items-center bg-app-input rounded-2xl p-3.5 mb-4 border border-app-border">
                   <View
                     className="w-10 h-10 rounded-full items-center justify-center mr-3"
                     style={{ backgroundColor: `${sideColor}1A`, borderWidth: 1, borderColor: `${sideColor}33` }}
@@ -220,8 +225,8 @@ export const FuturesOrderSheet: React.FC<FuturesOrderSheetProps> = ({ visible, o
                     </Text>
                   </View>
                   <View className="flex-1">
-                    <Text className="text-white font-bold text-[15px]">{order.symbol}</Text>
-                    <Text className="text-[#8A8D93] text-[11px]" numberOfLines={1}>
+                    <Text className="text-app-text font-bold text-[15px]">{order.symbol}</Text>
+                    <Text className="text-app-muted text-[11px]" numberOfLines={1}>
                       {order.companyName} · {order.expiry ?? 'Perpetual'}
                     </Text>
                   </View>
@@ -233,21 +238,21 @@ export const FuturesOrderSheet: React.FC<FuturesOrderSheetProps> = ({ visible, o
                 </View>
 
                 <View className="flex-row gap-2 mb-4">
-                  <View className="flex-1 rounded-xl py-2 px-3 border border-[#25272D] bg-[#1C1E22]">
-                    <Text className="text-[#8A8D93] text-[10px] mb-0.5">Leverage</Text>
+                  <View className="flex-1 rounded-xl py-2 px-3 border border-app-border bg-app-input">
+                    <Text className="text-app-muted text-[10px] mb-0.5">Leverage</Text>
                     <Text className="text-[13px] font-bold" style={{ color: ACCENT }}>{order.leverage}x</Text>
                   </View>
-                  <View className="flex-1 rounded-xl py-2 px-3 border border-[#25272D] bg-[#1C1E22]">
-                    <Text className="text-[#8A8D93] text-[10px] mb-0.5">Margin</Text>
-                    <Text className="text-white text-[13px] font-bold">{order.marginMode}</Text>
+                  <View className="flex-1 rounded-xl py-2 px-3 border border-app-border bg-app-input">
+                    <Text className="text-app-muted text-[10px] mb-0.5">Margin</Text>
+                    <Text className="text-app-text text-[13px] font-bold">{order.marginMode}</Text>
                   </View>
-                  <View className="flex-1 rounded-xl py-2 px-3 border border-[#25272D] bg-[#1C1E22]">
-                    <Text className="text-[#8A8D93] text-[10px] mb-0.5">Type</Text>
-                    <Text className="text-white text-[13px] font-bold">{orderType}</Text>
+                  <View className="flex-1 rounded-xl py-2 px-3 border border-app-border bg-app-input">
+                    <Text className="text-app-muted text-[10px] mb-0.5">Type</Text>
+                    <Text className="text-app-text text-[13px] font-bold">{orderType}</Text>
                   </View>
                 </View>
 
-                <View className="bg-[#1C1E22] rounded-2xl px-4 py-1 mb-4 border border-[#25272D]">
+                <View className="bg-app-input rounded-2xl px-4 py-1 mb-4 border border-app-border">
                   <DetailRow label="Quantity" value={`${order.quantity.toLocaleString()} Lots`} />
                   <DetailRow
                     label={orderType === 'Market' ? 'Price' : 'Limit Price'}
@@ -260,14 +265,14 @@ export const FuturesOrderSheet: React.FC<FuturesOrderSheetProps> = ({ visible, o
                     valueColor={ACCENT}
                   />
                   <View className="flex-row justify-between py-2.5">
-                    <Text className="text-[#8A8D93] text-[13px] font-semibold">Est. Liq. Price</Text>
+                    <Text className="text-app-muted text-[13px] font-semibold">Est. Liq. Price</Text>
                     <Text className="text-[13px] font-semibold" style={{ color: SHORT }}>
                       Rs {formatFuturesPrice(liqPrice)}
                     </Text>
                   </View>
                 </View>
 
-                <Text className="text-[#5C6068] text-[11px] text-center mb-4 leading-4">
+                <Text className="text-app-muted text-[11px] text-center mb-4 leading-4">
                   {order.leverage}x leverage amplifies gains and losses. Available margin after order ≈ Rs{' '}
                   {afterOrder.toLocaleString(undefined, { maximumFractionDigits: 2 })}.
                 </Text>
@@ -281,7 +286,7 @@ export const FuturesOrderSheet: React.FC<FuturesOrderSheetProps> = ({ visible, o
                   <Text className="text-black font-bold text-[15px]">Confirm {order.futuresSide}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={onClose} activeOpacity={0.7} className="py-2 items-center">
-                  <Text className="text-[#8A8D93] font-semibold text-[13px]">Edit Order</Text>
+                  <Text className="text-app-muted font-semibold text-[13px]">Edit Order</Text>
                 </TouchableOpacity>
               </ScrollView>
             </>
@@ -290,7 +295,7 @@ export const FuturesOrderSheet: React.FC<FuturesOrderSheetProps> = ({ visible, o
           {/* ── PROCESSING ── */}
           {phase === 'processing' && (
             <View className="px-6 pt-4 pb-10 items-center">
-              <View className="w-16 h-16 rounded-full border-4 border-[#25272D] items-center justify-center mb-6 mt-2">
+              <View className="w-16 h-16 rounded-full border-4 border-app-border items-center justify-center mb-6 mt-2">
                 <Animated.View
                   style={[
                     {
@@ -305,8 +310,8 @@ export const FuturesOrderSheet: React.FC<FuturesOrderSheetProps> = ({ visible, o
                   ]}
                 />
               </View>
-              <Text className="text-white text-[17px] font-bold mb-1">Opening position...</Text>
-              <Text className="text-[#8A8D93] text-[12px] mb-6">Please do not close the app</Text>
+              <Text className="text-app-text text-[17px] font-bold mb-1">Opening position...</Text>
+              <Text className="text-app-muted text-[12px] mb-6">Please do not close the app</Text>
 
               <View className="w-full">
                 {STEPS.map((step, index) => {
@@ -316,9 +321,16 @@ export const FuturesOrderSheet: React.FC<FuturesOrderSheetProps> = ({ visible, o
                     <View key={step} className="flex-row items-center mb-3.5">
                       <View
                         className="w-3.5 h-3.5 rounded-full mr-3"
-                        style={{ backgroundColor: done ? LONG : active ? ACCENT : '#333' }}
+                        style={{
+                          backgroundColor: done ? LONG : active ? ACCENT : colors.border,
+                        }}
                       />
-                      <Text className="text-[13px] font-semibold" style={{ color: done ? LONG : active ? ACCENT : '#444' }}>
+                      <Text
+                        className="text-[13px] font-semibold"
+                        style={{
+                          color: done ? LONG : active ? ACCENT : colors.muted,
+                        }}
+                      >
                         {step}
                       </Text>
                     </View>
@@ -335,20 +347,20 @@ export const FuturesOrderSheet: React.FC<FuturesOrderSheetProps> = ({ visible, o
                 <View className="w-16 h-16 rounded-full items-center justify-center mb-3" style={{ backgroundColor: `${sideColor}1A` }}>
                   <Ionicons name="checkmark" size={34} color={sideColor} />
                 </View>
-                <Text className="text-white text-[20px] font-bold mb-1">
+                <Text className="text-app-text text-[20px] font-bold mb-1">
                   {isPending ? 'Order Submitted!' : 'Position Opened!'}
                 </Text>
-                <Text className="text-[#8A8D93] text-[13px] mb-3 text-center">
+                <Text className="text-app-muted text-[13px] mb-3 text-center">
                   {isPending
                     ? `Your ${order.futuresSide.toLowerCase()} limit order is queued on the exchange`
                     : `Your ${order.futuresSide.toLowerCase()} position on ${order.symbol} is now live`}
                 </Text>
-                <View className="bg-[#1C1E22] px-3.5 py-1.5 rounded-full border border-[#25272D]">
-                  <Text className="text-[#8A8D93] text-[11px] font-semibold">Order ID {finalData?.orderId ?? ''}</Text>
+                <View className="bg-app-input px-3.5 py-1.5 rounded-full border border-app-border">
+                  <Text className="text-app-muted text-[11px] font-semibold">Order ID {finalData?.orderId ?? ''}</Text>
                 </View>
               </View>
 
-              <View className="bg-[#1C1E22] rounded-2xl px-4 py-1 mb-6 border border-[#25272D]">
+              <View className="bg-app-input rounded-2xl px-4 py-1 mb-6 border border-app-border">
                 <DetailRow label="Contract" value={`${order.symbol} · ${order.quantity} lots`} />
                 <DetailRow label="Side" value={`${order.futuresSide} · ${orderType}`} valueColor={sideColor} />
                 <DetailRow label="Leverage" value={`${order.leverage}x ${order.marginMode}`} valueColor={ACCENT} />
@@ -358,7 +370,7 @@ export const FuturesOrderSheet: React.FC<FuturesOrderSheetProps> = ({ visible, o
                 />
                 <DetailRow label="Margin Used" value={`Rs ${formatFuturesPrice(order.totalCost)}`} />
                 <View className="flex-row justify-between py-2.5">
-                  <Text className="text-[#8A8D93] text-[13px] font-semibold">Status</Text>
+                  <Text className="text-app-muted text-[13px] font-semibold">Status</Text>
                   <Text className="text-[13px] font-semibold" style={{ color: LONG }}>
                     ● {finalData?.status ?? ''}
                   </Text>
@@ -383,7 +395,7 @@ export const FuturesOrderSheet: React.FC<FuturesOrderSheetProps> = ({ visible, o
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => onClose()} activeOpacity={0.7} className="py-2.5 items-center">
-                <Text className="text-[#8A8D93] font-semibold text-[13px]">Done</Text>
+                <Text className="text-app-muted font-semibold text-[13px]">Done</Text>
               </TouchableOpacity>
             </ScrollView>
           )}

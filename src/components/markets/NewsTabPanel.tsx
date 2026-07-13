@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { View, ScrollView, TouchableOpacity, Text } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTheme } from '../../context/ThemeContext';
 import { NewsCard } from '../ui/NewsCard';
 import { COMMUNITY_FEED_TABS, CommunityFeedTab } from '../../data/mockNews';
 import { filterNews } from '../../utils/marketsHub';
@@ -18,10 +19,12 @@ interface NewsCategoryTabsProps {
 }
 
 export function NewsCategoryTabs({ activeCategory, onCategoryChange }: NewsCategoryTabsProps) {
+  const { colors } = useTheme();
+
   return (
-    <View className="bg-[#050505] border-b border-[#2A2B2F]">
+    <View style={{ backgroundColor: colors.card, borderBottomWidth: 1, borderBottomColor: colors.border }}>
       <View className="px-4 pt-3 pb-0">
-        <Text className="text-white text-[15px] font-bold">Community</Text>
+        <Text className="text-app-text text-[15px] font-bold">Community</Text>
       </View>
       <ScrollView
         horizontal
@@ -41,14 +44,14 @@ export function NewsCategoryTabs({ activeCategory, onCategoryChange }: NewsCateg
                 marginRight: 20,
                 paddingBottom: 6,
                 borderBottomWidth: 2,
-                borderBottomColor: active ? '#FF8A00' : 'transparent',
+                borderBottomColor: active ? colors.primary : 'transparent',
               }}
             >
               <Text
                 style={{
                   fontSize: 13,
                   fontWeight: active ? '700' : '500',
-                  color: active ? '#FF8A00' : '#9CA3AF',
+                  color: active ? colors.primary : colors.muted,
                 }}
               >
                 {cat}

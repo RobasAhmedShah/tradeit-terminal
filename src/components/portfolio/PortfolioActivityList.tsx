@@ -35,9 +35,9 @@ export function PortfolioActivityList({ items, compact = false }: PortfolioActiv
 
   if (items.length === 0) {
     return (
-      <View className="bg-[#111214] rounded-xl p-6 border border-[#2A2B2F] items-center">
-        <Text className="text-[#9CA3AF] text-sm">No activity yet</Text>
-        <Text className="text-[#9CA3AF] text-xs mt-1 text-center">
+      <View className="bg-app-card rounded-xl p-6 border border-app-border items-center">
+        <Text className="text-app-muted text-sm">No activity yet</Text>
+        <Text className="text-app-muted text-xs mt-1 text-center">
           Deposits, trades, and orders will show up here.
         </Text>
       </View>
@@ -49,13 +49,13 @@ export function PortfolioActivityList({ items, compact = false }: PortfolioActiv
       {items.map((item) => {
         const icon = activityIcon(item.type);
         const isCredit = item.type === 'deposit' || item.type === 'sell';
-        const amountColor = isCredit ? 'text-[#0ECB81]' : 'text-white';
+        const amountColor = isCredit ? 'text-[#0ECB81]' : 'text-app-text';
 
         return (
           <TouchableOpacity
             key={item.id}
             onPress={() => handlePress(item)}
-            className={`bg-[#111214] rounded-xl border border-[#2A2B2F] flex-row items-center ${
+            className={`bg-app-card rounded-xl border border-app-border flex-row items-center ${
               compact ? 'p-3' : 'p-4'
             }`}
           >
@@ -67,11 +67,11 @@ export function PortfolioActivityList({ items, compact = false }: PortfolioActiv
             </View>
 
             <View className="flex-1 mr-2">
-              <Text className="text-white font-semibold text-[12px]">{item.title}</Text>
-              <Text className="text-[#9CA3AF] text-[10px] mt-0.5" numberOfLines={1}>
+              <Text className="text-app-text font-semibold text-[12px]">{item.title}</Text>
+              <Text className="text-app-muted text-[10px] mt-0.5" numberOfLines={1}>
                 {item.subtitle}
               </Text>
-              <Text className="text-[#9CA3AF] text-[9px] mt-1">{formatActivityTime(item.timestamp)}</Text>
+              <Text className="text-app-muted text-[9px] mt-1">{formatActivityTime(item.timestamp)}</Text>
             </View>
 
             <View className="items-end">

@@ -27,7 +27,7 @@ export const FuturesPositionCard: React.FC<FuturesPositionCardProps> = ({
     <TouchableOpacity
       activeOpacity={0.85}
       onPress={openDetail}
-      className="bg-[#111214] border border-[#2A2B2F] rounded-xl p-3 mb-2"
+      className="bg-app-card border border-app-border rounded-xl p-3 mb-2"
     >
       <View className="flex-row items-center">
         <View
@@ -40,8 +40,8 @@ export const FuturesPositionCard: React.FC<FuturesPositionCardProps> = ({
           </Text>
         </View>
         <View className="flex-1 ml-2">
-          <Text className="text-white text-sm font-semibold">{position.symbol}</Text>
-          <Text className="text-[#9CA3AF] text-[11px]">
+          <Text className="text-app-text text-sm font-semibold">{position.symbol}</Text>
+          <Text className="text-app-muted text-[11px]">
             {position.expiry} · {position.leverage}x
           </Text>
         </View>
@@ -50,27 +50,27 @@ export const FuturesPositionCard: React.FC<FuturesPositionCardProps> = ({
             e.stopPropagation?.();
             onClose(position);
           }}
-          className="bg-[#18191C] border border-[#2A2B2F] px-2.5 py-1 rounded"
+          className="bg-app-card-soft border border-app-border px-2.5 py-1 rounded"
         >
-          <Text className="text-[#9CA3AF] text-[11px] font-semibold">Close</Text>
+          <Text className="text-app-muted text-[11px] font-semibold">Close</Text>
         </TouchableOpacity>
       </View>
 
       <View className={`flex-row ${compact ? 'mt-2' : 'mt-2.5'}`}>
         <View className="flex-1">
-          <Text className="text-[#9CA3AF] text-[10px] mb-1">Size (Lots)</Text>
-          <Text className="text-white text-xs font-medium">{position.sizeLots}</Text>
+          <Text className="text-app-muted text-[10px] mb-1">Size (Lots)</Text>
+          <Text className="text-app-text text-xs font-medium">{position.sizeLots}</Text>
         </View>
         <View className="flex-1">
-          <Text className="text-[#9CA3AF] text-[10px] mb-1">Entry</Text>
-          <Text className="text-white text-xs font-medium">{formatFuturesPrice(position.entryPrice)}</Text>
+          <Text className="text-app-muted text-[10px] mb-1">Entry</Text>
+          <Text className="text-app-text text-xs font-medium">{formatFuturesPrice(position.entryPrice)}</Text>
         </View>
         <View className="flex-1">
-          <Text className="text-[#9CA3AF] text-[10px] mb-1">Mark</Text>
-          <Text className="text-white text-xs font-medium">{formatFuturesPrice(position.markPrice)}</Text>
+          <Text className="text-app-muted text-[10px] mb-1">Mark</Text>
+          <Text className="text-app-text text-xs font-medium">{formatFuturesPrice(position.markPrice)}</Text>
         </View>
         <View className="flex-1 items-end">
-          <Text className="text-[#9CA3AF] text-[10px] mb-1">Unrealized PnL</Text>
+          <Text className="text-app-muted text-[10px] mb-1">Unrealized PnL</Text>
           <Text
             className={`text-xs font-medium ${position.unrealizedPnl >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}
           >

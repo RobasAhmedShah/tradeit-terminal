@@ -40,6 +40,7 @@ import { MarketsErrorState } from '../components/markets/MarketsErrorState';
 import { SortFilterSheet } from '../components/markets/SortFilterSheet';
 import { ComposePostFab } from '../components/community/ComposePostFab';
 import { usePosts } from '../context/PostsContext';
+import { useTheme } from '../context/ThemeContext';
 
 const MAIN_TABS: { id: MarketsTab; label: string }[] = [
   { id: 'watchlist', label: 'Watchlist' },
@@ -59,6 +60,7 @@ export default function MarketsScreen() {
   const params = useLocalSearchParams<{ tab?: string; type?: string; category?: string }>();
   const { watchlist, toggleWatchlist } = useWatchlist();
   const { refreshPosts } = usePosts();
+  const { colors } = useTheme();
 
   const initialTab = parseMarketsTab(params.tab);
   const initialSegment = parseMoverSegment(params.type);
@@ -201,7 +203,7 @@ export default function MarketsScreen() {
         }
         ListHeaderComponent={
           <View className="flex-row items-center justify-between px-4 py-2">
-            <Text className="text-[#5C6068] text-xs">{watchlistData.length} symbols</Text>
+            <Text className="text-app-muted text-xs">{watchlistData.length} symbols</Text>
             <TouchableOpacity onPress={() => setShowSort(true)} className="flex-row items-center">
               <Ionicons name="swap-vertical-outline" size={13} color="#FF8A00" />
               <Text className="text-[#FF8A00] text-xs ml-1">Sort</Text>
@@ -214,7 +216,7 @@ export default function MarketsScreen() {
 
   const renderMovers = () => (
     <View className="flex-1">
-      <View className="flex-row mx-4 my-3 p-1 bg-[#111214] rounded-xl border border-[#2A2B2F]">
+      <View className="flex-row mx-4 my-3 p-1 bg-app-card rounded-xl border border-app-border">
         {MOVER_SEGMENTS.map((seg) => {
           const active = moverSegment === seg.id;
           return (
@@ -227,7 +229,7 @@ export default function MarketsScreen() {
               className={`flex-1 py-2 rounded-lg items-center ${active ? 'bg-[#FF8A00]' : ''}`}
             >
               <Text
-                className={`text-[10px] font-bold ${active ? 'text-black' : 'text-[#9CA3AF]'}`}
+                className={`text-[10px] font-bold ${active ? 'text-black' : 'text-app-muted'}`}
                 numberOfLines={1}
               >
                 {seg.label}
@@ -253,7 +255,7 @@ export default function MarketsScreen() {
         }
         ListHeaderComponent={
           <View className="flex-row items-center justify-between px-4 py-1">
-            <Text className="text-[#555] text-xs">{moversData.length} stocks</Text>
+            <Text className="text-app-muted text-xs">{moversData.length} stocks</Text>
             <TouchableOpacity onPress={() => setShowSort(true)} className="flex-row items-center">
               <Ionicons name="swap-vertical-outline" size={13} color="#FF8A00" />
               <Text className="text-[#FF8A00] text-xs ml-1">Sort</Text>
@@ -289,20 +291,24 @@ export default function MarketsScreen() {
   }, [params.category]);
 
   return (
-    <SafeAreaView className="flex-1 bg-[#050505]" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-app-bg" edges={['top']}>
       {/* Header */}
-      <View className="flex-row items-center px-4 py-3 border-b border-[#2A2B2F]">
+      <View className="flex-row items-center px-4 py-3 border-b border-app-border">
         <TouchableOpacity onPress={() => safeBack(router, '/(tabs)/home')} className="w-10">
-          <Ionicons name="arrow-back" size={22} color="#fff" />
+          <Ionicons name="arrow-back" size={22} color={colors.text} />
         </TouchableOpacity>
-        <Text className="flex-1 text-center text-white text-[17px] font-bold">Markets</Text>
+        <Text className="flex-1 text-center text-app-text text-[17px] font-bold">Markets</Text>
         <TouchableOpacity onPress={() => activeTab !== 'news' && setShowSort(true)} className="w-10 items-end">
-          <Ionicons name="options-outline" size={22} color="#9CA3AF" />
+          <Ionicons
+            name="options-outline"
+            size={22}
+            color={activeTab === 'news' ? colors.mutedDarker : colors.headerIcon}
+          />
         </TouchableOpacity>
       </View>
 
       {/* Main tabs */}
-      <View className="flex-row border-b border-[#2A2B2F] px-2">
+      <View className="flex-row border-b border-app-border px-2">
         {MAIN_TABS.map((tab) => {
           const active = activeTab === tab.id;
           return (
@@ -319,7 +325,7 @@ export default function MarketsScreen() {
               }}
             >
               <Text
-                className={`text-[13px] font-bold ${active ? 'text-[#FF8A00]' : 'text-[#9CA3AF]'}`}
+                className={`text-[13px] font-bold ${active ? 'text-[#FF8A00]' : 'text-app-muted'}`}
               >
                 {tab.label}
               </Text>

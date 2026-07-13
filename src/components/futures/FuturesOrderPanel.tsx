@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../../context/ThemeContext';
 import {
   FuturesContract,
   FuturesMarginMode,
@@ -40,6 +41,7 @@ export const FuturesOrderPanel: React.FC<FuturesOrderPanelProps> = ({
   bookPriceFill,
   onBookPriceFillConsumed,
 }) => {
+  const { colors } = useTheme();
   const [orderType, setOrderType] = useState<FuturesOrderType>('Market');
   const [limitPrice, setLimitPrice] = useState(formatFuturesPrice(contract.markPrice));
   const [quantity, setQuantity] = useState('1');
@@ -135,17 +137,17 @@ export const FuturesOrderPanel: React.FC<FuturesOrderPanelProps> = ({
   };
 
   return (
-    <View className="flex-[1.35] self-stretch bg-[#111214] border border-[#2A2B2F] rounded-xl p-2.5 justify-between">
-      <View className="flex-row items-center pb-2 mb-2 border-b border-[#2A2B2F]">
+    <View className="flex-[1.35] self-stretch bg-app-card border border-app-border rounded-xl p-2.5 justify-between">
+      <View className="flex-row items-center pb-2 mb-2 border-b border-app-border">
         <View className="flex-row gap-1">
           {(['Cross', 'Isolated'] as FuturesMarginMode[]).map((mode) => (
             <TouchableOpacity
               key={mode}
               onPress={() => onMarginModeChange(mode)}
-              className={`py-1.5 px-2.5 rounded-md ${marginMode === mode ? 'bg-[#FF8A00]' : 'bg-[#18191C]'}`}
+              className={`py-1.5 px-2.5 rounded-md ${marginMode === mode ? 'bg-[#FF8A00]' : 'bg-app-card-soft'}`}
             >
               <Text
-                className={`text-xs ${marginMode === mode ? 'text-black font-bold' : 'text-[#9CA3AF] font-medium'}`}
+                className={`text-xs ${marginMode === mode ? 'text-black font-bold' : 'text-app-muted font-medium'}`}
               >
                 {mode}
               </Text>
@@ -154,7 +156,7 @@ export const FuturesOrderPanel: React.FC<FuturesOrderPanelProps> = ({
         </View>
         <TouchableOpacity
           onPress={onLeveragePress}
-          className="ml-auto flex-row items-center bg-[#18191C] rounded-md py-1.5 px-2"
+          className="ml-auto flex-row items-center bg-app-card-soft rounded-md py-1.5 px-2"
         >
           <Text className="text-[#FF8A00] text-xs font-bold">{leverage}x</Text>
           <Ionicons name="chevron-down" size={12} color="#FF8A00" style={{ marginLeft: 2 }} />
@@ -170,7 +172,7 @@ export const FuturesOrderPanel: React.FC<FuturesOrderPanelProps> = ({
         </View>
       )}
 
-      <View className="flex-row border-b border-[#2A2B2F] mb-2">
+      <View className="flex-row border-b border-app-border mb-2">
         {(['Limit', 'Market', 'Stop'] as FuturesOrderType[]).map((type) => (
           <TouchableOpacity
             key={type}
@@ -181,7 +183,7 @@ export const FuturesOrderPanel: React.FC<FuturesOrderPanelProps> = ({
             className={`flex-1 pb-1.5 ${orderType === type ? 'border-b-2 border-[#FF8A00]' : ''}`}
           >
             <Text
-              className={`text-center text-sm font-semibold ${orderType === type ? 'text-[#FF8A00]' : 'text-[#9CA3AF]'}`}
+              className={`text-center text-sm font-semibold ${orderType === type ? 'text-[#FF8A00]' : 'text-app-muted'}`}
             >
               {type}
             </Text>
@@ -190,14 +192,14 @@ export const FuturesOrderPanel: React.FC<FuturesOrderPanelProps> = ({
       </View>
 
       <View className="mb-2">
-        <Text className="text-[#9CA3AF] text-xs mb-1">Price (PKR)</Text>
+        <Text className="text-app-muted text-xs mb-1">Price (PKR)</Text>
         <View
-          className={`flex-row items-center bg-[#050505] border rounded-md py-2 px-2.5 ${
-            priceFieldHighlight ? 'border-[#FF8A00]' : 'border-[#2A2B2F]'
+          className={`flex-row items-center bg-app-bg border rounded-md py-2 px-2.5 ${
+            priceFieldHighlight ? 'border-[#FF8A00]' : 'border-app-border'
           }`}
         >
           <TouchableOpacity onPress={() => adjustPrice(-0.5)} disabled={orderType === 'Market'}>
-            <Text className={`text-base ${orderType === 'Market' ? 'text-[#5C6068]' : 'text-[#9CA3AF]'}`}>-</Text>
+            <Text className={`text-base ${orderType === 'Market' ? 'text-app-muted' : 'text-app-muted'}`}>-</Text>
           </TouchableOpacity>
           <TextInput
             value={orderType === 'Market' ? 'Market' : limitPrice}
@@ -206,46 +208,46 @@ export const FuturesOrderPanel: React.FC<FuturesOrderPanelProps> = ({
               setLimitPrice(text);
               setSliderValue(0);
             }}
-            className="flex-1 text-center text-white text-sm font-semibold py-0"
+            className="flex-1 text-center text-app-text text-sm font-semibold py-0"
             keyboardType="numeric"
           />
           <TouchableOpacity onPress={() => adjustPrice(0.5)} disabled={orderType === 'Market'}>
-            <Text className={`text-base ${orderType === 'Market' ? 'text-[#555]' : 'text-[#9CA3AF]'}`}>+</Text>
+            <Text className={`text-base ${orderType === 'Market' ? 'text-app-muted' : 'text-app-muted'}`}>+</Text>
           </TouchableOpacity>
         </View>
       </View>
 
       <View className="mb-2">
-        <Text className="text-[#9CA3AF] text-xs mb-1">Qty (Lots)</Text>
-        <View className="flex-row items-center bg-[#050505] border border-[#2A2B2F] rounded-md py-2 px-2.5">
+        <Text className="text-app-muted text-xs mb-1">Qty (Lots)</Text>
+        <View className="flex-row items-center bg-app-bg border border-app-border rounded-md py-2 px-2.5">
           <TouchableOpacity onPress={() => adjustQty(-1)}>
-            <Text className="text-[#9CA3AF] text-base">-</Text>
+            <Text className="text-app-muted text-base">-</Text>
           </TouchableOpacity>
           <TextInput
             value={quantity}
             onChangeText={handleQuantityChange}
-            className="flex-1 text-center text-white text-sm font-semibold py-0"
+            className="flex-1 text-center text-app-text text-sm font-semibold py-0"
             keyboardType="numeric"
           />
           <TouchableOpacity onPress={() => adjustQty(1)}>
-            <Text className="text-[#9CA3AF] text-base">+</Text>
+            <Text className="text-app-muted text-base">+</Text>
           </TouchableOpacity>
         </View>
       </View>
 
       <View className="mb-2.5">
         <View className="flex-row justify-between mb-1">
-          <Text className="text-[#9CA3AF] text-[10px]">Margin %</Text>
+          <Text className="text-app-muted text-[10px]">Margin %</Text>
           <Text className="text-[#FF8A00] text-[10px] font-semibold">{sliderValue}%</Text>
         </View>
-        <View className="h-1.5 bg-[#18191C] w-full rounded-full relative justify-center">
+        <View className="h-1.5 bg-app-card-soft w-full rounded-full relative justify-center">
           <View
             className="absolute left-0 top-0 bottom-0 bg-[#FF8A00] rounded-full"
             style={{ width: `${sliderValue}%` }}
           />
           <View
-            className="absolute w-3.5 h-3.5 bg-[#FF8A00] rounded-full -top-1 border-2 border-[#050505]"
-            style={{ left: `${sliderValue}%`, transform: [{ translateX: -7 }] }}
+            className="absolute w-3.5 h-3.5 bg-[#FF8A00] rounded-full -top-1 border-2"
+            style={{ left: `${sliderValue}%`, transform: [{ translateX: -7 }], borderColor: colors.background }}
           />
         </View>
         <View className="flex-row justify-between mt-1.5">
@@ -258,7 +260,7 @@ export const FuturesOrderPanel: React.FC<FuturesOrderPanelProps> = ({
                 className={`px-1.5 py-0.5 rounded ${isActive ? 'bg-[#FF8A00]/20' : ''}`}
               >
                 <Text
-                  className={`text-[11px] font-semibold ${isActive ? 'text-[#FF8A00]' : 'text-[#9CA3AF]'}`}
+                  className={`text-[11px] font-semibold ${isActive ? 'text-[#FF8A00]' : 'text-app-muted'}`}
                 >
                   {val}%
                 </Text>
@@ -268,15 +270,15 @@ export const FuturesOrderPanel: React.FC<FuturesOrderPanelProps> = ({
         </View>
       </View>
 
-      <View className="flex-row justify-between bg-[#050505] border border-[#2A2B2F] rounded-md py-2 px-2 mb-2.5">
+      <View className="flex-row justify-between bg-app-bg border border-app-border rounded-md py-2 px-2 mb-2.5">
         <View>
-          <Text className="text-[#9CA3AF] text-xs">Order Value</Text>
-          <Text className="text-white text-sm font-semibold mt-0.5">
+          <Text className="text-app-muted text-xs">Order Value</Text>
+          <Text className="text-app-text text-sm font-semibold mt-0.5">
             {formatFuturesPrice(summary.orderValue)}
           </Text>
         </View>
         <View className="items-end">
-          <Text className="text-[#9CA3AF] text-xs">Required Margin</Text>
+          <Text className="text-app-muted text-xs">Required Margin</Text>
           <Text className="text-[#FF8A00] text-sm font-semibold mt-0.5">
             {formatFuturesPrice(summary.requiredMargin)}
           </Text>
@@ -289,7 +291,7 @@ export const FuturesOrderPanel: React.FC<FuturesOrderPanelProps> = ({
           disabled={qty <= 0}
           className={`flex-1 rounded-md py-3 ${qty > 0 ? 'bg-[#0ECB81]' : 'bg-[#0ECB81]/40'}`}
         >
-          <Text className="text-white text-sm font-bold text-center">Long</Text>
+          <Text className="text-black text-sm font-bold text-center">Long</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => submitOrder('Short')}
@@ -300,21 +302,21 @@ export const FuturesOrderPanel: React.FC<FuturesOrderPanelProps> = ({
         </TouchableOpacity>
       </View>
 
-      <View className="flex-row justify-between border-t border-[#2A2B2F] pt-2">
+      <View className="flex-row justify-between border-t border-app-border pt-2">
         <View className="items-center">
-          <Text className="text-[#9CA3AF] text-[11px]">Avail. Margin</Text>
-          <Text className="text-white text-xs font-medium mt-0.5">
+          <Text className="text-app-muted text-[11px]">Avail. Margin</Text>
+          <Text className="text-app-text text-xs font-medium mt-0.5">
             {availableMargin.toLocaleString(undefined, { maximumFractionDigits: 0 })}
           </Text>
         </View>
         <View className="items-center">
-          <Text className="text-[#9CA3AF] text-[11px]">Used</Text>
-          <Text className="text-white text-xs font-medium mt-0.5">
+          <Text className="text-app-muted text-[11px]">Used</Text>
+          <Text className="text-app-text text-xs font-medium mt-0.5">
             {usedMargin.toLocaleString(undefined, { maximumFractionDigits: 0 })}
           </Text>
         </View>
         <View className="items-center">
-          <Text className="text-[#9CA3AF] text-[11px]">Ratio</Text>
+          <Text className="text-app-muted text-[11px]">Ratio</Text>
           <Text className="text-[#FF8A00] text-xs font-medium mt-0.5">
             {calcMarginUsageRatio(usedMargin, availableMargin)}
           </Text>

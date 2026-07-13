@@ -4,6 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { NewsPost, Sentiment } from '../../data/mockNews';
 import { MOCK_MARKET_STOCKS } from '../../data/mockStocks';
+import { useTheme } from '../../context/ThemeContext';
+import { StockLogo } from './StockLogo';
 
 /* ─── helpers ─────────────────────────────────────────────── */
 const SENTIMENT: Record<Sentiment, { color: string; bg: string; icon: any; label: string }> = {
@@ -51,6 +53,7 @@ export const NewsCard: React.FC<Props> = ({
   onOpen,
 }) => {
   const router  = useRouter();
+  const { colors } = useTheme();
   const [likedLocal, setLikedLocal]    = useState(false);
   const [expanded, setExpanded] = useState(false);
 
@@ -65,7 +68,7 @@ export const NewsCard: React.FC<Props> = ({
 
   return (
     <TouchableOpacity activeOpacity={0.92} onPress={onOpen} disabled={!onOpen}>
-    <View style={{ backgroundColor: '#050505', borderBottomWidth: 1, borderBottomColor: '#141414' }}>
+    <View className="bg-app-bg border-b border-app-border">
 
       {/* orange top stripe for featured */}
       {featured && <View style={{ height: 3, backgroundColor: '#FF8A00' }} />}
@@ -78,7 +81,7 @@ export const NewsCard: React.FC<Props> = ({
           <View style={{
             width: 40, height: 40, borderRadius: 20,
             backgroundColor: post.author.color ?? '#1A0E00',
-            borderWidth: 1, borderColor: '#2A2B2F',
+            borderWidth: 1, borderColor: 'rgba(128,128,128,0.25)',
             alignItems: 'center', justifyContent: 'center',
             marginRight: 10,
           }}>
@@ -90,7 +93,7 @@ export const NewsCard: React.FC<Props> = ({
           {/* name + time */}
           <View style={{ flex: 1 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={{ color: '#fff', fontWeight: '700', fontSize: 13, marginRight: 4 }}>
+              <Text style={{ color: colors.text, fontWeight: '700', fontSize: 13, marginRight: 4 }}>
                 {post.author.name}
               </Text>
               {post.author.verified && (
@@ -108,7 +111,7 @@ export const NewsCard: React.FC<Props> = ({
                 </View>
               )}
             </View>
-            <Text style={{ color: '#555', fontSize: 11, marginTop: 1 }}>{post.time}</Text>
+            <Text style={{ color: colors.muted, fontSize: 11, marginTop: 1 }}>{post.time}</Text>
           </View>
 
           {/* sentiment badge */}
@@ -136,7 +139,7 @@ export const NewsCard: React.FC<Props> = ({
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               style={{ marginLeft: 10, padding: 2 }}
             >
-              <Ionicons name="ellipsis-horizontal" size={18} color="#8A8D93" />
+              <Ionicons name="ellipsis-horizontal" size={18} color={colors.muted} />
             </TouchableOpacity>
           ) : onDismiss ? (
             <TouchableOpacity
@@ -147,14 +150,14 @@ export const NewsCard: React.FC<Props> = ({
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               style={{ marginLeft: 10, padding: 2 }}
             >
-              <Ionicons name="close" size={18} color="#444" />
+              <Ionicons name="close" size={18} color={colors.mutedDarker} />
             </TouchableOpacity>
           ) : null}
         </View>
 
         {post.repostOf && (
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-            <Ionicons name="repeat" size={12} color="#8A8D93" />
+            <Ionicons name="repeat" size={12} color={colors.muted} />
             <Text style={{ color: '#8A8D93', fontSize: 11, marginLeft: 4 }}>
               Reposted from {post.repostOf.authorName}
             </Text>
@@ -177,7 +180,7 @@ export const NewsCard: React.FC<Props> = ({
         )}
 
         {/* ── post content ─────────────────────────────────── */}
-        <Text style={{ color: '#D0D0D0', fontSize: 13, lineHeight: 20, marginBottom: 10 }}>
+        <Text style={{ color: colors.textSecondary, fontSize: 13, lineHeight: 20, marginBottom: 10 }}>
           {displayTxt}
           {isLong && !expanded && (
             <Text onPress={() => setExpanded(true)} style={{ color: '#FF8A00', fontWeight: '600' }}>
@@ -194,7 +197,7 @@ export const NewsCard: React.FC<Props> = ({
               height: 180,
               borderRadius: 12,
               marginBottom: 10,
-              backgroundColor: '#111214',
+              backgroundColor: colors.cardSoft,
             }}
             resizeMode="cover"
           />
@@ -213,14 +216,23 @@ export const NewsCard: React.FC<Props> = ({
                   onPress={() => router.push(`/stock/${sym}`)}
                   style={{
                     flexDirection: 'row', alignItems: 'center',
-                    backgroundColor: '#111214',
-                    borderWidth: 1, borderColor: '#2A2B2F',
+                    backgroundColor: colors.card,
+                    borderWidth: 1, borderColor: colors.border,
                     borderRadius: 8,
                     paddingHorizontal: 10, paddingVertical: 5,
                     marginRight: 8, marginBottom: 4,
                   }}
                 >
-                  <Text style={{ color: '#fff', fontWeight: '600', fontSize: 12, marginRight: 5 }}>
+                  <View style={{ marginRight: 6 }}>
+                    <StockLogo
+                      symbol={sym}
+                      logoUrl={stock.logoUrl}
+                      logoColor={stock.logoColor}
+                      website={stock.website}
+                      size={18}
+                    />
+                  </View>
+                  <Text style={{ color: colors.text, fontWeight: '600', fontSize: 12, marginRight: 5 }}>
                     {sym}
                   </Text>
                   <Ionicons
@@ -255,7 +267,7 @@ export const NewsCard: React.FC<Props> = ({
           }}
           style={{ flexDirection: 'row', alignItems: 'center', marginRight: 22 }}
         >
-          <Ionicons name="chatbubble-outline" size={15} color="#555" />
+          <Ionicons name="chatbubble-outline" size={15} color={colors.muted} />
           <Text style={{ color: '#555', fontSize: 12, marginLeft: 5 }}>{fmt(post.engagement.comments)}</Text>
         </TouchableOpacity>
 
@@ -267,7 +279,7 @@ export const NewsCard: React.FC<Props> = ({
           }}
           style={{ flexDirection: 'row', alignItems: 'center', marginRight: 22 }}
         >
-          <Ionicons name="repeat-outline" size={15} color="#555" />
+          <Ionicons name="repeat-outline" size={15} color={colors.muted} />
           <Text style={{ color: '#555', fontSize: 12, marginLeft: 5 }}>{fmt(post.engagement.reposts)}</Text>
         </TouchableOpacity>
 
@@ -284,7 +296,7 @@ export const NewsCard: React.FC<Props> = ({
 
         {/* views */}
         <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-          <Ionicons name="eye-outline" size={15} color="#555" />
+          <Ionicons name="eye-outline" size={15} color={colors.muted} />
           <Text style={{ color: '#555', fontSize: 12, marginLeft: 5 }}>{post.engagement.views}</Text>
         </View>
 
@@ -301,7 +313,7 @@ export const NewsCard: React.FC<Props> = ({
           </TouchableOpacity>
         )}
         <TouchableOpacity>
-          <Ionicons name="paper-plane-outline" size={15} color="#555" />
+          <Ionicons name="paper-plane-outline" size={15} color={colors.muted} />
         </TouchableOpacity>
       </View>
     </View>

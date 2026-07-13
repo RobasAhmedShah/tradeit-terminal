@@ -38,9 +38,9 @@ export const MarketTableHeader: React.FC<MarketTableHeaderProps> = ({
   const changeActive = sortField === 'Change %';
 
   return (
-    <View className="flex-row items-center justify-between px-4 py-2 border-b border-[#2A2B2F]">
+    <View className="flex-row items-center justify-between px-4 py-2 border-b border-app-border">
       <View className="flex-[1.5]">
-        <Text className="text-[#9CA3AF] text-xs">Stock / Company</Text>
+        <Text className="text-app-muted text-xs">Stock / Company</Text>
       </View>
       <View className="flex-1 items-center justify-center" />
       <TouchableOpacity
@@ -49,14 +49,14 @@ export const MarketTableHeader: React.FC<MarketTableHeaderProps> = ({
         hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
       >
         <View className="flex-row items-center">
-          <Text className={`text-[10px] mr-1 ${priceActive ? 'text-[#FF8A00] font-semibold' : 'text-[#9CA3AF]'}`}>
+          <Text className={`text-[10px] mr-1 ${priceActive ? 'text-[#FF8A00] font-semibold' : 'text-app-muted'}`}>
             Price
           </Text>
           <SortIcon field="Price" activeField={sortField} direction={sortDirection} />
         </View>
       </TouchableOpacity>
       <View className="flex-[0.8] items-end justify-center pr-2">
-        <Text className="text-[#9CA3AF] text-[10px]">Buy / Sell</Text>
+        <Text className="text-app-muted text-[10px]">Buy / Sell</Text>
       </View>
       <TouchableOpacity
         onPress={() => onSortPress('Change %')}
@@ -64,7 +64,7 @@ export const MarketTableHeader: React.FC<MarketTableHeaderProps> = ({
         hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
       >
         <View className="flex-row items-center">
-          <Text className={`text-[10px] mr-1 ${changeActive ? 'text-[#FF8A00] font-semibold' : 'text-[#9CA3AF]'}`}>
+          <Text className={`text-[10px] mr-1 ${changeActive ? 'text-[#FF8A00] font-semibold' : 'text-app-muted'}`}>
             Change %
           </Text>
           <SortIcon field="Change %" activeField={sortField} direction={sortDirection} />

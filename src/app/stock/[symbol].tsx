@@ -25,6 +25,7 @@ export default function StockDetailScreen() {
   const { openAlert } = useAlertSheet();
 
   const [activeTab, setActiveTab] = useState<StockDetailTab>('Overview');
+  const [rulerActive, setRulerActive] = useState(false);
 
   const staticStock = MOCK_MARKET_STOCKS.find((s) => s.symbol === symbol);
   const liveStock = useMarketStock(symbol);
@@ -32,8 +33,8 @@ export default function StockDetailScreen() {
 
   if (!stock) {
     return (
-      <SafeAreaView className="flex-1 bg-[#050505] justify-center items-center">
-        <Text className="text-white text-lg">Stock not found.</Text>
+      <SafeAreaView className="flex-1 bg-app-bg justify-center items-center">
+        <Text className="text-app-text text-lg">Stock not found.</Text>
       </SafeAreaView>
     );
   }
@@ -53,7 +54,7 @@ export default function StockDetailScreen() {
   const showChartSection = activeTab === 'Overview';
 
   return (
-    <SafeAreaView className="flex-1 bg-[#050505]" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-app-bg" edges={['top']}>
       <StockDetailHeader
         symbol={stock.symbol}
         name={stock.name}
@@ -64,13 +65,14 @@ export default function StockDetailScreen() {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
+        scrollEnabled={!rulerActive}
         contentContainerStyle={{ paddingBottom: 100 }}
       >
         <StockPriceHeader stock={stock} />
 
         {showChartSection && (
           <>
-            <StockLineChartPlaceholder stock={stock} />
+            <StockLineChartPlaceholder stock={stock} onRulerActiveChange={setRulerActive} />
             <StockTimeframeTabs />
             <StockStatsGrid stock={stock} />
           </>

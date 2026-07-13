@@ -113,17 +113,17 @@ export const FuturesOrderBook: React.FC<FuturesOrderBookProps> = ({
   );
 
   const columnHeader = (
-    <View className="flex-row items-center pb-1 mb-1 border-b border-[#2A2B2F]">
-      <Text className={`text-[#9CA3AF] ${headerSize} flex-1`}>Price</Text>
-      <Text className={`text-[#9CA3AF] ${headerSize} w-[42px] text-right`}>Size</Text>
+    <View className="flex-row items-center pb-1 mb-1 border-b border-app-border">
+      <Text className={`text-app-muted ${headerSize} flex-1`}>Price</Text>
+      <Text className={`text-app-muted ${headerSize} w-[42px] text-right`}>Size</Text>
       {!compact && (
-        <Text className={`text-[#9CA3AF] ${headerSize} w-[42px] text-right pr-0.5`}>Total</Text>
+        <Text className={`text-app-muted ${headerSize} w-[42px] text-right pr-0.5`}>Total</Text>
       )}
     </View>
   );
 
   const markRow = (
-    <View className="bg-[#18191C] rounded-md py-1.5 px-2 my-1 flex-row items-center justify-between overflow-hidden">
+    <View className="bg-app-card-soft rounded-md py-1.5 px-2 my-1 flex-row items-center justify-between overflow-hidden">
       <Text
         className={`text-[#FF8A00] font-bold flex-1 min-w-0 ${compact ? 'text-xs' : 'text-sm'}`}
         numberOfLines={1}
@@ -133,11 +133,11 @@ export const FuturesOrderBook: React.FC<FuturesOrderBookProps> = ({
         {formatFuturesPrice(contract.markPrice)}
       </Text>
       {!compact ? (
-        <Text className="text-[#9CA3AF] text-[11px] ml-2 shrink-0" numberOfLines={1}>
+        <Text className="text-app-muted text-[11px] ml-2 shrink-0" numberOfLines={1}>
           Mark {formatFuturesPrice(contract.indexPrice)}
         </Text>
       ) : (
-        <Text className="text-[#9CA3AF] text-[10px] ml-2 shrink-0" numberOfLines={1}>
+        <Text className="text-app-muted text-[10px] ml-2 shrink-0" numberOfLines={1}>
           M {formatFuturesPrice(contract.indexPrice)}
         </Text>
       )}
@@ -158,22 +158,22 @@ export const FuturesOrderBook: React.FC<FuturesOrderBookProps> = ({
 
   return (
     <View
-      className={`bg-[#111214] border border-[#2A2B2F] rounded-xl overflow-hidden ${
+      className={`bg-app-card border border-app-border rounded-xl overflow-hidden ${
         compact ? 'p-2 flex-1 self-stretch' : 'mx-4 p-3 mb-3'
       }`}
     >
       <View className="flex-row items-center justify-between mb-1">
-        <Text className={`text-white font-bold ${compact ? 'text-xs' : 'text-sm'}`}>
+        <Text className={`text-app-text font-bold ${compact ? 'text-xs' : 'text-sm'}`}>
           Order Book
         </Text>
-        <View className="flex-row items-center bg-[#18191C] border border-[#2A2B2F] rounded px-1.5 py-0.5">
-          <Text className="text-[#9CA3AF] text-[10px] mr-0.5">0.25</Text>
+        <View className="flex-row items-center bg-app-card-soft border border-app-border rounded px-1.5 py-0.5">
+          <Text className="text-app-muted text-[10px] mr-0.5">0.25</Text>
           <Ionicons name="chevron-down" size={9} color="#9CA3AF" />
         </View>
       </View>
 
       {onPricePress && (
-        <Text className="text-[#9CA3AF] text-[10px] mb-1.5">Tap a price to fill limit order</Text>
+        <Text className="text-app-muted text-[10px] mb-1.5">Tap a price to fill limit order</Text>
       )}
 
       <View className="overflow-hidden">

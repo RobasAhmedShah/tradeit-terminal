@@ -4,6 +4,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useOrders } from '../../context/OrdersContext';
+import { useTheme } from '../../context/ThemeContext';
 import { safeBack } from '../../utils/navigation';
 import { useAppAlert } from '../../context/AppAlertContext';
 import { useFutures } from '../../context/FuturesContext';
@@ -82,18 +83,19 @@ function StatItem({
   label,
   value,
   align = 'left',
-  valueColor = '#FFFFFF',
+  valueColor,
 }: {
   label: string;
   value: string;
   align?: 'left' | 'right' | 'center';
   valueColor?: string;
 }) {
+  const { colors } = useTheme();
   const alignClass = align === 'right' ? 'items-end' : align === 'center' ? 'items-center' : 'items-start';
   return (
     <View className={`flex-1 ${alignClass}`}>
-      <Text className="text-[#8A8D93] text-[10px] mb-1">{label}</Text>
-      <Text className="text-[13px] font-semibold" style={{ color: valueColor }} numberOfLines={1}>
+      <Text className="text-app-muted text-[10px] mb-1">{label}</Text>
+      <Text className="text-[13px] font-semibold" style={{ color: valueColor ?? colors.text }} numberOfLines={1}>
         {value}
       </Text>
     </View>
@@ -102,6 +104,7 @@ function StatItem({
 
 export default function OrdersHubScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const { tab, view, returnTo } = useLocalSearchParams<{ tab?: string; view?: string; returnTo?: string }>();
   const { orders, cancelOrder } = useOrders();
   const { positions, openOrders, orderHistory, marginAvailable, marginUsed, cancelOpenOrder } = useFutures();
@@ -233,8 +236,8 @@ export default function OrdersHubScreen() {
     return (
       <View
         key={order.id}
-        className="bg-[#161719] rounded-2xl mb-3 overflow-hidden"
-        style={{ borderWidth: 1, borderColor: '#25272D' }}
+        className="bg-app-sheet rounded-2xl mb-3 overflow-hidden"
+        style={{ borderWidth: 1, borderColor: colors.border }}
       >
         <View className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: sideColor }} />
         <TouchableOpacity activeOpacity={0.85} onPress={() => openOrderDetail(order.id)} className="p-4">
@@ -242,14 +245,14 @@ export default function OrdersHubScreen() {
             <SymbolAvatar symbol={order.symbol} color={sideColor} />
             <View className="flex-1">
               <View className="flex-row items-center">
-                <Text className="text-white text-[15px] font-bold mr-2">{order.symbol}</Text>
+                <Text className="text-app-text text-[15px] font-bold mr-2">{order.symbol}</Text>
                 <View className="px-1.5 py-0.5 rounded" style={{ backgroundColor: `${sideColor}1A` }}>
                   <Text className="text-[10px] font-bold" style={{ color: sideColor }}>
                     {order.side}
                   </Text>
                 </View>
               </View>
-              <Text className="text-[#8A8D93] text-[11px] mt-0.5" numberOfLines={1}>
+              <Text className="text-app-muted text-[11px] mt-0.5" numberOfLines={1}>
                 {order.type} · {order.companyName}
               </Text>
             </View>
@@ -267,29 +270,29 @@ export default function OrdersHubScreen() {
               label="Filled"
               value={`${order.filledQty}/${order.quantity}`}
               align="right"
-              valueColor={order.filledQty > 0 ? ACCENT : '#FFFFFF'}
+              valueColor={order.filledQty > 0 ? ACCENT : colors.text}
             />
           </View>
 
           {showProgress && (
             <View className="mt-3">
-              <View className="h-[3px] rounded-full bg-[#25272D] overflow-hidden">
+              <View className="h-[3px] rounded-full bg-app-border overflow-hidden">
                 <View className="h-full rounded-full" style={{ width: `${fillPct}%`, backgroundColor: ACCENT }} />
               </View>
-              <Text className="text-[#8A8D93] text-[10px] mt-1">{fillPct}% filled</Text>
+              <Text className="text-app-muted text-[10px] mt-1">{fillPct}% filled</Text>
             </View>
           )}
         </TouchableOpacity>
 
-        <View className="flex-row border-t" style={{ borderColor: '#25272D' }}>
+        <View className="flex-row border-t" style={{ borderColor: colors.border }}>
           <TouchableOpacity
             onPress={() => openEditOrder(order.id)}
             className="flex-1 py-3 items-center flex-row justify-center"
           >
-            <Ionicons name="create-outline" size={15} color="#C9CDD3" />
-            <Text className="text-[#C9CDD3] text-[13px] font-semibold ml-1.5">Modify</Text>
+            <Ionicons name="create-outline" size={15} color={colors.muted} />
+            <Text className="text-app-text text-[13px] font-semibold ml-1.5">Modify</Text>
           </TouchableOpacity>
-          <View className="w-[1px] my-2" style={{ backgroundColor: '#25272D' }} />
+          <View className="w-[1px] my-2" style={{ backgroundColor: colors.cardSoft }} />
           <TouchableOpacity
             onPress={() => handleSpotCancel(order.id, order.symbol)}
             className="flex-1 py-3 items-center flex-row justify-center"
@@ -314,20 +317,20 @@ export default function OrdersHubScreen() {
         key={order.id}
         activeOpacity={0.85}
         onPress={() => openOrderDetail(order.id)}
-        className="bg-[#161719] rounded-2xl mb-3 p-4 overflow-hidden"
-        style={{ borderWidth: 1, borderColor: '#25272D' }}
+        className="bg-app-sheet rounded-2xl mb-3 p-4 overflow-hidden"
+        style={{ borderWidth: 1, borderColor: colors.border }}
       >
         <View className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: sideColor }} />
         <View className="flex-row items-center mb-3">
           <SymbolAvatar symbol={order.symbol} color={sideColor} />
           <View className="flex-1">
             <View className="flex-row items-center">
-              <Text className="text-white text-[15px] font-bold mr-2">{order.symbol}</Text>
+              <Text className="text-app-text text-[15px] font-bold mr-2">{order.symbol}</Text>
               <Text className="text-[11px] font-bold" style={{ color: sideColor }}>
                 {order.side}
               </Text>
             </View>
-            <Text className="text-[#8A8D93] text-[11px] mt-0.5">
+            <Text className="text-app-muted text-[11px] mt-0.5">
               {order.type} · {order.date}
             </Text>
           </View>
@@ -363,23 +366,23 @@ export default function OrdersHubScreen() {
         key={`trade-${order.id}`}
         activeOpacity={0.85}
         onPress={() => openOrderDetail(order.id)}
-        className="bg-[#161719] rounded-2xl mb-3 p-4 overflow-hidden"
-        style={{ borderWidth: 1, borderColor: '#25272D' }}
+        className="bg-app-sheet rounded-2xl mb-3 p-4 overflow-hidden"
+        style={{ borderWidth: 1, borderColor: colors.border }}
       >
         <View className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: sideColor }} />
         <View className="flex-row items-center mb-3">
           <SymbolAvatar symbol={order.symbol} color={sideColor} />
           <View className="flex-1">
             <View className="flex-row items-center">
-              <Text className="text-white text-[15px] font-bold mr-2">{order.symbol}</Text>
+              <Text className="text-app-text text-[15px] font-bold mr-2">{order.symbol}</Text>
               <Text className="text-[11px] font-bold mr-2" style={{ color: sideColor }}>
                 {order.side}
               </Text>
-              <View className="px-1.5 py-0.5 rounded bg-[#25272D]">
-                <Text className="text-[#9CA3AF] text-[9px] font-semibold">{role}</Text>
+              <View className="px-1.5 py-0.5 rounded bg-app-border">
+                <Text className="text-app-muted text-[9px] font-semibold">{role}</Text>
               </View>
             </View>
-            <Text className="text-[#8A8D93] text-[11px] mt-0.5">
+            <Text className="text-app-muted text-[11px] mt-0.5">
               {order.date} · {order.createdTime}
             </Text>
           </View>
@@ -402,8 +405,8 @@ export default function OrdersHubScreen() {
     return (
       <View
         key={position.id}
-        className="bg-[#161719] rounded-2xl mb-3 overflow-hidden"
-        style={{ borderWidth: 1, borderColor: '#25272D' }}
+        className="bg-app-sheet rounded-2xl mb-3 overflow-hidden"
+        style={{ borderWidth: 1, borderColor: colors.border }}
       >
         <View className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: sideColor }} />
         <TouchableOpacity
@@ -418,23 +421,23 @@ export default function OrdersHubScreen() {
             <SymbolAvatar symbol={position.symbol} color={sideColor} />
             <View className="flex-1">
               <View className="flex-row items-center">
-                <Text className="text-white text-[15px] font-bold mr-2">{position.symbol}</Text>
+                <Text className="text-app-text text-[15px] font-bold mr-2">{position.symbol}</Text>
                 <View className="px-1.5 py-0.5 rounded" style={{ backgroundColor: `${sideColor}1A` }}>
                   <Text className="text-[10px] font-bold" style={{ color: sideColor }}>
                     {position.side}
                   </Text>
                 </View>
               </View>
-              <Text className="text-[#8A8D93] text-[11px] mt-0.5">
+              <Text className="text-app-muted text-[11px] mt-0.5">
                 {position.expiry} · {position.leverage}x
               </Text>
             </View>
             <TouchableOpacity
               onPress={() => handleFuturesClose(position)}
               className="px-3 py-1.5 rounded-lg"
-              style={{ backgroundColor: '#25272D', borderWidth: 1, borderColor: '#2A2B2F' }}
+              style={{ backgroundColor: colors.cardSoft, borderWidth: 1, borderColor: colors.border }}
             >
-              <Text className="text-[#C9CDD3] text-[12px] font-semibold">Close</Text>
+              <Text className="text-app-text text-[12px] font-semibold">Close</Text>
             </TouchableOpacity>
           </View>
 
@@ -444,7 +447,7 @@ export default function OrdersHubScreen() {
             <StatItem label="Mark" value={formatFuturesPrice(position.markPrice)} align="right" />
           </View>
 
-          <View className="flex-row mt-3 pt-3 border-t" style={{ borderColor: '#25272D' }}>
+          <View className="flex-row mt-3 pt-3 border-t" style={{ borderColor: colors.border }}>
             <StatItem label="Unrealized PnL" value={`${position.unrealizedPnl >= 0 ? '+' : ''}${formatFuturesPrice(position.unrealizedPnl)}`} valueColor={pnlColor} />
             <StatItem
               label="Return"
@@ -465,22 +468,22 @@ export default function OrdersHubScreen() {
     return (
       <View
         key={order.id}
-        className="bg-[#161719] rounded-2xl mb-3 p-4 overflow-hidden"
-        style={{ borderWidth: 1, borderColor: '#25272D' }}
+        className="bg-app-sheet rounded-2xl mb-3 p-4 overflow-hidden"
+        style={{ borderWidth: 1, borderColor: colors.border }}
       >
         <View className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: sideColor }} />
         <View className="flex-row items-center mb-3">
           <SymbolAvatar symbol={order.symbol} color={sideColor} />
           <View className="flex-1">
             <View className="flex-row items-center">
-              <Text className="text-white text-[15px] font-bold mr-2">{order.symbol}</Text>
+              <Text className="text-app-text text-[15px] font-bold mr-2">{order.symbol}</Text>
               <View className="px-1.5 py-0.5 rounded" style={{ backgroundColor: `${sideColor}1A` }}>
                 <Text className="text-[10px] font-bold" style={{ color: sideColor }}>
                   {order.side}
                 </Text>
               </View>
             </View>
-            <Text className="text-[#8A8D93] text-[11px] mt-0.5">
+            <Text className="text-app-muted text-[11px] mt-0.5">
               {order.orderType} · {order.leverage}x {order.marginMode}
             </Text>
           </View>
@@ -521,20 +524,20 @@ export default function OrdersHubScreen() {
     return (
       <View
         key={item.id}
-        className="bg-[#161719] rounded-2xl mb-3 p-4 overflow-hidden"
-        style={{ borderWidth: 1, borderColor: '#25272D' }}
+        className="bg-app-sheet rounded-2xl mb-3 p-4 overflow-hidden"
+        style={{ borderWidth: 1, borderColor: colors.border }}
       >
         <View className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: sideColor }} />
         <View className="flex-row items-center mb-3">
           <SymbolAvatar symbol={item.symbol} color={sideColor} />
           <View className="flex-1">
             <View className="flex-row items-center">
-              <Text className="text-white text-[15px] font-bold mr-2">{item.symbol}</Text>
+              <Text className="text-app-text text-[15px] font-bold mr-2">{item.symbol}</Text>
               <Text className="text-[11px] font-bold" style={{ color: sideColor }}>
                 {item.side}
               </Text>
             </View>
-            <Text className="text-[#8A8D93] text-[11px] mt-0.5">{item.timestamp}</Text>
+            <Text className="text-app-muted text-[11px] mt-0.5">{item.timestamp}</Text>
           </View>
           <View className="px-2 py-1 rounded-md" style={{ backgroundColor: `${typeColor}1F` }}>
             <Text className="text-[10px] font-bold" style={{ color: typeColor }}>
@@ -653,19 +656,19 @@ export default function OrdersHubScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#050505]" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-app-bg" edges={['top']}>
       {/* Header */}
       <View className="flex-row items-center justify-between px-4 py-3">
         <TouchableOpacity
           onPress={handleBack}
-          className="w-9 h-9 rounded-full bg-[#161719] items-center justify-center"
+          className="w-9 h-9 rounded-full bg-app-sheet items-center justify-center"
         >
-          <Ionicons name="arrow-back" size={20} color="white" />
+          <Ionicons name="arrow-back" size={20} color={colors.text} />
         </TouchableOpacity>
-        <Text className="text-white text-[17px] font-bold">Orders</Text>
+        <Text className="text-app-text text-[17px] font-bold">Orders</Text>
         <TouchableOpacity
           onPress={() => router.push(marketTab === 'futures' ? '/(tabs)/futures' : '/(tabs)/trade')}
-          className="w-9 h-9 rounded-full bg-[#161719] items-center justify-center"
+          className="w-9 h-9 rounded-full bg-app-sheet items-center justify-center"
         >
           <Ionicons name="add" size={22} color={ACCENT} />
         </TouchableOpacity>
@@ -673,8 +676,8 @@ export default function OrdersHubScreen() {
 
       {/* Spot / Futures segmented control */}
       <View
-        className="flex-row mx-4 mt-1 bg-[#161719] rounded-xl p-1"
-        style={{ borderWidth: 1, borderColor: '#25272D' }}
+        className="flex-row mx-4 mt-1 bg-app-sheet rounded-xl p-1"
+        style={{ borderWidth: 1, borderColor: colors.border }}
       >
         {(['spot', 'futures'] as MarketTab[]).map((t) => {
           const active = marketTab === t;
@@ -687,19 +690,19 @@ export default function OrdersHubScreen() {
               key={t}
               onPress={() => handleMarketTabChange(t)}
               activeOpacity={0.8}
-              className={`flex-1 py-2.5 rounded-lg flex-row items-center justify-center ${active ? 'bg-[#202227]' : ''}`}
+              className={`flex-1 py-2.5 rounded-lg flex-row items-center justify-center ${active ? 'bg-app-card-soft' : ''}`}
             >
               <View className="items-center">
                 <View className="flex-row items-center">
-                  <Text className={`text-[13px] font-bold capitalize ${active ? 'text-white' : 'text-[#8A8D93]'}`}>
+                  <Text className={`text-[13px] font-bold capitalize ${active ? 'text-app-text' : 'text-app-muted'}`}>
                     {t}
                   </Text>
                   {count > 0 && (
                     <View
                       className="ml-1.5 rounded-full min-w-[18px] h-[18px] px-1 items-center justify-center"
-                      style={{ backgroundColor: active ? ACCENT : '#2A2B2F' }}
+                      style={{ backgroundColor: active ? ACCENT : colors.border }}
                     >
-                      <Text className={`text-[10px] font-bold ${active ? 'text-black' : 'text-[#9CA3AF]'}`}>{count}</Text>
+                      <Text className={`text-[10px] font-bold ${active ? 'text-black' : 'text-app-muted'}`}>{count}</Text>
                     </View>
                   )}
                 </View>
@@ -724,7 +727,7 @@ export default function OrdersHubScreen() {
           const active = hubTab === t.id;
           return (
             <TouchableOpacity key={t.id} onPress={() => setHubTab(t.id)} className="mr-5 pb-2.5" activeOpacity={0.7}>
-              <Text className={`text-[14px] ${active ? 'text-white font-bold' : 'text-[#8A8D93] font-semibold'}`}>
+              <Text className={`text-[14px] ${active ? 'text-app-text font-bold' : 'text-app-muted font-semibold'}`}>
                 {t.label}
               </Text>
               {active && (
@@ -737,7 +740,7 @@ export default function OrdersHubScreen() {
           );
         })}
       </ScrollView>
-      <View className="h-[1px] bg-[#1C1E22]" />
+      <View className="h-[1px] bg-app-input" />
 
       {/* History filter chips (spot only) */}
       {hubTab === 'history' && marketTab === 'spot' && (
@@ -757,12 +760,12 @@ export default function OrdersHubScreen() {
                 activeOpacity={0.8}
                 className="mr-2 px-3.5 py-1.5 rounded-full"
                 style={{
-                  backgroundColor: active ? ACCENT : '#161719',
+                  backgroundColor: active ? ACCENT : colors.cardSoft,
                   borderWidth: 1,
-                  borderColor: active ? ACCENT : '#25272D',
+                  borderColor: active ? ACCENT : colors.border,
                 }}
               >
-                <Text className={`text-[12px] font-bold ${active ? 'text-black' : 'text-[#9CA3AF]'}`}>{f}</Text>
+                <Text className={`text-[12px] font-bold ${active ? 'text-black' : 'text-app-muted'}`}>{f}</Text>
               </TouchableOpacity>
             );
           })}
@@ -771,15 +774,15 @@ export default function OrdersHubScreen() {
 
       {/* Futures margin summary */}
       {marketTab === 'futures' && hubTab === 'positions' && (
-        <View className="mx-4 mt-3 bg-[#161719] rounded-xl p-3.5 flex-row" style={{ borderWidth: 1, borderColor: '#25272D' }}>
+        <View className="mx-4 mt-3 bg-app-sheet rounded-xl p-3.5 flex-row" style={{ borderWidth: 1, borderColor: colors.border }}>
           <View className="flex-1">
-            <Text className="text-[#8A8D93] text-[10px] mb-1">Available Margin</Text>
-            <Text className="text-white text-[14px] font-bold">{formatFuturesPrice(marginAvailable)}</Text>
+            <Text className="text-app-muted text-[10px] mb-1">Available Margin</Text>
+            <Text className="text-app-text text-[14px] font-bold">{formatFuturesPrice(marginAvailable)}</Text>
           </View>
-          <View className="w-[1px] bg-[#25272D] mx-3" />
+          <View className="w-[1px] bg-app-border mx-3" />
           <View className="flex-1 items-end">
-            <Text className="text-[#8A8D93] text-[10px] mb-1">Margin Used</Text>
-            <Text className="text-white text-[14px] font-bold">{formatFuturesPrice(marginUsed)}</Text>
+            <Text className="text-app-muted text-[10px] mb-1">Margin Used</Text>
+            <Text className="text-app-text text-[14px] font-bold">{formatFuturesPrice(marginUsed)}</Text>
           </View>
         </View>
       )}
@@ -787,7 +790,7 @@ export default function OrdersHubScreen() {
       {/* Open Orders action row: count + Cancel All */}
       {hubTab === 'open' && openCount > 0 && (
         <View className="px-4 pt-3 flex-row items-center justify-between">
-          <Text className="text-[#8A8D93] text-[12px]">
+          <Text className="text-app-muted text-[12px]">
             {openCount} active {marketTab} order{openCount > 1 ? 's' : ''}
           </Text>
           <TouchableOpacity onPress={handleCancelAll} activeOpacity={0.7} className="flex-row items-center">

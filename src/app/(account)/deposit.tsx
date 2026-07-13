@@ -12,6 +12,7 @@ import Animated, {
   withDelay,
 } from 'react-native-reanimated';
 import { usePortfolio } from '../../context/PortfolioContext';
+import { useTheme } from '../../context/ThemeContext';
 import { useTransferSheet } from '../../context/TransferSheetContext';
 import { formatPortfolioRs } from '../../data/mockPortfolio';
 import { safeBack } from '../../utils/navigation';
@@ -55,6 +56,7 @@ const PROGRESS_LABELS = ['Method', 'Bank', 'Amount', 'Review'];
 type Step = 1 | 2 | 3 | 4 | 5 | 6;
 
 function DepositSuccessHero() {
+  const { colors } = useTheme();
   const ringScale = useSharedValue(0.5);
   const ringOpacity = useSharedValue(0);
   const iconScale = useSharedValue(0);
@@ -108,7 +110,7 @@ function DepositSuccessHero() {
               width: 70,
               height: 70,
               borderRadius: 35,
-              backgroundColor: '#0d2010',
+              backgroundColor: 'rgba(14,203,129,0.12)',
               alignItems: 'center',
               justifyContent: 'center',
             },
@@ -119,8 +121,8 @@ function DepositSuccessHero() {
         </Animated.View>
       </Animated.View>
       <Animated.View style={[{ alignItems: 'center', marginTop: 16 }, contentStyle]}>
-        <Text style={{ color: '#fff', fontSize: 22, fontWeight: '700', textAlign: 'center' }}>Deposit Successful!</Text>
-        <Text style={{ color: '#555', fontSize: 13, textAlign: 'center', marginTop: 6, marginBottom: 24, lineHeight: 20 }}>
+        <Text style={{ color: colors.text, fontSize: 22, fontWeight: '700', textAlign: 'center' }}>Deposit Successful!</Text>
+        <Text style={{ color: colors.muted, fontSize: 13, textAlign: 'center', marginTop: 6, marginBottom: 24, lineHeight: 20 }}>
           Your deposit has been received{'\n'}and is being processed.
         </Text>
       </Animated.View>
@@ -130,6 +132,7 @@ function DepositSuccessHero() {
 
 export default function DepositScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { openTransfer } = useTransferSheet();
   const { addCash, summary } = usePortfolio();
@@ -187,24 +190,24 @@ export default function DepositScreen() {
 
   // ── Shared: Nav Bar ─────────────────────────────────────────────────────────
   const renderNavBar = () => (
-    <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: '#1e1e1e' }}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingVertical: 10, borderBottomWidth: 0.5, borderBottomColor: colors.border }}>
       {step < 6 ? (
         <TouchableOpacity onPress={goBack} style={{ width: 36 }}>
-          <Ionicons name="arrow-back" size={20} color="#fff" />
+          <Ionicons name="arrow-back" size={20} color={colors.text} />
         </TouchableOpacity>
       ) : (
         <View style={{ width: 36 }} />
       )}
       <View style={{ flex: 1, alignItems: 'center' }}>
-        <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>Deposit</Text>
+        <Text style={{ color: colors.text, fontSize: 16, fontWeight: '600' }}>Deposit</Text>
       </View>
       {step === 1 ? (
         <TouchableOpacity style={{ width: 36, alignItems: 'flex-end' }}>
-          <Ionicons name="help-circle-outline" size={20} color="#555" />
+          <Ionicons name="help-circle-outline" size={20} color={colors.muted} />
         </TouchableOpacity>
       ) : step === 6 ? (
         <TouchableOpacity onPress={() => router.replace('/(tabs)/home')} style={{ width: 36, alignItems: 'flex-end' }}>
-          <Ionicons name="home-outline" size={20} color="#555" />
+          <Ionicons name="home-outline" size={20} color={colors.muted} />
         </TouchableOpacity>
       ) : (
         <View style={{ width: 36 }} />
@@ -223,7 +226,7 @@ export default function DepositScreen() {
           return (
             <React.Fragment key={label}>
               {idx > 0 && (
-                <View style={{ flex: 1, height: 1.5, backgroundColor: idx <= progressIndex ? '#f97316' : '#1e1e1e' }} />
+                <View style={{ flex: 1, height: 1.5, backgroundColor: idx <= progressIndex ? '#f97316' : colors.border }} />
               )}
               <View style={{ alignItems: 'center' }}>
                 <View style={{
@@ -231,14 +234,14 @@ export default function DepositScreen() {
                   alignItems: 'center', justifyContent: 'center',
                   backgroundColor: isCompleted ? '#f97316' : 'transparent',
                   borderWidth: isCompleted ? 0 : isCurrent ? 2 : 1.5,
-                  borderColor: isCompleted ? '#f97316' : isCurrent ? '#f97316' : '#333',
+                  borderColor: isCompleted ? '#f97316' : isCurrent ? '#f97316' : colors.border,
                 }}>
                   {isCompleted
                     ? <Ionicons name="checkmark" size={14} color="#fff" />
-                    : <Text style={{ color: isCurrent ? '#f97316' : '#333', fontSize: 11, fontWeight: '700' }}>{idx + 1}</Text>
+                    : <Text style={{ color: isCurrent ? '#f97316' : colors.mutedDarker, fontSize: 11, fontWeight: '700' }}>{idx + 1}</Text>
                   }
                 </View>
-                <Text style={{ fontSize: 9, marginTop: 4, color: isCurrent ? '#f97316' : '#444', fontWeight: isCurrent ? '600' : '400' }}>
+                <Text style={{ fontSize: 9, marginTop: 4, color: isCurrent ? '#f97316' : colors.muted, fontWeight: isCurrent ? '600' : '400' }}>
                   {label}
                 </Text>
               </View>
@@ -263,7 +266,7 @@ export default function DepositScreen() {
     else if (step === 5) { label = 'Upload Receipt'; outlined = true; onPress = () => setStep(6); }
 
     return (
-      <View style={{ paddingHorizontal: 14, paddingTop: 10, paddingBottom: Math.max(insets.bottom, 12), borderTopWidth: 0.5, borderTopColor: '#1e1e1e', backgroundColor: '#050505' }}>
+      <View style={{ paddingHorizontal: 14, paddingTop: 10, paddingBottom: Math.max(insets.bottom, 12), borderTopWidth: 0.5, borderTopColor: colors.border, backgroundColor: 'transparent' }}>
         <TouchableOpacity
           onPress={onPress}
           disabled={disabled}
@@ -287,18 +290,18 @@ export default function DepositScreen() {
   const renderStep1 = () => (
     <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }}>
       {/* Balance Block */}
-      <View style={{ paddingHorizontal: 14, paddingTop: 16, paddingBottom: 14, borderBottomWidth: 0.5, borderBottomColor: '#1e1e1e', marginBottom: 14 }}>
-        <Text style={{ color: '#555', fontSize: 11, fontWeight: '500', marginBottom: 4 }}>Total Balance</Text>
+      <View style={{ paddingHorizontal: 14, paddingTop: 16, paddingBottom: 14, borderBottomWidth: 0.5, borderBottomColor: colors.border, marginBottom: 14 }}>
+        <Text style={{ color: colors.muted, fontSize: 11, fontWeight: '500', marginBottom: 4 }}>Total Balance</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          <Text style={{ color: '#fff', fontSize: 26, fontWeight: '700', letterSpacing: -0.5 }}>{balanceLabel}</Text>
-          <Ionicons name="eye-outline" size={16} color="#555" />
+          <Text style={{ color: colors.text, fontSize: 26, fontWeight: '700', letterSpacing: -0.5 }}>{balanceLabel}</Text>
+          <Ionicons name="eye-outline" size={16} color={colors.muted} />
         </View>
-        <Text style={{ color: '#555', fontSize: 11, marginTop: 4 }}>Spot wallet · buying power</Text>
+        <Text style={{ color: colors.muted, fontSize: 11, marginTop: 4 }}>Spot wallet · buying power</Text>
         <Text style={{ color: '#f97316', fontSize: 13, fontWeight: '600', marginTop: 2 }}>{availableLabel}</Text>
       </View>
 
       {/* Method Selection */}
-      <Text style={{ color: '#e0e0e0', fontSize: 13, fontWeight: '600', marginHorizontal: 14, marginBottom: 10 }}>Choose Deposit Method</Text>
+      <Text style={{ color: colors.text, fontSize: 13, fontWeight: '600', marginHorizontal: 14, marginBottom: 10 }}>Choose Deposit Method</Text>
       {METHODS.map((method) => {
         const isSelected = selectedMethod === method.id;
         return (
@@ -306,27 +309,27 @@ export default function DepositScreen() {
             key={method.id}
             onPress={() => setSelectedMethod(method.id)}
             style={{
-              backgroundColor: '#161616', borderRadius: 12, marginHorizontal: 14, marginBottom: 8, padding: 14,
+              backgroundColor: colors.card, borderRadius: 12, marginHorizontal: 14, marginBottom: 8, padding: 14,
               flexDirection: 'row', alignItems: 'center',
-              borderWidth: 1.5, borderColor: isSelected ? '#f97316' : '#1e1e1e',
+              borderWidth: 1.5, borderColor: isSelected ? '#f97316' : colors.border,
             }}
           >
-            <View style={{ width: 40, height: 40, borderRadius: 8, backgroundColor: '#1e1e1e', alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ width: 40, height: 40, borderRadius: 8, backgroundColor: colors.cardSoft, alignItems: 'center', justifyContent: 'center' }}>
               <Ionicons name={method.icon as any} size={20} color={method.color} />
             </View>
             <View style={{ flex: 1, marginLeft: 12 }}>
-              <Text style={{ color: '#fff', fontSize: 13, fontWeight: '600' }}>{method.title}</Text>
-              <Text style={{ color: '#555', fontSize: 11, marginTop: 2 }}>{method.sub}</Text>
+              <Text style={{ color: colors.text, fontSize: 13, fontWeight: '600' }}>{method.title}</Text>
+              <Text style={{ color: colors.muted, fontSize: 11, marginTop: 2 }}>{method.sub}</Text>
             </View>
-            <Ionicons name="chevron-forward" size={16} color="#333" />
+            <Ionicons name="chevron-forward" size={16} color={colors.mutedDarker} />
           </TouchableOpacity>
         );
       })}
 
       {/* Info Notice */}
-      <View style={{ marginHorizontal: 14, marginTop: 6, backgroundColor: '#111111', borderRadius: 10, padding: 12, flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
-        <Ionicons name="information-circle-outline" size={14} color="#555" style={{ marginTop: 1 }} />
-        <Text style={{ color: '#555', fontSize: 11, lineHeight: 17, flex: 1 }}>
+      <View style={{ marginHorizontal: 14, marginTop: 6, backgroundColor: colors.cardSoft, borderRadius: 10, padding: 12, flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
+        <Ionicons name="information-circle-outline" size={14} color={colors.muted} style={{ marginTop: 1 }} />
+        <Text style={{ color: colors.muted, fontSize: 11, lineHeight: 17, flex: 1 }}>
           Deposits are credited to your Spot wallet (buying power). To trade futures, transfer funds from Spot to Futures after your deposit clears.
         </Text>
       </View>
@@ -337,7 +340,7 @@ export default function DepositScreen() {
   const renderStep2 = () => (
     <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 14, paddingBottom: 20 }}>
       {renderProgress()}
-      <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600', marginTop: 4, marginBottom: 14 }}>Select Bank Account</Text>
+      <Text style={{ color: colors.text, fontSize: 16, fontWeight: '600', marginTop: 4, marginBottom: 14 }}>Select Bank Account</Text>
 
       {BANKS.map((bank) => {
         const isSelected = selectedBank === bank.id;
@@ -346,13 +349,13 @@ export default function DepositScreen() {
             key={bank.id}
             onPress={() => setSelectedBank(bank.id)}
             style={{
-              backgroundColor: '#161616', borderRadius: 12, padding: 14, marginBottom: 8,
+              backgroundColor: colors.card, borderRadius: 12, padding: 14, marginBottom: 8,
               flexDirection: 'row', alignItems: 'center',
-              borderWidth: 1.5, borderColor: isSelected ? '#f97316' : '#1e1e1e',
+              borderWidth: 1.5, borderColor: isSelected ? '#f97316' : colors.border,
             }}
           >
             {/* Radio */}
-            <View style={{ width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', borderWidth: isSelected ? 2 : 1.5, borderColor: isSelected ? '#f97316' : '#333' }}>
+            <View style={{ width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', borderWidth: isSelected ? 2 : 1.5, borderColor: isSelected ? '#f97316' : colors.border }}>
               {isSelected && <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: '#f97316' }} />}
             </View>
             {/* Logo */}
@@ -361,9 +364,9 @@ export default function DepositScreen() {
             </View>
             {/* Info */}
             <View style={{ flex: 1, marginLeft: 10 }}>
-              <Text style={{ color: '#fff', fontSize: 13, fontWeight: '600' }}>{bank.name}</Text>
-              <Text style={{ color: '#555', fontSize: 11, marginTop: 2 }}>{bank.number}</Text>
-              <Text style={{ color: '#555', fontSize: 11, marginTop: 1 }}>{bank.holder}</Text>
+              <Text style={{ color: colors.text, fontSize: 13, fontWeight: '600' }}>{bank.name}</Text>
+              <Text style={{ color: colors.muted, fontSize: 11, marginTop: 2 }}>{bank.number}</Text>
+              <Text style={{ color: colors.muted, fontSize: 11, marginTop: 1 }}>{bank.holder}</Text>
             </View>
           </TouchableOpacity>
         );
@@ -371,11 +374,11 @@ export default function DepositScreen() {
 
       {/* Add New Bank */}
       <TouchableOpacity style={{
-        backgroundColor: 'transparent', borderWidth: 1.5, borderColor: '#333', borderStyle: 'dashed',
+        backgroundColor: 'transparent', borderWidth: 1.5, borderColor: colors.border, borderStyle: 'dashed',
         borderRadius: 12, padding: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
       }}>
-        <Ionicons name="add" size={16} color="#555" />
-        <Text style={{ color: '#555', fontSize: 13, fontWeight: '500' }}>Add New Bank Account</Text>
+        <Ionicons name="add" size={16} color={colors.muted} />
+        <Text style={{ color: colors.muted, fontSize: 13, fontWeight: '500' }}>Add New Bank Account</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -384,11 +387,11 @@ export default function DepositScreen() {
   const renderStep3 = () => (
     <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 14, paddingBottom: 20 }}>
       {renderProgress()}
-      <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600', marginTop: 4, marginBottom: 16 }}>Enter Deposit Amount</Text>
+      <Text style={{ color: colors.text, fontSize: 16, fontWeight: '600', marginTop: 4, marginBottom: 16 }}>Enter Deposit Amount</Text>
 
       {/* Amount Input */}
-      <Text style={{ color: '#555', fontSize: 12, marginBottom: 6 }}>Amount (PKR)</Text>
-      <View style={{ backgroundColor: '#161616', borderRadius: 10, paddingVertical: 16, paddingHorizontal: 14, borderWidth: 1.5, borderColor: amount ? '#f97316' : '#1e1e1e' }}>
+      <Text style={{ color: colors.muted, fontSize: 12, marginBottom: 6 }}>Amount (PKR)</Text>
+      <View style={{ backgroundColor: colors.card, borderRadius: 10, paddingVertical: 16, paddingHorizontal: 14, borderWidth: 1.5, borderColor: amount ? '#f97316' : colors.border }}>
         <TextInput
           value={amount}
           onChangeText={(text) => {
@@ -397,15 +400,15 @@ export default function DepositScreen() {
             setSelectedQuickAmount(null);
           }}
           placeholder="0"
-          placeholderTextColor="#333"
+          placeholderTextColor={colors.mutedDarker}
           keyboardType="numeric"
-          style={{ fontSize: 28, fontWeight: '700', color: '#fff' }}
+          style={{ fontSize: 28, fontWeight: '700', color: colors.text }}
         />
       </View>
-      <Text style={{ color: '#555', fontSize: 11, marginTop: 8 }}>Available Balance: {availableLabel}</Text>
+      <Text style={{ color: colors.muted, fontSize: 11, marginTop: 8 }}>Available Balance: {availableLabel}</Text>
 
       {/* Quick Amounts */}
-      <Text style={{ color: '#e0e0e0', fontSize: 12, fontWeight: '600', marginTop: 16, marginBottom: 8 }}>Quick Amounts</Text>
+      <Text style={{ color: colors.text, fontSize: 12, fontWeight: '600', marginTop: 16, marginBottom: 8 }}>Quick Amounts</Text>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
         {QUICK_AMOUNTS.map((qa) => {
           const isSelected = selectedQuickAmount === qa;
@@ -415,25 +418,25 @@ export default function DepositScreen() {
               onPress={() => { setSelectedQuickAmount(qa); setAmount(qa.toString()); }}
               style={{
                 flexBasis: '30%', paddingVertical: 10, borderRadius: 8, alignItems: 'center',
-                backgroundColor: isSelected ? '#f97316' : '#161616',
-                borderWidth: 1, borderColor: isSelected ? '#f97316' : '#1e1e1e',
+                backgroundColor: isSelected ? '#f97316' : colors.cardSoft,
+                borderWidth: 1, borderColor: isSelected ? '#f97316' : colors.border,
               }}
             >
-              <Text style={{ color: isSelected ? '#fff' : '#8A8D93', fontSize: 12, fontWeight: '500' }}>
+              <Text style={{ color: isSelected ? '#fff' : colors.muted, fontSize: 12, fontWeight: '500' }}>
                 +{qa.toLocaleString()}
               </Text>
             </TouchableOpacity>
           );
         })}
-        <TouchableOpacity style={{ flexBasis: '30%', paddingVertical: 10, borderRadius: 8, alignItems: 'center', backgroundColor: '#161616', borderWidth: 1, borderColor: '#1e1e1e' }}>
-          <Text style={{ color: '#8A8D93', fontSize: 12, fontWeight: '500' }}>Other</Text>
+        <TouchableOpacity style={{ flexBasis: '30%', paddingVertical: 10, borderRadius: 8, alignItems: 'center', backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border }}>
+          <Text style={{ color: colors.muted, fontSize: 12, fontWeight: '500' }}>Other</Text>
         </TouchableOpacity>
       </View>
 
       {/* Fee Notice */}
-      <View style={{ marginTop: 14, backgroundColor: '#111111', borderRadius: 10, padding: 12, flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
-        <Ionicons name="information-circle-outline" size={14} color="#555" style={{ marginTop: 1 }} />
-        <Text style={{ color: '#555', fontSize: 11, flex: 1 }}>
+      <View style={{ marginTop: 14, backgroundColor: colors.cardSoft, borderRadius: 10, padding: 12, flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
+        <Ionicons name="information-circle-outline" size={14} color={colors.muted} style={{ marginTop: 1 }} />
+        <Text style={{ color: colors.muted, fontSize: 11, flex: 1 }}>
           No fees on deposits via bank transfer.{'\n'}Minimum deposit: PKR 10
         </Text>
       </View>
@@ -444,42 +447,42 @@ export default function DepositScreen() {
   const renderStep4 = () => (
     <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 14, paddingBottom: 20 }}>
       {renderProgress()}
-      <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600', marginTop: 4, marginBottom: 14 }}>Review Deposit Details</Text>
+      <Text style={{ color: colors.text, fontSize: 16, fontWeight: '600', marginTop: 4, marginBottom: 14 }}>Review Deposit Details</Text>
 
-      <View style={{ backgroundColor: '#161616', borderRadius: 12, padding: 14 }}>
+      <View style={{ backgroundColor: colors.card, borderRadius: 12, padding: 14 }}>
         {/* Destination wallet */}
-        <Text style={{ color: '#555', fontSize: 10, fontWeight: '500', textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 8 }}>Destination</Text>
+        <Text style={{ color: colors.muted, fontSize: 10, fontWeight: '500', textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 8 }}>Destination</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 4 }}>
           <Ionicons name="wallet-outline" size={18} color="#f97316" />
-          <Text style={{ color: '#fff', fontSize: 13, fontWeight: '600' }}>Spot Wallet</Text>
+          <Text style={{ color: colors.text, fontSize: 13, fontWeight: '600' }}>Spot Wallet</Text>
         </View>
-        <Text style={{ color: '#666', fontSize: 11, marginBottom: 12 }}>Funds will be added to spot buying power only.</Text>
+        <Text style={{ color: colors.muted, fontSize: 11, marginBottom: 12 }}>Funds will be added to spot buying power only.</Text>
 
-        <View style={{ height: 0.5, backgroundColor: '#1e1e1e', marginBottom: 12 }} />
+        <View style={{ height: 0.5, backgroundColor: colors.cardSoft, marginBottom: 12 }} />
 
         {/* Method */}
-        <Text style={{ color: '#555', fontSize: 10, fontWeight: '500', textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 8 }}>Deposit Method</Text>
+        <Text style={{ color: colors.muted, fontSize: 10, fontWeight: '500', textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 8 }}>Deposit Method</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
           <Ionicons name="business-outline" size={18} color="#f97316" />
-          <Text style={{ color: '#fff', fontSize: 13, fontWeight: '500' }}>Bank Transfer</Text>
+          <Text style={{ color: colors.text, fontSize: 13, fontWeight: '500' }}>Bank Transfer</Text>
         </View>
 
-        <View style={{ height: 0.5, backgroundColor: '#1e1e1e', marginVertical: 12 }} />
+        <View style={{ height: 0.5, backgroundColor: colors.cardSoft, marginVertical: 12 }} />
 
         {/* Bank */}
-        <Text style={{ color: '#555', fontSize: 10, fontWeight: '500', textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 8 }}>Bank Account</Text>
+        <Text style={{ color: colors.muted, fontSize: 10, fontWeight: '500', textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 8 }}>Bank Account</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
           <View style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: selectedBankData.bgColor, alignItems: 'center', justifyContent: 'center' }}>
             <Text style={{ color: selectedBankData.textColor, fontSize: selectedBankData.small ? 10 : 14, fontWeight: '700' }}>{selectedBankData.abbr}</Text>
           </View>
           <View>
-            <Text style={{ color: '#fff', fontSize: 13, fontWeight: '600' }}>{selectedBankData.name}</Text>
-            <Text style={{ color: '#555', fontSize: 11, marginTop: 2 }}>{selectedBankData.number}</Text>
-            <Text style={{ color: '#555', fontSize: 11, marginTop: 1 }}>{selectedBankData.holder}</Text>
+            <Text style={{ color: colors.text, fontSize: 13, fontWeight: '600' }}>{selectedBankData.name}</Text>
+            <Text style={{ color: colors.muted, fontSize: 11, marginTop: 2 }}>{selectedBankData.number}</Text>
+            <Text style={{ color: colors.muted, fontSize: 11, marginTop: 1 }}>{selectedBankData.holder}</Text>
           </View>
         </View>
 
-        <View style={{ height: 0.5, backgroundColor: '#1e1e1e', marginVertical: 12 }} />
+        <View style={{ height: 0.5, backgroundColor: colors.cardSoft, marginVertical: 12 }} />
 
         {/* Detail Rows */}
         {([
@@ -488,17 +491,17 @@ export default function DepositScreen() {
           { label: 'Transaction Fee', value: DEPOSIT_MOCK.fee,               style: { color: '#22c55e' } },
           { label: 'Total Amount',    value: displayAmount,                  style: { color: '#f97316', fontSize: 14, fontWeight: '700' } },
         ] as const).map((row, idx, arr) => (
-          <View key={row.label} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8, borderBottomWidth: idx < arr.length - 1 ? 0.5 : 0, borderBottomColor: '#111111' }}>
-            <Text style={{ color: '#555', fontSize: 12 }}>{row.label}</Text>
-            <Text style={{ color: '#fff', fontSize: 12, fontWeight: '500', ...(row.style as object) }}>{row.value}</Text>
+          <View key={row.label} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8, borderBottomWidth: idx < arr.length - 1 ? 0.5 : 0, borderBottomColor: colors.border }}>
+            <Text style={{ color: colors.muted, fontSize: 12 }}>{row.label}</Text>
+            <Text style={{ color: colors.text, fontSize: 12, fontWeight: '500', ...(row.style as object) }}>{row.value}</Text>
           </View>
         ))}
       </View>
 
       {/* Warning */}
-      <View style={{ marginTop: 12, backgroundColor: '#111111', borderRadius: 8, padding: 10, flexDirection: 'row', gap: 8 }}>
-        <Ionicons name="information-circle-outline" size={14} color="#555" style={{ marginTop: 1 }} />
-        <Text style={{ color: '#555', fontSize: 11, flex: 1 }}>
+      <View style={{ marginTop: 12, backgroundColor: colors.cardSoft, borderRadius: 8, padding: 10, flexDirection: 'row', gap: 8 }}>
+        <Ionicons name="information-circle-outline" size={14} color={colors.muted} style={{ marginTop: 1 }} />
+        <Text style={{ color: colors.muted, fontSize: 11, flex: 1 }}>
           Make sure the details above are correct. You won't be able to change them later.
         </Text>
       </View>
@@ -511,40 +514,40 @@ export default function DepositScreen() {
     return (
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 14, paddingBottom: 20 }}>
         {/* Request Created */}
-        <View style={{ backgroundColor: '#161616', borderRadius: 12, padding: 16, marginTop: 14, marginBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-          <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: '#0d2010', alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ backgroundColor: colors.card, borderRadius: 12, padding: 16, marginTop: 14, marginBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(14,203,129,0.12)', alignItems: 'center', justifyContent: 'center' }}>
             <Ionicons name="checkmark" size={22} color="#22c55e" />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={{ color: '#fff', fontSize: 14, fontWeight: '600' }}>Deposit Request Created</Text>
-            <Text style={{ color: '#555', fontSize: 12, marginTop: 3 }}>Complete the payment to process your deposit.</Text>
+            <Text style={{ color: colors.text, fontSize: 14, fontWeight: '600' }}>Deposit Request Created</Text>
+            <Text style={{ color: colors.muted, fontSize: 12, marginTop: 3 }}>Complete the payment to process your deposit.</Text>
           </View>
         </View>
 
         {/* Timer */}
-        <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600', marginBottom: 10 }}>Payment Instructions</Text>
+        <Text style={{ color: colors.text, fontSize: 16, fontWeight: '600', marginBottom: 10 }}>Payment Instructions</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-          <Text style={{ color: '#555', fontSize: 12, flex: 1 }}>Complete payment within</Text>
+          <Text style={{ color: colors.muted, fontSize: 12, flex: 1 }}>Complete payment within</Text>
           <Text style={{ color: timerColor, fontSize: 14, fontWeight: '700' }}>{formatTime(timeLeft)}</Text>
         </View>
 
         {/* Instructions Card */}
-        <View style={{ backgroundColor: '#161616', borderRadius: 12, padding: 14, marginBottom: 14 }}>
+        <View style={{ backgroundColor: colors.card, borderRadius: 12, padding: 14, marginBottom: 14 }}>
           {/* Instruction 1 */}
           <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
             <View style={{ width: 22, height: 22, borderRadius: 11, backgroundColor: '#f97316', alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={{ color: '#fff', fontSize: 11, fontWeight: '700' }}>1</Text>
+              <Text style={{ color: '#000', fontSize: 11, fontWeight: '700' }}>1</Text>
             </View>
             <View style={{ flex: 1, marginLeft: 10 }}>
-              <Text style={{ color: '#555', fontSize: 12 }}>Transfer the exact amount of</Text>
-              <Text style={{ color: '#fff', fontSize: 13, fontWeight: '600', marginTop: 2 }}>
+              <Text style={{ color: colors.muted, fontSize: 12 }}>Transfer the exact amount of</Text>
+              <Text style={{ color: colors.text, fontSize: 13, fontWeight: '600', marginTop: 2 }}>
                 PKR {(parsedAmount || DEPOSIT_MOCK.amount).toLocaleString()}.00
               </Text>
-              <Text style={{ color: '#555', fontSize: 12 }}>to the account below.</Text>
+              <Text style={{ color: colors.muted, fontSize: 12 }}>to the account below.</Text>
             </View>
           </View>
 
-          <View style={{ height: 0.5, backgroundColor: '#1e1e1e', marginVertical: 10 }} />
+          <View style={{ height: 0.5, backgroundColor: colors.cardSoft, marginVertical: 10 }} />
 
           {/* TradeIt Bank Details */}
           {([
@@ -555,31 +558,31 @@ export default function DepositScreen() {
             { label: 'Reference / Note', value: DEPOSIT_MOCK.reference,      highlight: true  },
           ] as const).map((detail) => (
             <View key={detail.label} style={{ paddingVertical: 5 }}>
-              <Text style={{ color: '#555', fontSize: 11 }}>{detail.label}</Text>
-              <Text style={{ color: detail.highlight ? '#f97316' : '#e0e0e0', fontSize: 12, fontWeight: '500', marginTop: 2 }}>
+              <Text style={{ color: colors.muted, fontSize: 11 }}>{detail.label}</Text>
+              <Text style={{ color: detail.highlight ? '#f97316' : colors.text, fontSize: 12, fontWeight: '500', marginTop: 2 }}>
                 {detail.value}
               </Text>
             </View>
           ))}
 
-          <View style={{ height: 0.5, backgroundColor: '#1e1e1e', marginVertical: 10 }} />
+          <View style={{ height: 0.5, backgroundColor: colors.cardSoft, marginVertical: 10 }} />
 
           {/* Instruction 2 */}
           <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
             <View style={{ width: 22, height: 22, borderRadius: 11, backgroundColor: '#f97316', alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={{ color: '#fff', fontSize: 11, fontWeight: '700' }}>2</Text>
+              <Text style={{ color: '#000', fontSize: 11, fontWeight: '700' }}>2</Text>
             </View>
-            <Text style={{ color: '#555', fontSize: 12, flex: 1, marginLeft: 10, marginTop: 2 }}>Use your registered bank account.</Text>
+            <Text style={{ color: colors.muted, fontSize: 12, flex: 1, marginLeft: 10, marginTop: 2 }}>Use your registered bank account.</Text>
           </View>
 
-          <View style={{ height: 0.5, backgroundColor: '#1e1e1e', marginVertical: 10 }} />
+          <View style={{ height: 0.5, backgroundColor: colors.cardSoft, marginVertical: 10 }} />
 
           {/* Instruction 3 */}
           <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
             <View style={{ width: 22, height: 22, borderRadius: 11, backgroundColor: '#f97316', alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={{ color: '#fff', fontSize: 11, fontWeight: '700' }}>3</Text>
+              <Text style={{ color: '#000', fontSize: 11, fontWeight: '700' }}>3</Text>
             </View>
-            <Text style={{ color: '#555', fontSize: 12, flex: 1, marginLeft: 10, marginTop: 2 }}>
+            <Text style={{ color: colors.muted, fontSize: 12, flex: 1, marginLeft: 10, marginTop: 2 }}>
               After payment, tap the button below to upload the receipt.
             </Text>
           </View>
@@ -594,7 +597,7 @@ export default function DepositScreen() {
       <DepositSuccessHero />
 
       {/* Receipt Card */}
-      <View style={{ backgroundColor: '#161616', borderRadius: 12, padding: 14 }}>
+      <View style={{ backgroundColor: colors.card, borderRadius: 12, padding: 14 }}>
         {([
           { label: 'Amount',         value: displayAmount,                              style: {},                                        isStatus: false },
           { label: 'Method',         value: DEPOSIT_MOCK.method,                        style: {},                                        isStatus: false },
@@ -603,24 +606,24 @@ export default function DepositScreen() {
           { label: 'Date & Time',    value: DEPOSIT_MOCK.dateTime,                      style: {},                                        isStatus: false },
           { label: 'Status',         value: 'Processing',                               style: {},                                        isStatus: true  },
         ] as const).map((row, idx, arr) => (
-          <View key={row.label} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 9, borderBottomWidth: idx < arr.length - 1 ? 0.5 : 0, borderBottomColor: '#111111' }}>
-            <Text style={{ color: '#555', fontSize: 12 }}>{row.label}</Text>
+          <View key={row.label} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 9, borderBottomWidth: idx < arr.length - 1 ? 0.5 : 0, borderBottomColor: colors.border }}>
+            <Text style={{ color: colors.muted, fontSize: 12 }}>{row.label}</Text>
             {row.isStatus ? (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
                 <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#f97316' }} />
                 <Text style={{ color: '#f97316', fontSize: 12, fontWeight: '500' }}>Processing</Text>
               </View>
             ) : (
-              <Text style={{ color: '#e0e0e0', fontSize: 12, fontWeight: '500', ...(row.style as object) }}>{row.value}</Text>
+              <Text style={{ color: colors.text, fontSize: 12, fontWeight: '500', ...(row.style as object) }}>{row.value}</Text>
             )}
           </View>
         ))}
       </View>
 
       {/* Info Notice */}
-      <View style={{ backgroundColor: '#111111', borderRadius: 10, padding: 12, marginTop: 12, flexDirection: 'row', gap: 8 }}>
-        <Ionicons name="information-circle-outline" size={14} color="#555" style={{ marginTop: 1 }} />
-        <Text style={{ color: '#555', fontSize: 11, flex: 1 }}>
+      <View style={{ backgroundColor: colors.cardSoft, borderRadius: 10, padding: 12, marginTop: 12, flexDirection: 'row', gap: 8 }}>
+        <Ionicons name="information-circle-outline" size={14} color={colors.muted} style={{ marginTop: 1 }} />
+        <Text style={{ color: colors.muted, fontSize: 11, flex: 1 }}>
           {cashCredited
             ? `PKR ${parsedAmount.toLocaleString()} added to your Spot wallet. Use Transfer to move funds to Futures margin.`
             : 'Your funds will be added to your Spot wallet once the payment is verified.'}
@@ -665,7 +668,7 @@ export default function DepositScreen() {
           onPress={() => router.replace('/(tabs)/home')}
           style={{ paddingVertical: 14, marginBottom: 30 }}
         >
-          <Text style={{ color: '#8A8D93', fontSize: 14, fontWeight: '500', textAlign: 'center' }}>Back to Home</Text>
+          <Text style={{ color: colors.muted, fontSize: 14, fontWeight: '500', textAlign: 'center' }}>Back to Home</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -673,7 +676,7 @@ export default function DepositScreen() {
 
   // ── Main Render ─────────────────────────────────────────────────────────────
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#050505' }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }} edges={['top']}>
       {renderNavBar()}
       <KeyboardAvoidingView
         style={{ flex: 1 }}

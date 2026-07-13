@@ -25,7 +25,7 @@ export default function FuturesCloseReviewRedirect() {
   }, [data, openCloseSheet, router]);
 
   return (
-    <View className="flex-1 bg-[#050505] items-center justify-center">
+    <View className="flex-1 bg-app-bg items-center justify-center">
       <ActivityIndicator color="#FF8A00" />
     </View>
   );

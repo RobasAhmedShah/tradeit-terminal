@@ -15,7 +15,7 @@ interface FuturesTabBarProps {
 }
 
 export const FuturesTabBar: React.FC<FuturesTabBarProps> = ({ activeTab, onTabChange }) => (
-  <View className="mx-4 flex-row border-b border-[#2A2B2F] mb-2">
+  <View className="mx-4 flex-row border-b border-app-border mb-2">
     {TABS.map((tab) => {
       const isActive = activeTab === tab.id;
       return (
@@ -25,7 +25,7 @@ export const FuturesTabBar: React.FC<FuturesTabBarProps> = ({ activeTab, onTabCh
           className={`flex-1 py-2.5 ${isActive ? 'border-b-2 border-[#FF8A00]' : ''}`}
         >
           <Text
-            className={`text-center text-sm font-semibold ${isActive ? 'text-[#FF8A00]' : 'text-[#9CA3AF]'}`}
+            className={`text-center text-sm font-semibold ${isActive ? 'text-[#FF8A00]' : 'text-app-muted'}`}
           >
             {tab.label}
           </Text>

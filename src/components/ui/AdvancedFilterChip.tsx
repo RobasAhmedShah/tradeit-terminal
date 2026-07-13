@@ -21,7 +21,7 @@ export const AdvancedFilterChip: React.FC<AdvancedFilterChipProps> = ({
     <TouchableOpacity
       onPress={onPress}
       className={`flex-row items-center px-3 py-1.5 rounded-lg mr-2 border ${
-        isActive ? 'border-[#FF8A00] bg-[#FF8A00]/10' : 'bg-[#050505] border-[#2A2B2F]'
+        isActive ? 'border-[#FF8A00] bg-[#FF8A00]/10' : 'bg-app-bg border-app-border'
       }`}
     >
       {icon && (
@@ -32,7 +32,7 @@ export const AdvancedFilterChip: React.FC<AdvancedFilterChipProps> = ({
           style={{ marginRight: 4 }}
         />
       )}
-      <Text className={`text-xs font-medium mr-1 ${isActive ? 'text-[#FF8A00]' : 'text-[#9CA3AF]'}`}>
+      <Text className={`text-xs font-medium mr-1 ${isActive ? 'text-[#FF8A00]' : 'text-app-muted'}`}>
         {label}
       </Text>
       <Ionicons

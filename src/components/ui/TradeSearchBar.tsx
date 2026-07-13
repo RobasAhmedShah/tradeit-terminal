@@ -9,14 +9,14 @@ interface TradeSearchBarProps {
 
 export const TradeSearchBar: React.FC<TradeSearchBarProps> = ({ value, onChangeText }) => {
   return (
-    <View className="flex-row items-center bg-[#111214] border border-[#2A2B2F] rounded-xl px-4 mx-4 my-2">
+    <View className="flex-row items-center bg-app-card border border-app-border rounded-xl px-4 mx-4 my-2">
       <Ionicons name="search" size={20} color="#9CA3AF" />
       <TextInput
         value={value}
         onChangeText={onChangeText}
         placeholder="Search stocks, symbols..."
         placeholderTextColor="#9CA3AF"
-        className="flex-1 text-white ml-2 text-base"
+        className="flex-1 text-app-text ml-2 text-base"
         returnKeyType="search"
         autoCorrect={false}
         autoCapitalize="characters"

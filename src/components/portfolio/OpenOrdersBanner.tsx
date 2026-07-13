@@ -27,14 +27,14 @@ export function OpenOrdersBanner() {
       <TouchableOpacity
         onPress={handlePress}
         activeOpacity={0.85}
-        className="mx-4 mb-4 bg-[#111214] border border-[#2A2B2F] rounded-xl px-4 py-3 flex-row items-center"
+        className="mx-4 mb-4 bg-app-card border border-app-border rounded-xl px-4 py-3 flex-row items-center"
       >
-        <View className="w-9 h-9 rounded-full bg-[#18191C] items-center justify-center mr-3">
+        <View className="w-9 h-9 rounded-full bg-app-card-soft items-center justify-center mr-3">
           <Ionicons name="list-outline" size={18} color="#9CA3AF" />
         </View>
         <View className="flex-1">
-          <Text className="text-white text-sm font-semibold">Open orders</Text>
-          <Text className="text-[#8A8D93] text-[11px] mt-0.5">No pending spot or futures orders</Text>
+          <Text className="text-app-text text-sm font-semibold">Open orders</Text>
+          <Text className="text-app-muted text-[11px] mt-0.5">No pending spot or futures orders</Text>
         </View>
         <Ionicons name="chevron-forward" size={18} color="#8A8D93" />
       </TouchableOpacity>
@@ -58,10 +58,10 @@ export function OpenOrdersBanner() {
         <Ionicons name="time-outline" size={18} color="#FF8A00" />
       </View>
       <View className="flex-1">
-        <Text className="text-white text-sm font-semibold">
+        <Text className="text-app-text text-sm font-semibold">
           {total} open order{total === 1 ? '' : 's'}
         </Text>
-        <Text className="text-[#9CA3AF] text-[11px] mt-0.5">{subtitle}</Text>
+        <Text className="text-app-muted text-[11px] mt-0.5">{subtitle}</Text>
       </View>
       <Ionicons name="chevron-forward" size={18} color="#FF8A00" />
     </TouchableOpacity>

@@ -161,7 +161,7 @@ export default function FuturesScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#050505]" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-app-bg" edges={['top']}>
       <AppHeader title="Futures" />
 
       <ScrollView

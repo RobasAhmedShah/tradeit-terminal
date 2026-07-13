@@ -31,10 +31,10 @@ export const PortfolioHeroCard: React.FC = () => {
   const sparkColor = isPositive ? COLORS.buy : COLORS.sell;
 
   return (
-    <View className="mx-4 bg-[#111214] border border-[#2A2B2F] rounded-2xl p-4 mb-4 overflow-hidden relative">
+    <View className="mx-4 bg-app-card border border-app-border rounded-2xl p-4 mb-4 overflow-hidden relative">
       <View className="flex-row justify-between items-center mb-2">
         <View className="flex-row items-center">
-          <Text className="text-[#9CA3AF] text-xs font-semibold mr-1">Total Portfolio Value</Text>
+          <Text className="text-app-muted text-xs font-semibold mr-1">Total Portfolio Value</Text>
           <TouchableOpacity
             onPress={() => setIsHidden((h) => !h)}
             hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
@@ -48,7 +48,7 @@ export const PortfolioHeroCard: React.FC = () => {
         </View>
       </View>
 
-      <Text className="text-white text-[26px] font-bold mb-1 z-10 relative">
+      <Text className="text-app-text text-[26px] font-bold mb-1 z-10 relative">
         {isHidden ? 'Rs ••••••' : `Rs ${formatPortfolioRs(summary.totalValue)}`}
       </Text>
       <Text className="text-[#FF8A00] text-xs font-semibold mb-3 z-10 relative">
@@ -70,18 +70,18 @@ export const PortfolioHeroCard: React.FC = () => {
 
       <View className="z-10 relative">
         {isHidden ? (
-          <Text className="text-[#9CA3AF] text-xs">Balance hidden</Text>
+          <Text className="text-app-muted text-xs">Balance hidden</Text>
         ) : (
           <>
             <Text className={`text-xs font-bold mb-1 ${isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
               {isPositive ? '+' : ''}Rs {formatPortfolioRs(rangeStats.periodPnl)} ({rangeStats.periodPnlPct}%){' '}
-              <Text className="text-[#9CA3AF] font-normal">{rangeStats.label}</Text>
+              <Text className="text-app-muted font-normal">{rangeStats.label}</Text>
             </Text>
             <Text className={`text-xs font-bold mb-1 ${summary.totalReturn >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
-              <Text className="text-[#9CA3AF] font-normal">Total return • </Text>
+              <Text className="text-app-muted font-normal">Total return • </Text>
               {summary.totalReturn >= 0 ? '+' : ''}Rs {formatPortfolioRs(summary.totalReturn)} ({summary.totalReturnPct}%)
             </Text>
-            <Text className="text-[#9CA3AF] text-xs">
+            <Text className="text-app-muted text-xs">
               Invested: Rs {formatPortfolioRs(summary.invested)}
             </Text>
           </>
@@ -108,10 +108,10 @@ export const PortfolioHeroCard: React.FC = () => {
             <TouchableOpacity
               key={range}
               onPress={() => setActiveRange(range)}
-              className={`rounded-full px-2.5 py-1 ${isActive ? 'bg-[#FF8A00]' : 'bg-[#18191C]'}`}
+              className={`rounded-full px-2.5 py-1 ${isActive ? 'bg-[#FF8A00]' : 'bg-app-card-soft'}`}
             >
               <Text
-                className={`text-[11px] font-semibold ${isActive ? 'text-black' : 'text-[#9CA3AF]'}`}
+                className={`text-[11px] font-semibold ${isActive ? 'text-black' : 'text-app-muted'}`}
               >
                 {range}
               </Text>

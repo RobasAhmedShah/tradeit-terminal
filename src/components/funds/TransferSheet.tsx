@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import {
   View,
   Text,
@@ -27,6 +28,7 @@ interface TransferSheetProps {
 }
 
 export const TransferSheet: React.FC<TransferSheetProps> = ({ visible, onClose }) => {
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { summary, transferCashToFutures, receiveTransferFromFutures } = usePortfolio();
   const { marginAvailable, addFuturesMargin, transferMarginToSpot } = useFutures();
@@ -98,15 +100,15 @@ export const TransferSheet: React.FC<TransferSheetProps> = ({ visible, onClose }
         <View className="flex-1 bg-black/70 justify-end">
           <TouchableOpacity className="flex-1" activeOpacity={1} onPress={handleClose} />
 
-          <View className="bg-[#161719] rounded-t-3xl border-t border-[#25272D] max-h-[88%]">
+          <View className="bg-app-sheet rounded-t-3xl border-t border-app-border max-h-[88%]">
             <View className="items-center pt-3 pb-1">
-              <View className="w-10 h-1 rounded-full bg-[#3A3D44]" />
+              <View className="w-10 h-1 rounded-full bg-app-border" />
             </View>
 
             <View className="flex-row items-center justify-between px-5 py-3">
-              <Text className="text-white text-[16px] font-bold">Transfer</Text>
+              <Text className="text-app-text text-[16px] font-bold">Transfer</Text>
               <TouchableOpacity onPress={handleClose} className="w-8 h-8 items-center justify-center">
-                <Ionicons name="close" size={22} color="#8A8D93" />
+                <Ionicons name="close" size={22} color={colors.muted} />
               </TouchableOpacity>
             </View>
 
@@ -116,12 +118,12 @@ export const TransferSheet: React.FC<TransferSheetProps> = ({ visible, onClose }
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{ paddingBottom: 12 }}
             >
-              <View className="flex-row bg-[#1C1E22] border border-[#25272D] rounded-xl p-1 mb-4">
+              <View className="flex-row bg-app-input border border-app-border rounded-xl p-1 mb-4">
                 <TouchableOpacity
                   onPress={() => setDirection('spot-to-futures')}
                   className={`flex-1 py-2.5 rounded-lg items-center ${fromSpot ? 'bg-[#FF8A00]' : ''}`}
                 >
-                  <Text className={`text-xs font-bold ${fromSpot ? 'text-black' : 'text-[#8A8D93]'}`}>
+                  <Text className={`text-xs font-bold ${fromSpot ? 'text-black' : 'text-app-muted'}`}>
                     Spot → Futures
                   </Text>
                 </TouchableOpacity>
@@ -129,32 +131,32 @@ export const TransferSheet: React.FC<TransferSheetProps> = ({ visible, onClose }
                   onPress={() => setDirection('futures-to-spot')}
                   className={`flex-1 py-2.5 rounded-lg items-center ${!fromSpot ? 'bg-[#FF8A00]' : ''}`}
                 >
-                  <Text className={`text-xs font-bold ${!fromSpot ? 'text-black' : 'text-[#8A8D93]'}`}>
+                  <Text className={`text-xs font-bold ${!fromSpot ? 'text-black' : 'text-app-muted'}`}>
                     Futures → Spot
                   </Text>
                 </TouchableOpacity>
               </View>
 
-              <View className="bg-[#1C1E22] border border-[#25272D] rounded-xl p-4 mb-4">
-                <Text className="text-[#8A8D93] text-xs mb-1">From</Text>
-                <Text className="text-white font-semibold mb-3">
+              <View className="bg-app-input border border-app-border rounded-xl p-4 mb-4">
+                <Text className="text-app-muted text-xs mb-1">From</Text>
+                <Text className="text-app-text font-semibold mb-3">
                   {fromSpot ? 'Spot Wallet' : 'Futures Wallet'}
                 </Text>
-                <Text className="text-[#8A8D93] text-xs mb-1">To</Text>
-                <Text className="text-white font-semibold mb-3">
+                <Text className="text-app-muted text-xs mb-1">To</Text>
+                <Text className="text-app-text font-semibold mb-3">
                   {fromSpot ? 'Futures Wallet' : 'Spot Wallet'}
                 </Text>
-                <Text className="text-[#5C6068] text-[11px]">Available: {availableLabel}</Text>
+                <Text className="text-app-muted text-[11px]">Available: {availableLabel}</Text>
               </View>
 
-              <Text className="text-[#8A8D93] text-xs mb-2">Amount (PKR)</Text>
+              <Text className="text-app-muted text-xs mb-2">Amount (PKR)</Text>
               <TextInput
                 value={amount}
                 onChangeText={setAmount}
                 keyboardType="numeric"
                 placeholder="0"
-                placeholderTextColor="#555"
-                className="bg-[#1C1E22] border border-[#25272D] rounded-xl px-4 py-3.5 text-white text-lg font-bold mb-3"
+                placeholderTextColor="#9CA3AF"
+                className="bg-app-input border border-app-border rounded-xl px-4 py-3.5 text-app-text text-lg font-bold mb-3"
               />
 
               <View className="flex-row flex-wrap gap-2">
@@ -162,9 +164,9 @@ export const TransferSheet: React.FC<TransferSheetProps> = ({ visible, onClose }
                   <TouchableOpacity
                     key={v}
                     onPress={() => setAmount(String(v))}
-                    className="px-3 py-1.5 rounded-full border border-[#25272D] bg-[#1C1E22]"
+                    className="px-3 py-1.5 rounded-full border border-app-border bg-app-input"
                   >
-                    <Text className="text-[#8A8D93] text-xs font-semibold">{v.toLocaleString()}</Text>
+                    <Text className="text-app-muted text-xs font-semibold">{v.toLocaleString()}</Text>
                   </TouchableOpacity>
                 ))}
                 <TouchableOpacity
@@ -177,7 +179,7 @@ export const TransferSheet: React.FC<TransferSheetProps> = ({ visible, onClose }
             </ScrollView>
 
             <View
-              className="px-5 pt-3 border-t border-[#25272D]"
+              className="px-5 pt-3 border-t border-app-border"
               style={{ paddingBottom: Math.max(insets.bottom, 12) }}
             >
               <TouchableOpacity onPress={handleTransfer} className="bg-[#FF8A00] rounded-2xl py-4 items-center">

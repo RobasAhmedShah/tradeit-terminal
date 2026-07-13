@@ -14,15 +14,15 @@ export const StickyActionBar: React.FC<StickyActionBarProps> = ({ onTradePress, 
   
   return (
     <View 
-      className="absolute bottom-0 left-0 right-0 bg-[#050505] border-t border-[#2A2B2F] flex-row px-4 pt-3 pb-4 items-center justify-between"
+      className="absolute bottom-0 left-0 right-0 bg-app-bg border-t border-app-border flex-row px-4 pt-3 pb-4 items-center justify-between"
       style={{ paddingBottom: Math.max(insets.bottom + 8, 16) }}
     >
       <TouchableOpacity 
         onPress={onWatchlistPress}
-        className="flex-row items-center justify-center border border-[#2A2B2F] rounded-xl px-4 py-3 mr-3"
+        className="flex-row items-center justify-center border border-app-border rounded-xl px-4 py-3 mr-3"
       >
         <Ionicons name={isWatchlisted ? "star" : "star-outline"} size={20} color={isWatchlisted ? "#FF8A00" : "#9CA3AF"} />
-        <Text className={`ml-2 font-semibold ${isWatchlisted ? 'text-[#FF8A00]' : 'text-white'}`}>
+        <Text className={`ml-2 font-semibold ${isWatchlisted ? 'text-[#FF8A00]' : 'text-app-text'}`}>
           Watchlist
         </Text>
       </TouchableOpacity>

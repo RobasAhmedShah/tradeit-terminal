@@ -1,16 +1,17 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../../context/ThemeContext';
 
 function Pulse({ className }: { className: string }) {
-  return <View className={`bg-[#18191C] rounded ${className}`} />;
+  return <View className={`bg-app-card-soft rounded ${className}`} />;
 }
 
 export function TradeListSkeleton({ rows = 10 }: { rows?: number }) {
   return (
     <View className="pt-2">
       {Array.from({ length: rows }).map((_, i) => (
-        <View key={i} className="flex-row items-center px-4 py-3 border-b border-[#2A2B2F]">
+        <View key={i} className="flex-row items-center px-4 py-3 border-b border-app-border">
           <Pulse className="w-9 h-9 rounded-full mr-3" />
           <View className="flex-1 gap-2">
             <Pulse className="h-3 w-14" />
@@ -66,11 +67,12 @@ export function ScreenErrorState({
   message: string;
   onRetry?: () => void;
 }) {
+  const { colors } = useTheme();
   return (
     <View className="flex-1 items-center justify-center px-8 py-16">
-      <Ionicons name="cloud-offline-outline" size={44} color="#333" />
-      <Text className="text-white text-base font-semibold mt-4 text-center">{title}</Text>
-      <Text className="text-[#8A8D93] text-sm mt-2 text-center leading-5">{message}</Text>
+      <Ionicons name="cloud-offline-outline" size={44} color={colors.mutedDarker} />
+      <Text className="text-app-text text-base font-semibold mt-4 text-center">{title}</Text>
+      <Text className="text-app-muted text-sm mt-2 text-center leading-5">{message}</Text>
       {onRetry ? (
         <TouchableOpacity onPress={onRetry} className="mt-5 px-5 py-2.5 rounded-full border border-[#FF8A00]">
           <Text className="text-[#FF8A00] font-semibold text-sm">Try again</Text>

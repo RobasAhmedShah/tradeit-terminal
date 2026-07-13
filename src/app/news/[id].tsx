@@ -6,19 +6,21 @@ import { Ionicons } from '@expo/vector-icons';
 import { Sentiment } from '../../data/mockNews';
 import { MOCK_MARKET_STOCKS } from '../../data/mockStocks';
 import { usePosts } from '../../context/PostsContext';
+import { useTheme } from '../../context/ThemeContext';
 import { COLORS } from '../../constants/theme';
 import { hapticSelection } from '../../utils/haptics';
 import { safeBack } from '../../utils/navigation';
 
 const SENTIMENT: Record<Sentiment, { color: string; bg: string; icon: keyof typeof Ionicons.glyphMap; label: string }> = {
-  Bullish: { color: COLORS.buy, bg: '#001f0e', icon: 'trending-up', label: 'Bullish' },
-  Bearish: { color: COLORS.sell, bg: '#200006', icon: 'trending-down', label: 'Bearish' },
-  Neutral: { color: COLORS.muted, bg: '#1a1a1a', icon: 'remove', label: 'Neutral' },
+  Bullish: { color: COLORS.buy, bg: 'rgba(14,203,129,0.12)', icon: 'trending-up', label: 'Bullish' },
+  Bearish: { color: COLORS.sell, bg: 'rgba(246,70,93,0.12)', icon: 'trending-down', label: 'Bearish' },
+  Neutral: { color: COLORS.muted, bg: 'rgba(107,114,128,0.12)', icon: 'remove', label: 'Neutral' },
 };
 
 export default function NewsDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { colors } = useTheme();
   const {
     getPostById,
     isLiked,
@@ -56,8 +58,8 @@ export default function NewsDetailScreen() {
 
   if (!post) {
     return (
-      <SafeAreaView className="flex-1 bg-[#050505] justify-center items-center">
-        <Text className="text-white text-lg">Post not found</Text>
+      <SafeAreaView className="flex-1 bg-app-bg justify-center items-center">
+        <Text className="text-app-text text-lg">Post not found</Text>
         <TouchableOpacity onPress={() => safeBack(router, '/markets?tab=news')} className="mt-4">
           <Text className="text-[#FF8A00]">Go back</Text>
         </TouchableOpacity>
@@ -70,12 +72,12 @@ export default function NewsDetailScreen() {
   const likes = getLikeCount(post);
 
   return (
-    <SafeAreaView className="flex-1 bg-[#050505]">
-      <View className="flex-row items-center px-4 py-3 border-b border-[#2A2B2F]">
+    <SafeAreaView className="flex-1 bg-app-bg">
+      <View className="flex-row items-center px-4 py-3 border-b border-app-border">
         <TouchableOpacity onPress={() => safeBack(router, '/markets?tab=news')} className="w-10">
-          <Ionicons name="arrow-back" size={22} color="#fff" />
+          <Ionicons name="arrow-back" size={22} color={colors.text} />
         </TouchableOpacity>
-        <Text className="flex-1 text-center text-white text-[17px] font-bold">Post</Text>
+        <Text className="flex-1 text-center text-app-text text-[17px] font-bold">Post</Text>
         <View className="flex-row items-center min-w-[72px] justify-end gap-2">
           <TouchableOpacity onPress={() => setSaved((s) => !s)}>
             <Ionicons name={saved ? 'bookmark' : 'bookmark-outline'} size={22} color={saved ? '#FF8A00' : '#9CA3AF'} />
@@ -90,7 +92,7 @@ export default function NewsDetailScreen() {
         {post.repostOf && (
           <View className="flex-row items-center mb-3">
             <Ionicons name="repeat" size={14} color="#8A8D93" />
-            <Text className="text-[#8A8D93] text-xs ml-2">
+            <Text className="text-app-muted text-xs ml-2">
               Reposted from {post.repostOf.authorName}
             </Text>
           </View>
@@ -99,14 +101,14 @@ export default function NewsDetailScreen() {
         {/* Author row — matches feed card: name left, sentiment + follow right */}
         <View className="flex-row items-start mb-3">
           <View
-            className="w-10 h-10 rounded-full items-center justify-center mr-2.5 border border-[#2A2B2F]"
+            className="w-10 h-10 rounded-full items-center justify-center mr-2.5 border border-app-border"
             style={{ backgroundColor: post.author.color ?? '#1A0E00' }}
           >
             <Text className="text-[#FF8A00] text-[13px] font-bold">{post.author.initials}</Text>
           </View>
           <View className="flex-1 mr-2">
             <View className="flex-row items-center">
-              <Text className="text-white font-bold text-[13px] mr-1" numberOfLines={1}>
+              <Text className="text-app-text font-bold text-[13px] mr-1" numberOfLines={1}>
                 {post.author.name}
               </Text>
               {post.author.verified && (
@@ -118,7 +120,7 @@ export default function NewsDetailScreen() {
                 </View>
               )}
             </View>
-            <Text className="text-[#555] text-[11px] mt-0.5">
+            <Text className="text-app-muted text-[11px] mt-0.5">
               {post.time} · {post.category}
             </Text>
           </View>
@@ -141,13 +143,13 @@ export default function NewsDetailScreen() {
               }}
               className="px-3 py-1.5 rounded-full border ml-2"
               style={{
-                borderColor: following ? COLORS.border : COLORS.primary,
+                borderColor: following ? colors.border : COLORS.primary,
                 backgroundColor: following ? 'transparent' : `${COLORS.primary}18`,
               }}
             >
               <Text
                 className="text-[11px] font-bold"
-                style={{ color: following ? COLORS.mutedDark : COLORS.primary }}
+                style={{ color: following ? colors.mutedDark : COLORS.primary }}
               >
                 {following ? 'Following' : 'Follow'}
               </Text>
@@ -170,12 +172,12 @@ export default function NewsDetailScreen() {
           </View>
         )}
 
-        <Text className="text-[#D0D0D0] text-[15px] leading-6 mb-3">{post.content}</Text>
+        <Text className="text-app-text text-[15px] leading-6 mb-3">{post.content}</Text>
 
         {post.imageUri ? (
           <Image
             source={{ uri: post.imageUri }}
-            className="w-full h-48 rounded-xl mb-3 bg-[#111214]"
+            className="w-full h-48 rounded-xl mb-3 bg-app-card"
             resizeMode="cover"
           />
         ) : null}
@@ -191,9 +193,9 @@ export default function NewsDetailScreen() {
                 <TouchableOpacity
                   key={t}
                   onPress={() => router.push(`/stock/${sym}`)}
-                  className="flex-row items-center bg-[#111214] border border-[#2A2B2F] rounded-lg px-2.5 py-1.5"
+                  className="flex-row items-center bg-app-card border border-app-border rounded-lg px-2.5 py-1.5"
                 >
-                  <Text className="text-white font-semibold text-xs mr-1">{sym}</Text>
+                  <Text className="text-app-text font-semibold text-xs mr-1">{sym}</Text>
                   <Ionicons
                     name={stock.isPositive ? 'caret-up' : 'caret-down'}
                     size={10}
@@ -212,14 +214,14 @@ export default function NewsDetailScreen() {
           </View>
         )}
 
-        <View className="flex-row items-center py-4 border-t border-b border-[#2A2B2F] mb-4">
+        <View className="flex-row items-center py-4 border-t border-b border-app-border mb-4">
           <TouchableOpacity onPress={() => openComments(post.id)} className="flex-row items-center mr-5">
             <Ionicons name="chatbubble-outline" size={18} color="#8A8D93" />
-            <Text className="text-[#8A8D93] text-xs ml-1">{post.engagement.comments}</Text>
+            <Text className="text-app-muted text-xs ml-1">{post.engagement.comments}</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => repostPost(post.id)} className="flex-row items-center mr-5">
             <Ionicons name="repeat-outline" size={18} color="#8A8D93" />
-            <Text className="text-[#8A8D93] text-xs ml-1">{post.engagement.reposts}</Text>
+            <Text className="text-app-muted text-xs ml-1">{post.engagement.reposts}</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => toggleLike(post.id)} className="flex-row items-center mr-5">
             <Ionicons name={liked ? 'heart' : 'heart-outline'} size={18} color={liked ? COLORS.sell : '#8A8D93'} />
@@ -229,13 +231,13 @@ export default function NewsDetailScreen() {
           </TouchableOpacity>
           <View className="flex-row items-center">
             <Ionicons name="eye-outline" size={18} color="#8A8D93" />
-            <Text className="text-[#8A8D93] text-xs ml-1">{post.engagement.views}</Text>
+            <Text className="text-app-muted text-xs ml-1">{post.engagement.views}</Text>
           </View>
         </View>
 
         <TouchableOpacity
           onPress={() => openComments(post.id)}
-          className="bg-[#111214] border border-[#2A2B2F] rounded-xl py-3.5 items-center"
+          className="bg-app-card border border-app-border rounded-xl py-3.5 items-center"
         >
           <Text className="text-[#FF8A00] text-sm font-semibold">View comments</Text>
         </TouchableOpacity>

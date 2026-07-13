@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Swipeable } from 'react-native-gesture-handler';
 import { useNotifications } from '../../context/NotificationsContext';
+import { useTheme } from '../../context/ThemeContext';
 import { useOrderDetailSheet } from '../../context/OrderDetailSheetContext';
 import { AppNotification, AppNotificationType } from '../../utils/notificationPrefs';
 import { hapticLight } from '../../utils/haptics';
@@ -62,7 +63,7 @@ function NotificationSwipeRow({
       <TouchableOpacity
         onPress={onOpen}
         activeOpacity={0.7}
-        className={`flex-row px-4 py-4 border-b border-[#111] bg-[#050505] ${!notif.isRead ? 'bg-[#161719]' : ''}`}
+        className={`flex-row px-4 py-4 border-b border-app-border bg-app-bg ${!notif.isRead ? 'bg-app-sheet' : ''}`}
       >
         <View
           className="w-10 h-10 rounded-full items-center justify-center mr-3 mt-0.5 flex-shrink-0"
@@ -73,13 +74,13 @@ function NotificationSwipeRow({
 
         <View className="flex-1">
           <View className="flex-row items-center justify-between mb-1">
-            <Text className="text-white text-[13px] font-bold flex-1 mr-2" numberOfLines={1}>
+            <Text className="text-app-text text-[13px] font-bold flex-1 mr-2" numberOfLines={1}>
               {notif.title}
               {notif.symbol ? <Text className="text-[#f97316]"> · {notif.symbol}</Text> : null}
             </Text>
-            <Text className="text-[#5C6068] text-[11px]">{notif.time}</Text>
+            <Text className="text-app-muted text-[11px]">{notif.time}</Text>
           </View>
-          <Text className="text-[#8A8D93] text-[12px] leading-5">{notif.body}</Text>
+          <Text className="text-app-muted text-[12px] leading-5">{notif.body}</Text>
         </View>
 
         {!notif.isRead && (
@@ -92,6 +93,7 @@ function NotificationSwipeRow({
 
 export default function NotificationsScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const { notifications, unreadCount, markRead, markAllRead, removeNotification } = useNotifications();
   const { openOrderDetail } = useOrderDetailSheet();
   const [activeTab, setActiveTab] = useState<NotifCategory>('All');
@@ -136,13 +138,13 @@ export default function NotificationsScreen() {
   const tabs: NotifCategory[] = ['All', 'Orders', 'Alerts', 'News', 'Community'];
 
   return (
-    <SafeAreaView className="flex-1 bg-[#050505]" edges={['top']}>
-      <View className="flex-row items-center justify-between px-4 py-3 border-b border-[#1a1a1a]">
+    <SafeAreaView className="flex-1 bg-app-bg" edges={['top']}>
+      <View className="flex-row items-center justify-between px-4 py-3 border-b border-app-border">
         <TouchableOpacity onPress={() => safeBack(router, '/(tabs)/home')} className="w-10">
-          <Ionicons name="arrow-back" size={24} color="#e0e0e0" />
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <View className="flex-1 items-center">
-          <Text className="text-white text-[16px] font-semibold">
+          <Text className="text-app-text text-[16px] font-semibold">
             Notifications{unreadCount > 0 ? ` (${unreadCount})` : ''}
           </Text>
         </View>
@@ -157,10 +159,10 @@ export default function NotificationsScreen() {
             key={tab}
             onPress={() => setActiveTab(tab)}
             className={`px-4 py-1.5 rounded-full border ${
-              activeTab === tab ? 'bg-[#f97316] border-[#f97316]' : 'border-[#2A2B2F]'
+              activeTab === tab ? 'bg-[#f97316] border-[#f97316]' : 'border-app-border'
             }`}
           >
-            <Text className={`text-[12px] font-semibold ${activeTab === tab ? 'text-white' : 'text-[#9CA3AF]'}`}>
+            <Text className={`text-[12px] font-semibold ${activeTab === tab ? 'text-white' : 'text-app-muted'}`}>
               {tab}
             </Text>
           </TouchableOpacity>

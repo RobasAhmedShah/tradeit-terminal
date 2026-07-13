@@ -52,7 +52,7 @@ function BookSide({
             <Text className={`${priceColor} text-[12px] font-semibold flex-1`}>
               {level.price.toFixed(2)}
             </Text>
-            <Text className="text-white text-[12px] font-medium w-[52px] text-right">
+            <Text className="text-app-text text-[12px] font-medium w-[52px] text-right">
               {level.qty.toLocaleString()}
             </Text>
           </View>
@@ -102,19 +102,19 @@ export const OrderBookTabContent: React.FC<OrderBookTabContentProps> = ({
   return (
     <View className="px-4 pt-3 pb-6">
       {/* Market Depth Summary */}
-      <View className="bg-[#111214] border border-[#2A2B2F] rounded-xl p-4 mb-4">
+      <View className="bg-app-card border border-app-border rounded-xl p-4 mb-4">
         <View className="flex-row justify-between items-center mb-2">
-          <Text className="text-white text-[15px] font-bold">Market Depth Summary</Text>
+          <Text className="text-app-text text-[15px] font-bold">Market Depth Summary</Text>
           <TouchableOpacity
             onPress={cycleDepth}
-            className="bg-[#18191C] border border-[#2A2B2F] rounded-md px-2.5 py-1 flex-row items-center"
+            className="bg-app-card-soft border border-app-border rounded-md px-2.5 py-1 flex-row items-center"
           >
-            <Text className="text-[#9CA3AF] text-[11px] mr-1">{depth}</Text>
+            <Text className="text-app-muted text-[11px] mr-1">{depth}</Text>
             <Ionicons name="chevron-down" size={12} color="#9CA3AF" />
           </TouchableOpacity>
         </View>
 
-        <Text className="text-[#9CA3AF] text-[11px] mb-3">
+        <Text className="text-app-muted text-[11px] mb-3">
           Spread: {data.spread.value.toFixed(2)} ({data.spread.percent.toFixed(2)}%)
         </Text>
 
@@ -122,7 +122,7 @@ export const OrderBookTabContent: React.FC<OrderBookTabContentProps> = ({
           <Text className="text-[#0ECB81] text-[11px] font-medium">Buy Pressure {buyPressure}%</Text>
           <Text className="text-[#F6465D] text-[11px] font-medium">Sell Pressure {sellPressure}%</Text>
         </View>
-        <View className="h-2 w-full bg-[#2A2B2F] rounded-full overflow-hidden flex-row">
+        <View className="h-2 w-full bg-app-border rounded-full overflow-hidden flex-row">
           <View style={{ width: `${buyPressure}%` }} className="h-full bg-[#0ECB81]" />
           <View style={{ width: `${sellPressure}%` }} className="h-full bg-[#F6465D]" />
         </View>
@@ -132,18 +132,18 @@ export const OrderBookTabContent: React.FC<OrderBookTabContentProps> = ({
       <View className="mb-4">
         <View className="flex-row mb-2 px-0.5">
           <View className="flex-1 flex-row pr-3">
-            <Text className="text-[#9CA3AF] text-[10px] font-semibold flex-1">Bid (PKR)</Text>
-            <Text className="text-[#9CA3AF] text-[10px] font-semibold w-[52px] text-right">Bid Qty</Text>
+            <Text className="text-app-muted text-[10px] font-semibold flex-1">Bid (PKR)</Text>
+            <Text className="text-app-muted text-[10px] font-semibold w-[52px] text-right">Bid Qty</Text>
           </View>
-          <View className="w-px bg-[#2A2B2F] mx-1" />
+          <View className="w-px bg-app-border mx-1" />
           <View className="flex-1 flex-row pl-3">
-            <Text className="text-[#9CA3AF] text-[10px] font-semibold flex-1">Ask (PKR)</Text>
-            <Text className="text-[#9CA3AF] text-[10px] font-semibold w-[52px] text-right">Ask Qty</Text>
+            <Text className="text-app-muted text-[10px] font-semibold flex-1">Ask (PKR)</Text>
+            <Text className="text-app-muted text-[10px] font-semibold w-[52px] text-right">Ask Qty</Text>
           </View>
         </View>
 
         <View className="flex-row">
-          <View className="flex-1 pr-3 border-r border-[#2A2B2F]">
+          <View className="flex-1 pr-3 border-r border-app-border">
             <BookSide levels={visibleBids} side="bid" maxQty={maxBidQty} selectedPrice={selectedPrice} onPricePress={onPricePress} />
           </View>
           <View className="flex-1 pl-3">
@@ -153,22 +153,22 @@ export const OrderBookTabContent: React.FC<OrderBookTabContentProps> = ({
       </View>
 
       {/* Bottom Summary */}
-      <View className="bg-[#111214] border border-[#2A2B2F] rounded-xl px-3 py-3 flex-row">
+      <View className="bg-app-card border border-app-border rounded-xl px-3 py-3 flex-row">
         <View className="flex-1 items-center">
-          <Text className="text-[#9CA3AF] text-[10px] mb-1">Best Bid</Text>
+          <Text className="text-app-muted text-[10px] mb-1">Best Bid</Text>
           <Text className="text-[#0ECB81] text-[13px] font-bold">{bestBid.toFixed(2)}</Text>
         </View>
         <View className="flex-1 items-center">
-          <Text className="text-[#9CA3AF] text-[10px] mb-1">Best Ask</Text>
+          <Text className="text-app-muted text-[10px] mb-1">Best Ask</Text>
           <Text className="text-[#F6465D] text-[13px] font-bold">{bestAsk.toFixed(2)}</Text>
         </View>
         <View className="flex-1 items-center">
-          <Text className="text-[#9CA3AF] text-[10px] mb-1">Mid Price</Text>
-          <Text className="text-white text-[13px] font-bold">{midPrice.toFixed(2)}</Text>
+          <Text className="text-app-muted text-[10px] mb-1">Mid Price</Text>
+          <Text className="text-app-text text-[13px] font-bold">{midPrice.toFixed(2)}</Text>
         </View>
         <View className="flex-1 items-center">
-          <Text className="text-[#9CA3AF] text-[10px] mb-1">Spread</Text>
-          <Text className="text-white text-[13px] font-bold">
+          <Text className="text-app-muted text-[10px] mb-1">Spread</Text>
+          <Text className="text-app-text text-[13px] font-bold">
             {data.spread.value.toFixed(2)} / {data.spread.percent.toFixed(2)}%
           </Text>
         </View>

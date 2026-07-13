@@ -24,14 +24,14 @@ export const FuturesContractInfo: React.FC<FuturesContractInfoProps> = ({ contra
 
   return (
     <ScrollView className="mx-4 mb-3" showsVerticalScrollIndicator={false}>
-      <View className="bg-[#111214] border border-[#2A2B2F] rounded-xl overflow-hidden">
+      <View className="bg-app-card border border-app-border rounded-xl overflow-hidden">
         {rows.map((row, index) => (
           <View
             key={row.label}
-            className={`flex-row justify-between px-3 py-3 ${index < rows.length - 1 ? 'border-b border-[#2A2B2F]' : ''}`}
+            className={`flex-row justify-between px-3 py-3 ${index < rows.length - 1 ? 'border-b border-app-border' : ''}`}
           >
-            <Text className="text-[#9CA3AF] text-sm">{row.label}</Text>
-            <Text className="text-white text-sm font-semibold">{row.value}</Text>
+            <Text className="text-app-muted text-sm">{row.label}</Text>
+            <Text className="text-app-text text-sm font-semibold">{row.value}</Text>
           </View>
         ))}
       </View>

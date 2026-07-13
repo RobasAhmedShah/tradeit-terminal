@@ -15,20 +15,20 @@ export const FuturesTradesPanel: React.FC<FuturesTradesPanelProps> = ({ contract
 
   return (
     <ScrollView className="mx-4 mb-3" showsVerticalScrollIndicator={false}>
-      <View className="bg-[#111214] border border-[#2A2B2F] rounded-xl p-3 mb-3">
+      <View className="bg-app-card border border-app-border rounded-xl p-3 mb-3">
         <View className="flex-row justify-between mb-2">
           <View>
-            <Text className="text-[#9CA3AF] text-xs">Last Price</Text>
-            <Text className="text-white text-sm font-bold">{formatFuturesPrice(contract.markPrice)}</Text>
+            <Text className="text-app-muted text-xs">Last Price</Text>
+            <Text className="text-app-text text-sm font-bold">{formatFuturesPrice(contract.markPrice)}</Text>
           </View>
           <View className="items-end">
-            <Text className="text-[#9CA3AF] text-xs">24h Volume</Text>
-            <Text className="text-white text-sm font-bold">{contract.volume24h.toLocaleString()}</Text>
+            <Text className="text-app-muted text-xs">24h Volume</Text>
+            <Text className="text-app-text text-sm font-bold">{contract.volume24h.toLocaleString()}</Text>
           </View>
         </View>
         <View className="flex-row items-center gap-1">
           <Text className="text-[#0ECB81] text-xs">Buy {buyPct}%</Text>
-          <View className="flex-1 h-1.5 bg-[#18191C] rounded-full overflow-hidden flex-row">
+          <View className="flex-1 h-1.5 bg-app-card-soft rounded-full overflow-hidden flex-row">
             <View className="h-full bg-[#0ECB81]" style={{ width: `${buyPct}%` }} />
             <View className="h-full bg-[#F6465D]" style={{ width: `${100 - buyPct}%` }} />
           </View>
@@ -36,11 +36,11 @@ export const FuturesTradesPanel: React.FC<FuturesTradesPanelProps> = ({ contract
         </View>
       </View>
 
-      <View className="bg-[#111214] border border-[#2A2B2F] rounded-xl overflow-hidden">
-        <View className="flex-row px-3 py-2 border-b border-[#2A2B2F]">
-          <Text className="text-[#9CA3AF] text-xs flex-1">Price (PKR)</Text>
-          <Text className="text-[#9CA3AF] text-xs w-16 text-right">Qty</Text>
-          <Text className="text-[#9CA3AF] text-xs w-16 text-right">Time</Text>
+      <View className="bg-app-card border border-app-border rounded-xl overflow-hidden">
+        <View className="flex-row px-3 py-2 border-b border-app-border">
+          <Text className="text-app-muted text-xs flex-1">Price (PKR)</Text>
+          <Text className="text-app-muted text-xs w-16 text-right">Qty</Text>
+          <Text className="text-app-muted text-xs w-16 text-right">Time</Text>
         </View>
         {trades.map((trade) => (
           <View key={trade.id} className="flex-row px-3 py-2 border-b border-[#18191C]">
@@ -49,8 +49,8 @@ export const FuturesTradesPanel: React.FC<FuturesTradesPanelProps> = ({ contract
             >
               {formatFuturesPrice(trade.price)}
             </Text>
-            <Text className="text-white text-sm w-16 text-right">{trade.qty}</Text>
-            <Text className="text-[#9CA3AF] text-sm w-16 text-right">{trade.time}</Text>
+            <Text className="text-app-text text-sm w-16 text-right">{trade.qty}</Text>
+            <Text className="text-app-muted text-sm w-16 text-right">{trade.time}</Text>
           </View>
         ))}
       </View>

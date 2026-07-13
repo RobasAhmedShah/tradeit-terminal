@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { usePortfolio } from '../../context/PortfolioContext';
+import { useTheme } from '../../context/ThemeContext';
 import { formatPortfolioRs } from '../../data/mockPortfolio';
 import { HoldingRow, HoldingsEmptyState } from '../../components/portfolio/HoldingRow';
 import { HoldingSortKey, sortHoldings } from '../../utils/portfolioUi';
@@ -18,18 +19,19 @@ const SORT_OPTIONS: { key: HoldingSortKey; label: string }[] = [
 
 export default function PortfolioHoldingsScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const { holdings, summary, isRefreshing, refreshPortfolio } = usePortfolio();
   const [sortKey, setSortKey] = useState<HoldingSortKey>('value');
 
   const sorted = useMemo(() => sortHoldings(holdings, sortKey), [holdings, sortKey]);
 
   return (
-    <SafeAreaView className="flex-1 bg-[#050505]">
-      <View className="flex-row items-center px-4 py-3 border-b border-[#2A2B2F]">
+    <SafeAreaView className="flex-1 bg-app-bg">
+      <View className="flex-row items-center px-4 py-3 border-b border-app-border">
         <TouchableOpacity onPress={() => safeBack(router, '/(tabs)/portfolio')} className="w-10">
-          <Ionicons name="arrow-back" size={24} color="white" />
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
-        <Text className="flex-1 text-center text-white text-lg font-bold mr-10">Holdings</Text>
+        <Text className="flex-1 text-center text-app-text text-lg font-bold mr-10">Holdings</Text>
       </View>
 
       <ScrollView
@@ -44,14 +46,14 @@ export default function PortfolioHoldingsScreen() {
           />
         }
       >
-        <View className="bg-[#111214] rounded-xl p-3 mb-4 border border-[#2A2B2F] flex-row justify-between">
+        <View className="bg-app-card rounded-xl p-3 mb-4 border border-app-border flex-row justify-between">
           <View>
-            <Text className="text-[#9CA3AF] text-[10px]">Total Value</Text>
-            <Text className="text-white font-bold text-base">Rs {formatPortfolioRs(summary.totalValue)}</Text>
+            <Text className="text-app-muted text-[10px]">Total Value</Text>
+            <Text className="text-app-text font-bold text-base">Rs {formatPortfolioRs(summary.totalValue)}</Text>
           </View>
           <View className="items-end">
-            <Text className="text-[#9CA3AF] text-[10px]">Stocks</Text>
-            <Text className="text-white font-bold text-base">{holdings.length}</Text>
+            <Text className="text-app-muted text-[10px]">Stocks</Text>
+            <Text className="text-app-text font-bold text-base">{holdings.length}</Text>
           </View>
         </View>
 
@@ -64,11 +66,11 @@ export default function PortfolioHoldingsScreen() {
                   key={opt.key}
                   onPress={() => setSortKey(opt.key)}
                   className={`rounded-full px-3 py-1.5 border ${
-                    active ? 'bg-[#FF8A00] border-[#FF8A00]' : 'bg-[#18191C] border-[#2A2B2F]'
+                    active ? 'bg-[#FF8A00] border-[#FF8A00]' : 'bg-app-card-soft border-app-border'
                   }`}
                 >
                   <Text
-                    className={`text-[11px] font-semibold ${active ? 'text-black' : 'text-[#9CA3AF]'}`}
+                    className={`text-[11px] font-semibold ${active ? 'text-black' : 'text-app-muted'}`}
                   >
                     {opt.label}
                   </Text>
@@ -84,16 +86,16 @@ export default function PortfolioHoldingsScreen() {
           <>
             <View className="flex-row items-center mb-3 px-1">
               <View className="flex-[1.2] ml-10">
-                <Text className="text-[#9CA3AF] text-[10px] font-semibold">Stock</Text>
+                <Text className="text-app-muted text-[10px] font-semibold">Stock</Text>
               </View>
               <View className="flex-[0.8] items-end">
-                <Text className="text-[#9CA3AF] text-[10px] font-semibold">Qty</Text>
+                <Text className="text-app-muted text-[10px] font-semibold">Qty</Text>
               </View>
               <View className="flex-[1.2] items-end">
-                <Text className="text-[#9CA3AF] text-[10px] font-semibold">Value</Text>
+                <Text className="text-app-muted text-[10px] font-semibold">Value</Text>
               </View>
               <View className="flex-[1.1] items-end">
-                <Text className="text-[#9CA3AF] text-[10px] font-semibold">Day Change</Text>
+                <Text className="text-app-muted text-[10px] font-semibold">Day Change</Text>
               </View>
             </View>
 

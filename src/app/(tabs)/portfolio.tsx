@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import { View, Text, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -16,6 +17,7 @@ import { PortfolioSkeleton } from '../../components/ui/ScreenSkeletons';
 
 export default function PortfolioScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const { openTransfer } = useTransferSheet();
   const { holdings, recentTradeSymbols, activities, isRefreshing, lastRefreshedAt, refreshPortfolio, ready } = usePortfolio();
 
@@ -35,7 +37,7 @@ export default function PortfolioScreen() {
     : 'Pull down to refresh';
 
   return (
-    <SafeAreaView className="flex-1 bg-[#050505]" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-app-bg" edges={['top']}>
       <AppHeader title="Portfolio" />
 
       <ScrollView
@@ -55,7 +57,7 @@ export default function PortfolioScreen() {
           <PortfolioSkeleton />
         ) : (
         <>
-        <Text className="text-[#9CA3AF] text-[10px] text-center mt-1 mb-1">{refreshedLabel}</Text>
+        <Text className="text-app-muted text-[10px] text-center mt-1 mb-1">{refreshedLabel}</Text>
 
         <PortfolioHeroCard />
 
@@ -67,49 +69,49 @@ export default function PortfolioScreen() {
           <View className="flex-row gap-2 mb-2">
             <TouchableOpacity
               onPress={() => router.push('/deposit')}
-              className="flex-1 bg-[#111214] rounded-xl p-3.5 flex-row items-center border border-[#2A2B2F]"
+              className="flex-1 bg-app-card rounded-xl p-3.5 flex-row items-center border border-app-border"
             >
-              <View className="w-9 h-9 rounded-lg items-center justify-center mr-3 bg-[#18191C]">
+              <View className="w-9 h-9 rounded-lg items-center justify-center mr-3 bg-app-card-soft">
                 <Ionicons name="arrow-down-outline" size={18} color="#FF8A00" />
               </View>
               <View className="flex-1">
-                <Text className="text-white font-bold text-[13px]">Deposit</Text>
-                <Text className="text-[#9CA3AF] text-[10px]">Add to Spot wallet</Text>
+                <Text className="text-app-text font-bold text-[13px]">Deposit</Text>
+                <Text className="text-app-muted text-[10px]">Add to Spot wallet</Text>
               </View>
             </TouchableOpacity>
 
             <TouchableOpacity
               onPress={() => router.push('/withdraw')}
-              className="flex-1 bg-[#111214] rounded-xl p-3.5 flex-row items-center border border-[#2A2B2F]"
+              className="flex-1 bg-app-card rounded-xl p-3.5 flex-row items-center border border-app-border"
             >
-              <View className="w-9 h-9 rounded-lg items-center justify-center mr-3 bg-[#18191C]">
+              <View className="w-9 h-9 rounded-lg items-center justify-center mr-3 bg-app-card-soft">
                 <Ionicons name="arrow-up-outline" size={18} color="#FF8A00" />
               </View>
               <View className="flex-1">
-                <Text className="text-white font-bold text-[13px]">Withdraw</Text>
-                <Text className="text-[#9CA3AF] text-[10px]">To your bank</Text>
+                <Text className="text-app-text font-bold text-[13px]">Withdraw</Text>
+                <Text className="text-app-muted text-[10px]">To your bank</Text>
               </View>
             </TouchableOpacity>
           </View>
 
           <TouchableOpacity
             onPress={() => openTransfer()}
-            className="bg-[#111214] rounded-xl p-3.5 flex-row items-center border border-[#2A2B2F]"
+            className="bg-app-card rounded-xl p-3.5 flex-row items-center border border-app-border"
           >
-            <View className="w-9 h-9 rounded-lg items-center justify-center mr-3 bg-[#18191C]">
+            <View className="w-9 h-9 rounded-lg items-center justify-center mr-3 bg-app-card-soft">
               <Ionicons name="swap-horizontal-outline" size={18} color="#FF8A00" />
             </View>
             <View className="flex-1">
-              <Text className="text-white font-bold text-[13px]">Transfer</Text>
-              <Text className="text-[#9CA3AF] text-[10px]">Move funds Spot ↔ Futures</Text>
+              <Text className="text-app-text font-bold text-[13px]">Transfer</Text>
+              <Text className="text-app-muted text-[10px]">Move funds Spot ↔ Futures</Text>
             </View>
-            <Ionicons name="chevron-forward" size={16} color="#8A8D93" />
+            <Ionicons name="chevron-forward" size={16} color={colors.muted} />
           </TouchableOpacity>
         </View>
 
         <View className="mx-4 mb-4">
           <View className="flex-row justify-between items-end mb-3">
-            <Text className="text-white text-sm font-semibold">Holdings</Text>
+            <Text className="text-app-text text-sm font-semibold">Holdings</Text>
             {holdings.length > 0 && (
               <TouchableOpacity onPress={() => router.push('/portfolio/holdings')}>
                 <Text className="text-[#FF8A00] text-xs font-semibold">View all</Text>
@@ -123,19 +125,19 @@ export default function PortfolioScreen() {
             <>
               <View className="flex-row items-center mb-2 px-1">
                 <View className="flex-[1.2] ml-10">
-                  <Text className="text-[#9CA3AF] text-[9px] font-semibold">Stock</Text>
+                  <Text className="text-app-muted text-[9px] font-semibold">Stock</Text>
                 </View>
                 <View className="flex-[0.8] items-end">
-                  <Text className="text-[#9CA3AF] text-[9px] font-semibold">Qty</Text>
+                  <Text className="text-app-muted text-[9px] font-semibold">Qty</Text>
                 </View>
                 <View className="flex-[1.2] items-end">
-                  <Text className="text-[#9CA3AF] text-[9px] font-semibold">Current Value</Text>
+                  <Text className="text-app-muted text-[9px] font-semibold">Current Value</Text>
                 </View>
                 <View className="flex-[1.1] items-end">
-                  <Text className="text-[#9CA3AF] text-[9px] font-semibold">Day Change</Text>
+                  <Text className="text-app-muted text-[9px] font-semibold">Day Change</Text>
                 </View>
                 <View className="w-10 items-center ml-2">
-                  <Text className="text-[#9CA3AF] text-[9px] font-semibold">Chart</Text>
+                  <Text className="text-app-muted text-[9px] font-semibold">Chart</Text>
                 </View>
               </View>
 
@@ -153,7 +155,7 @@ export default function PortfolioScreen() {
 
         <View className="mx-4 mb-4">
           <View className="flex-row justify-between items-end mb-3">
-            <Text className="text-white text-sm font-semibold">Recent Activity</Text>
+            <Text className="text-app-text text-sm font-semibold">Recent Activity</Text>
             {activities.length > 0 && (
               <TouchableOpacity onPress={() => router.push('/portfolio/activity')}>
                 <Text className="text-[#FF8A00] text-xs font-semibold">View all</Text>

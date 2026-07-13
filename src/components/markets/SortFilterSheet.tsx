@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Modal, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTheme } from '../../context/ThemeContext';
 
 interface SortOption {
   key: string;
@@ -24,12 +26,19 @@ export function SortFilterSheet({
   onSelect,
   onClose,
 }: SortFilterSheetProps) {
+  const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
+
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <Pressable className="flex-1 bg-black/60 justify-end" onPress={onClose}>
-        <Pressable className="bg-[#111214] rounded-t-3xl border-t border-[#2A2B2F] px-4 pt-3 pb-10" onPress={(e) => e.stopPropagation()}>
-          <View className="w-10 h-1 bg-[#2A2B2F] rounded-full self-center mb-4" />
-          <Text className="text-white text-lg font-bold mb-4">{title}</Text>
+      <Pressable className="flex-1 bg-black/50 justify-end" onPress={onClose}>
+        <Pressable
+          className="bg-app-sheet rounded-t-3xl border-t border-app-border px-4 pt-3"
+          style={{ paddingBottom: Math.max(insets.bottom, 24) }}
+          onPress={(e) => e.stopPropagation()}
+        >
+          <View className="w-10 h-1 rounded-full self-center mb-4" style={{ backgroundColor: colors.border }} />
+          <Text className="text-app-text text-lg font-bold mb-4">{title}</Text>
           {options.map((opt) => {
             const active = selected === opt.key;
             return (
@@ -43,7 +52,7 @@ export function SortFilterSheet({
                   active ? 'bg-[#FF8A00]/10 border-[#FF8A00]' : 'border-transparent'
                 }`}
               >
-                <Text className={`font-semibold ${active ? 'text-[#FF8A00]' : 'text-white'}`}>
+                <Text className={`font-semibold ${active ? 'text-[#FF8A00]' : 'text-app-text'}`}>
                   {opt.label}
                 </Text>
                 {active && <Ionicons name="checkmark" size={20} color="#FF8A00" />}

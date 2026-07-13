@@ -11,6 +11,8 @@ import { useAppAlert } from '../../context/AppAlertContext';
 import { formatPortfolioRs } from '../../data/mockPortfolio';
 import { NotificationSettingsSheet } from '../../components/settings/NotificationSettingsSheet';
 import { safeBack } from '../../utils/navigation';
+import { useTheme } from '../../context/ThemeContext';
+import { hapticSelection } from '../../utils/haptics';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -19,6 +21,7 @@ export default function ProfileScreen() {
   const { showAlert } = useAppAlert();
   const { unreadCount } = useNotifications();
   const { summary } = usePortfolio();
+  const { mode, toggleMode, colors, isDark } = useTheme();
   const [notifSettingsVisible, setNotifSettingsVisible] = useState(false);
 
   const returnPositive = summary.totalReturn >= 0;
@@ -74,40 +77,43 @@ export default function ProfileScreen() {
   const MenuRow = ({ icon, title, sub, isSecurity, hideBorder, onPress }: any) => (
     <TouchableOpacity
       onPress={onPress}
-      className={`flex-row items-center py-4 px-4 ${hideBorder ? '' : 'border-b border-[#2A2B2F]'}`}
+      className={`flex-row items-center py-4 px-4 ${hideBorder ? '' : 'border-b border-app-border'}`}
     >
       <View className="mr-4 w-6 items-center">
-        <Ionicons name={icon} size={22} color="#8A8D93" />
+        <Ionicons name={icon} size={22} color={colors.muted} />
       </View>
       <View className="flex-1 justify-center">
-        <Text className="text-[#e0e0e0] text-[13px] font-medium">{title}</Text>
-        <Text className="text-[#8A8D93] text-[11px] mt-0.5">{sub}</Text>
+        <Text className="text-app-text text-[13px] font-medium">{title}</Text>
+        <Text className="text-app-muted text-[11px] mt-0.5">{sub}</Text>
       </View>
       {isSecurity ? (
         <Text className="text-[#22c55e] text-[11px] font-medium">2FA Enabled</Text>
       ) : (
-        <Ionicons name="chevron-forward" size={16} color="#444" />
+        <Ionicons name="chevron-forward" size={16} color={colors.mutedDarker} />
       )}
     </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-[#050505]">
+    <SafeAreaView className="flex-1 bg-app-bg">
       {/* NAV BAR */}
       <View className="flex-row items-center justify-between px-4 py-3">
         <TouchableOpacity onPress={() => safeBack(router, '/(tabs)/home')} className="w-10">
-          <Ionicons name="arrow-back" size={24} color="#e0e0e0" />
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <View className="flex-1 items-center">
-          <Text className="text-white text-[16px] font-semibold">Profile</Text>
+          <Text className="text-app-text text-[16px] font-semibold">Profile</Text>
         </View>
         <View className="flex-row items-center w-16 justify-end">
-          <Ionicons name="headset-outline" size={20} color="#e0e0e0" style={{ marginRight: 12 }} />
+          <Ionicons name="headset-outline" size={20} color={colors.text} style={{ marginRight: 12 }} />
           <TouchableOpacity className="relative" onPress={() => router.push('/notifications')}>
-            <Ionicons name="notifications-outline" size={20} color="#e0e0e0" />
+            <Ionicons name="notifications-outline" size={20} color={colors.text} />
             {unreadCount > 0 && (
-              <View className="absolute -top-1 -right-1 min-w-[14px] h-[14px] px-0.5 bg-[#f97316] rounded-full items-center justify-center border border-[#050505]">
-                <Text className="text-white text-[8px] font-bold">
+              <View
+                className="absolute -top-1 -right-1 min-w-[14px] h-[14px] px-0.5 bg-[#f97316] rounded-full items-center justify-center border"
+                style={{ borderColor: colors.background }}
+              >
+                <Text className="text-app-text text-[8px] font-bold">
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </Text>
               </View>
@@ -119,28 +125,28 @@ export default function ProfileScreen() {
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
 
         {/* SECTION 1 & 2 - UNIFIED USER & STATS CARD */}
-        <View className="mx-4 mb-6 mt-2 bg-[#131316] rounded-xl overflow-hidden border border-transparent">
+        <View className="mx-4 mb-6 mt-2 bg-app-card rounded-xl overflow-hidden border border-transparent">
           {/* Top Info */}
           <View className="p-4 flex-row items-start">
-            <View className="w-16 h-16 rounded-full bg-[#1a1a1a] items-center justify-center relative border border-[#2A2B2F]">
+            <View className="w-16 h-16 rounded-full bg-app-card-soft items-center justify-center relative border border-app-border">
               <Ionicons name="bar-chart" size={28} color="#f97316" />
-              <View className="absolute bottom-0 right-0 w-6 h-6 bg-white rounded-full items-center justify-center border-2 border-[#131316]">
+              <View className="absolute bottom-0 right-0 w-6 h-6 bg-white rounded-full items-center justify-center border-2 border-app-card">
                 <Ionicons name="camera" size={12} color="#000" />
               </View>
             </View>
 
             <View className="flex-1 ml-4 justify-center py-1">
               <View className="flex-row items-center">
-                <Text className="text-white text-[16px] font-bold">{session?.displayName ?? 'Guest Trader'}</Text>
+                <Text className="text-app-text text-[16px] font-bold">{session?.displayName ?? 'Guest Trader'}</Text>
                 <View className="flex-row items-center bg-[#f97316]/10 rounded-full px-2 py-0.5 ml-2">
                   <Ionicons name="checkmark-circle" size={10} color="#f97316" style={{ marginRight: 3 }} />
                   <Text className="text-[#f97316] text-[9px] font-bold">Verified</Text>
                 </View>
               </View>
-              <Text className="text-[#8A8D93] text-[12px] mt-1">{session?.email ?? 'guesttrader@email.com'}</Text>
+              <Text className="text-app-muted text-[12px] mt-1">{session?.email ?? 'guesttrader@email.com'}</Text>
               <View className="flex-row items-center mt-1">
-                <Text className="text-[#8A8D93] text-[11px]">Client ID: {session?.clientId ?? 'TID12345678'}</Text>
-                <Ionicons name="copy-outline" size={12} color="#8A8D93" style={{ marginLeft: 6 }} />
+                <Text className="text-app-muted text-[11px]">Client ID: {session?.clientId ?? 'TID12345678'}</Text>
+                <Ionicons name="copy-outline" size={12} color={colors.muted} style={{ marginLeft: 6 }} />
               </View>
               <View className="self-start flex-row items-center bg-[#2d1b4e]/40 rounded-full px-2.5 py-1 mt-2">
                 <Ionicons name="diamond" size={10} color="#a855f7" style={{ marginRight: 4 }} />
@@ -149,22 +155,22 @@ export default function ProfileScreen() {
             </View>
 
             <View className="self-center">
-              <Ionicons name="chevron-forward" size={16} color="#444" />
+              <Ionicons name="chevron-forward" size={16} color={colors.mutedDarker} />
             </View>
           </View>
 
           {/* Bottom Stats */}
-          <View className="flex-row py-4 border-t border-[#2A2B2F]">
-            <View className="flex-1 items-center border-r border-[#2A2B2F] px-1">
-              <Text className="text-[#8A8D93] text-[10px] mb-1.5">Total Equity</Text>
-              <Text className="text-white text-[13px] font-bold">PKR {formatPortfolioRs(summary.totalValue)}</Text>
+          <View className="flex-row py-4 border-t border-app-border">
+            <View className="flex-1 items-center border-r border-app-border px-1">
+              <Text className="text-app-muted text-[10px] mb-1.5">Total Equity</Text>
+              <Text className="text-app-text text-[13px] font-bold">PKR {formatPortfolioRs(summary.totalValue)}</Text>
             </View>
-            <View className="flex-1 items-center border-r border-[#2A2B2F] px-1">
-              <Text className="text-[#8A8D93] text-[10px] mb-1.5">Buying Power</Text>
-              <Text className="text-white text-[13px] font-bold">PKR {formatPortfolioRs(summary.buyingPower)}</Text>
+            <View className="flex-1 items-center border-r border-app-border px-1">
+              <Text className="text-app-muted text-[10px] mb-1.5">Buying Power</Text>
+              <Text className="text-app-text text-[13px] font-bold">PKR {formatPortfolioRs(summary.buyingPower)}</Text>
             </View>
             <View className="flex-1 items-center px-1">
-              <Text className="text-[#8A8D93] text-[10px] mb-1.5">Total Return</Text>
+              <Text className="text-app-muted text-[10px] mb-1.5">Total Return</Text>
               <Text className={`text-[13px] font-bold ${returnPositive ? 'text-[#22c55e]' : 'text-[#ef4444]'}`}>
                 {returnPositive ? '+' : ''}{summary.totalReturnPct}%
               </Text>
@@ -173,7 +179,7 @@ export default function ProfileScreen() {
         </View>
 
         {/* SECTION 3 - QUICK ACTIONS GRID (2 x 3) */}
-        <View className="mx-4 mb-6 flex-row flex-wrap bg-[#131316] rounded-xl py-3">
+        <View className="mx-4 mb-6 flex-row flex-wrap bg-app-card rounded-xl py-3">
           {quickActions.map((action) => (
             <TouchableOpacity
               key={action.label}
@@ -181,23 +187,26 @@ export default function ProfileScreen() {
               activeOpacity={0.7}
               onPress={action.onPress}
             >
-              <View className="w-12 h-12 rounded-full bg-[#1a1a1a] items-center justify-center mb-2 border border-[#2A2B2F] relative">
+              <View className="w-12 h-12 rounded-full bg-app-card-soft items-center justify-center mb-2 border border-app-border relative">
                 <Ionicons name={action.icon} size={20} color="#f97316" />
                 {action.badge && action.badge > 0 ? (
-                  <View className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 bg-[#f97316] rounded-full items-center justify-center border border-[#131316]">
+                  <View
+                    className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 bg-[#f97316] rounded-full items-center justify-center border"
+                    style={{ borderColor: colors.card }}
+                  >
                     <Text className="text-white text-[8px] font-bold">
                       {action.badge > 9 ? '9+' : action.badge}
                     </Text>
                   </View>
                 ) : null}
               </View>
-              <Text className="text-[#aaa] text-[11px] text-center">{action.label}</Text>
+              <Text className="text-app-muted text-[11px] text-center">{action.label}</Text>
             </TouchableOpacity>
           ))}
         </View>
 
         {/* SECTION 4 - MENU LIST */}
-        <View className="mx-4 mb-4 bg-[#131316] rounded-xl overflow-hidden">
+        <View className="mx-4 mb-4 bg-app-card rounded-xl overflow-hidden">
           <MenuRow
             icon="briefcase-outline"
             title="Brokerage Accounts"
@@ -222,17 +231,37 @@ export default function ProfileScreen() {
             sub="Price alerts, order updates, news"
             onPress={() => setNotifSettingsVisible(true)}
           />
-          <MenuRow
-            icon="options-outline"
-            title="Preferences"
-            sub="Theme, language, default market"
-            hideBorder={true}
-            onPress={() => router.push('/(tabs)/trade')}
-          />
+          <TouchableOpacity
+            onPress={() => {
+              hapticSelection();
+              toggleMode();
+            }}
+            className="flex-row items-center py-4 px-4"
+          >
+            <View className="mr-4 w-6 items-center">
+              <Ionicons
+                name={isDark ? 'moon-outline' : 'sunny-outline'}
+                size={22}
+                color={colors.muted}
+              />
+            </View>
+            <View className="flex-1 justify-center">
+              <Text className="text-app-text text-[13px] font-medium">Appearance</Text>
+              <Text className="text-app-muted text-[11px] mt-0.5">
+                {mode === 'light' ? 'Light mode' : 'Dark mode'} · tap to switch
+              </Text>
+            </View>
+            <View className="flex-row items-center bg-app-card-soft border border-app-border rounded-full px-2 py-1">
+              <Text className="text-[#FF8A00] text-[11px] font-bold mr-1">
+                {isDark ? 'Dark' : 'Light'}
+              </Text>
+              <Ionicons name="swap-horizontal" size={14} color="#FF8A00" />
+            </View>
+          </TouchableOpacity>
         </View>
 
         {/* SECTION 5 - SUPPORT LIST */}
-        <View className="mx-4 mb-4 bg-[#131316] rounded-xl overflow-hidden">
+        <View className="mx-4 mb-4 bg-app-card rounded-xl overflow-hidden">
           <MenuRow
             icon="help-circle-outline"
             title="Help & Support"
@@ -251,7 +280,7 @@ export default function ProfileScreen() {
         {/* SECTION 6 - LOG OUT BUTTON */}
         <TouchableOpacity
           onPress={handleLogout}
-          className="mx-4 bg-[#131316] rounded-xl flex-row items-center justify-center py-4 mb-[30px]"
+          className="mx-4 bg-app-card rounded-xl flex-row items-center justify-center py-4 mb-[30px]"
         >
           <Ionicons name="log-out-outline" size={18} color="#ef4444" />
           <Text className="text-[#ef4444] text-[14px] font-semibold ml-2">Log Out</Text>

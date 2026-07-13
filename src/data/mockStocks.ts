@@ -1,4 +1,5 @@
 import { Stock, StockPerformance, StockMetrics, AIInsight, StockNews } from '../types';
+import { STOCK_LOGO_COLORS, getStockLogoUri } from '../utils/stockLogos';
 export type { Stock, StockPerformance, StockMetrics, AIInsight, StockNews };
 
 // ─── Master stock registry ────────────────────────────────────────────────────
@@ -422,3 +423,10 @@ export const KSE_100_SYMBOLS = new Set([
 export const KSE_30_SYMBOLS = new Set([
   'FANM', 'PSO', 'HBL', 'OGDC', 'FATM', 'AABS', 'PIAHCLB',
 ]);
+
+for (const stock of MOCK_MARKET_STOCKS) {
+  if (!stock.logoColor) stock.logoColor = STOCK_LOGO_COLORS[stock.symbol];
+  if (!stock.logoUrl) {
+    stock.logoUrl = getStockLogoUri(stock.symbol, stock.website);
+  }
+}

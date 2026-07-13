@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Stock } from '../../types';
 import { SparklinePlaceholder } from '../ui/SparklinePlaceholder';
+import { StockLogo } from '../ui/StockLogo';
 import { hapticLight } from '../../utils/haptics';
 
 interface WatchlistSwipeRowProps {
@@ -34,7 +35,7 @@ export function WatchlistSwipeRow({ stock, onRemove, onAlert, pulse }: Watchlist
           hapticLight();
           onAlert();
         }}
-        className="bg-[#18191C] w-[72px] items-center justify-center border-l border-[#2A2B2F]"
+        className="bg-app-card-soft w-[72px] items-center justify-center border-l border-app-border"
       >
         <Ionicons name="notifications-outline" size={20} color="#FF8A00" />
         <Text className="text-[#FF8A00] text-[9px] mt-1 font-semibold">Alert</Text>
@@ -63,15 +64,21 @@ export function WatchlistSwipeRow({ stock, onRemove, onAlert, pulse }: Watchlist
           }}
           delayLongPress={350}
           activeOpacity={0.7}
-          className="flex-row items-center px-4 py-3.5 bg-[#050505] border-b border-[#2A2B2F]"
+          className="flex-row items-center px-4 py-3.5 bg-app-bg border-b border-app-border"
         >
-          <View className="w-10 h-10 rounded-full bg-[#18191C] items-center justify-center mr-3 border border-[#2A2B2F]">
-            <Text className="text-[#FF8A00] text-sm font-bold">{stock.symbol.charAt(0)}</Text>
+          <View className="mr-3">
+            <StockLogo
+              symbol={stock.symbol}
+              logoUrl={stock.logoUrl}
+              logoColor={stock.logoColor}
+              website={stock.website}
+              size={40}
+            />
           </View>
 
           <View className="flex-1">
-            <Text className="text-white font-semibold text-[13px]">{stock.symbol}</Text>
-            <Text className="text-[#5C6068] text-[11px] mt-0.5" numberOfLines={1}>
+            <Text className="text-app-text font-semibold text-[13px]">{stock.symbol}</Text>
+            <Text className="text-app-muted text-[11px] mt-0.5" numberOfLines={1}>
               {stock.name}
             </Text>
           </View>
@@ -81,7 +88,7 @@ export function WatchlistSwipeRow({ stock, onRemove, onAlert, pulse }: Watchlist
           </View>
 
           <View className="items-end mr-2">
-            <Animated.Text style={{ opacity }} className="text-white font-semibold text-[13px]">
+            <Animated.Text style={{ opacity }} className="text-app-text font-semibold text-[13px]">
               Rs {stock.price.toFixed(2)}
             </Animated.Text>
             <View className="flex-row items-center mt-0.5">
@@ -104,10 +111,10 @@ export function WatchlistSwipeRow({ stock, onRemove, onAlert, pulse }: Watchlist
 
       <Modal visible={showActions} transparent animationType="fade" onRequestClose={() => setShowActions(false)}>
         <Pressable className="flex-1 bg-black/60 justify-end" onPress={() => setShowActions(false)}>
-          <Pressable className="bg-[#111214] rounded-t-3xl border-t border-[#2A2B2F] px-4 pt-3 pb-10" onPress={(e) => e.stopPropagation()}>
-            <View className="w-10 h-1 bg-[#2A2B2F] rounded-full self-center mb-4" />
-            <Text className="text-white text-lg font-bold mb-1">{stock.symbol}</Text>
-            <Text className="text-[#9CA3AF] text-xs mb-5">{stock.name}</Text>
+          <Pressable className="bg-app-card rounded-t-3xl border-t border-app-border px-4 pt-3 pb-10" onPress={(e) => e.stopPropagation()}>
+            <View className="w-10 h-1 bg-app-border rounded-full self-center mb-4" />
+            <Text className="text-app-text text-lg font-bold mb-1">{stock.symbol}</Text>
+            <Text className="text-app-muted text-xs mb-5">{stock.name}</Text>
 
             {[
               { label: 'Buy', icon: 'arrow-up-circle-outline' as const, route: `/spot/${stock.symbol}` },
@@ -123,10 +130,10 @@ export function WatchlistSwipeRow({ stock, onRemove, onAlert, pulse }: Watchlist
                   if (item.action) item.action();
                   else if (item.route) router.push(item.route as never);
                 }}
-                className="flex-row items-center py-3.5 border-b border-[#2A2B2F]"
+                className="flex-row items-center py-3.5 border-b border-app-border"
               >
                 <Ionicons name={item.icon} size={20} color="#9CA3AF" />
-                <Text className="text-white font-semibold ml-3">{item.label}</Text>
+                <Text className="text-app-text font-semibold ml-3">{item.label}</Text>
               </TouchableOpacity>
             ))}
           </Pressable>

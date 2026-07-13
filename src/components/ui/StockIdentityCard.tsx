@@ -17,13 +17,13 @@ export const StockIdentityCard: React.FC<StockIdentityCardProps> = ({ stock }) =
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-end">
           <Text className={`${changeColor} text-4xl font-bold`}>{stock.price.toFixed(2)}</Text>
-          <Text className="text-[#9CA3AF] text-sm ml-2 mb-1">PKR</Text>
+          <Text className="text-app-muted text-sm ml-2 mb-1">PKR</Text>
         </View>
         <Ionicons name="star-outline" size={24} color="#9CA3AF" />
       </View>
       
       <Text className={`${changeColor} text-sm font-semibold mt-1`}>
-        {sign}{stock.changeValue?.toFixed(2)} ({sign}{stock.changePercent.toFixed(2)}%) <Text className="text-[#9CA3AF] font-normal">Today</Text>
+        {sign}{stock.changeValue?.toFixed(2)} ({sign}{stock.changePercent.toFixed(2)}%) <Text className="text-app-muted font-normal">Today</Text>
       </Text>
 
       {stock.isShariahCompliant && (

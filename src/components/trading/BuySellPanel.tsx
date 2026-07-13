@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../../context/ThemeContext';
 
 import { usePortfolio } from '../../context/PortfolioContext';
 import { useMarketPrices } from '../../context/MarketPricesContext';
@@ -24,6 +25,7 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({
   const { summary, getHolding } = usePortfolio();
   const { getStock } = useMarketPrices();
   const { showAlert } = useAppAlert();
+  const { colors } = useTheme();
   const [side, setSide] = useState<'buy' | 'sell'>('buy');
   const [orderType, setOrderType] = useState('Market');
   const [price, setPrice] = useState(currentPrice.toString());
@@ -173,19 +175,19 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({
   };
 
   return (
-    <View className="bg-[#111214] rounded-xl border border-[#2A2B2F] p-2.5">
-      <View className="flex-row bg-[#18191C] rounded-lg p-1 mb-3 border border-[#2A2B2F]">
+    <View className="bg-app-card rounded-xl border border-app-border p-2.5">
+      <View className="flex-row bg-app-card-soft rounded-lg p-1 mb-3 border border-app-border">
         <TouchableOpacity
           onPress={() => setSide('buy')}
           className={`flex-1 items-center py-1.5 rounded-md ${isBuy ? 'bg-[#0ECB81]' : ''}`}
         >
-          <Text className={`font-bold text-xs ${isBuy ? 'text-black' : 'text-white'}`}>Buy</Text>
+          <Text className={`font-bold text-xs ${isBuy ? 'text-black' : 'text-app-muted'}`}>Buy</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => setSide('sell')}
           className={`flex-1 items-center py-1.5 rounded-md ${!isBuy ? 'bg-[#F6465D]' : ''}`}
         >
-          <Text className={`font-bold text-xs ${!isBuy ? 'text-white' : 'text-[#9CA3AF]'}`}>Sell</Text>
+          <Text className={`font-bold text-xs ${!isBuy ? 'text-white' : 'text-app-muted'}`}>Sell</Text>
         </TouchableOpacity>
       </View>
 
@@ -202,40 +204,40 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({
                   initStopLimitDefaults(side);
                 }
               }}
-              className={`px-2 py-1 rounded-md ${orderType === type ? 'bg-[#18191C] border border-[#2A2B2F]' : ''}`}
+              className={`px-2 py-1 rounded-md ${orderType === type ? 'bg-app-card-soft border border-app-border' : ''}`}
             >
-              <Text className={`text-[10px] font-semibold ${orderType === type ? mainColorText : 'text-[#9CA3AF]'}`}>
+              <Text className={`text-[10px] font-semibold ${orderType === type ? mainColorText : 'text-app-muted'}`}>
                 {type}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
-        <Ionicons name="information-circle-outline" size={12} color="#9CA3AF" />
+        <Ionicons name="information-circle-outline" size={12} color={colors.muted} />
       </View>
 
       {orderType === 'Stop Limit' && (
         <View className="mb-2">
-          <Text className="text-[#9CA3AF] text-[9px] mb-1">Stop Price (trigger)</Text>
-          <View className="bg-[#18191C] border border-[#2A2B2F] rounded-lg flex-row items-center h-10">
+          <Text className="text-app-muted text-[9px] mb-1">Stop Price (trigger)</Text>
+          <View className="bg-app-card-soft border border-app-border rounded-lg flex-row items-center h-10">
             <TouchableOpacity
               onPress={() => adjustPrice(-1, 'stop')}
-              className="px-3 h-full justify-center border-r border-[#2A2B2F]"
+              className="px-3 h-full justify-center border-r border-app-border"
             >
-              <Ionicons name="remove" size={14} color="#9CA3AF" />
+              <Ionicons name="remove" size={14} color={colors.muted} />
             </TouchableOpacity>
             <View className="flex-1 items-center justify-center">
               <TextInput
                 value={stopPrice}
                 onChangeText={setStopPrice}
                 keyboardType="numeric"
-                className="text-white font-bold text-sm text-center w-full"
+                className="text-app-text font-bold text-sm text-center w-full"
               />
             </View>
             <TouchableOpacity
               onPress={() => adjustPrice(1, 'stop')}
-              className="px-3 h-full justify-center border-l border-[#2A2B2F]"
+              className="px-3 h-full justify-center border-l border-app-border"
             >
-              <Ionicons name="add" size={14} color="#9CA3AF" />
+              <Ionicons name="add" size={14} color={colors.muted} />
             </TouchableOpacity>
           </View>
         </View>
@@ -243,7 +245,7 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({
 
       <View className="mb-2">
         <View className="flex-row items-center justify-between mb-1">
-          <Text className="text-[#9CA3AF] text-[9px]">
+          <Text className="text-app-muted text-[9px]">
             {orderType === 'Stop Limit' ? 'Limit Price (order)' : 'Price (PKR)'}
           </Text>
           {priceHintVisible ? (
@@ -251,15 +253,15 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({
           ) : null}
         </View>
         <View
-          className={`bg-[#18191C] border rounded-lg flex-row items-center h-10 ${
-            priceFieldHighlight ? 'border-[#FF8A00]' : 'border-[#2A2B2F]'
+          className={`bg-app-card-soft border rounded-lg flex-row items-center h-10 ${
+            priceFieldHighlight ? 'border-[#FF8A00]' : 'border-app-border'
           }`}
         >
           <TouchableOpacity
             onPress={() => adjustPrice(-1, 'price')}
-            className="px-3 h-full justify-center border-r border-[#2A2B2F]"
+            className="px-3 h-full justify-center border-r border-app-border"
           >
-            <Ionicons name="remove" size={14} color="#9CA3AF" />
+            <Ionicons name="remove" size={14} color={colors.muted} />
           </TouchableOpacity>
           <View className="flex-1 items-center justify-center">
             <TextInput
@@ -267,47 +269,47 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({
               onChangeText={setPrice}
               keyboardType="numeric"
               editable={orderType !== 'Market'}
-              className="text-white font-bold text-sm text-center w-full"
+              className="text-app-text font-bold text-sm text-center w-full"
             />
           </View>
           <TouchableOpacity
             onPress={() => adjustPrice(1, 'price')}
-            className="px-3 h-full justify-center border-l border-[#2A2B2F]"
+            className="px-3 h-full justify-center border-l border-app-border"
           >
-            <Ionicons name="add" size={14} color="#9CA3AF" />
+            <Ionicons name="add" size={14} color={colors.muted} />
           </TouchableOpacity>
         </View>
       </View>
 
       <View className="mb-3">
-        <Text className="text-[#9CA3AF] text-[9px] mb-1">Qty (Shares)</Text>
-        <View className="bg-[#18191C] border border-[#2A2B2F] rounded-lg flex-row items-center h-10">
+        <Text className="text-app-muted text-[9px] mb-1">Qty (Shares)</Text>
+        <View className="bg-app-card-soft border border-app-border rounded-lg flex-row items-center h-10">
           <TouchableOpacity
             onPress={() => setQty(String(Math.max(1, q - 1)))}
-            className="px-3 h-full justify-center border-r border-[#2A2B2F]"
+            className="px-3 h-full justify-center border-r border-app-border"
           >
-            <Ionicons name="remove" size={14} color="#9CA3AF" />
+            <Ionicons name="remove" size={14} color={colors.muted} />
           </TouchableOpacity>
           <View className="flex-1 items-center justify-center">
             <TextInput
               value={qty}
               onChangeText={setQty}
               keyboardType="numeric"
-              className="text-white font-bold text-sm text-center w-full"
+              className="text-app-text font-bold text-sm text-center w-full"
             />
           </View>
           <TouchableOpacity
             onPress={() => setQty(String(q + 1))}
-            className="px-3 h-full justify-center border-l border-[#2A2B2F]"
+            className="px-3 h-full justify-center border-l border-app-border"
           >
-            <Ionicons name="add" size={14} color="#9CA3AF" />
+            <Ionicons name="add" size={14} color={colors.muted} />
           </TouchableOpacity>
         </View>
       </View>
 
       <View className="space-y-1.5 mb-3">
         <View className="flex-row justify-between items-center">
-          <Text className="text-[#9CA3AF] text-[9px]">
+          <Text className="text-app-muted text-[9px]">
             {isBuy ? 'Buying Power' : 'Shares Owned'}
           </Text>
           <Text className="text-[#FF8A00] text-[11px] font-semibold">
@@ -318,14 +320,14 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({
         </View>
       </View>
 
-      <View className="border-t border-[#2A2B2F] pt-2.5 mb-4">
+      <View className="border-t border-app-border pt-2.5 mb-4">
         <View className="flex-row justify-between items-center mb-0.5">
-          <Text className="text-[#9CA3AF] text-[10px] mr-1">Estimated Cost</Text>
-          <Text className="text-white text-sm font-bold">Rs {estimatedCost}</Text>
+          <Text className="text-app-muted text-[10px] mr-1">Estimated Cost</Text>
+          <Text className="text-app-text text-sm font-bold">Rs {estimatedCost}</Text>
         </View>
         <View className="flex-row justify-between items-center">
-          <Text className="text-[#9CA3AF] text-[8px]">Includes charges & tax</Text>
-          <Text className="text-[#9CA3AF] text-[8px]">Rs {totalCharges}</Text>
+          <Text className="text-app-muted text-[8px]">Includes charges & tax</Text>
+          <Text className="text-app-muted text-[8px]">Rs {totalCharges}</Text>
         </View>
       </View>
 

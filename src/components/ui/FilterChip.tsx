@@ -16,13 +16,13 @@ export const FilterChip: React.FC<FilterChipProps> = ({ label, isActive, onPress
       className={`flex-row items-center px-4 py-2 rounded-full mr-2 border ${
         isActive 
           ? 'border-[#FF8A00]' 
-          : 'bg-[#111214] border-[#2A2B2F]'
+          : 'bg-app-card border-app-border'
       }`}
     >
       {isShariah && (
         <Ionicons name="moon" size={12} color="#0ECB81" className="mr-1" style={{ marginRight: 4 }} />
       )}
-      <Text className={`${isActive ? 'text-[#FF8A00]' : 'text-[#9CA3AF]'} font-semibold`}>
+      <Text className={`${isActive ? 'text-[#FF8A00]' : 'text-app-muted'} font-semibold`}>
         {label}
       </Text>
     </TouchableOpacity>

@@ -13,11 +13,11 @@ export const MarketRangeStrip: React.FC<MarketRangeStripProps> = ({ stock }) => 
   const sign = isPositive ? '+' : '';
 
   return (
-    <View className="bg-[#111214] border border-[#2A2B2F] rounded-xl py-3 px-3 flex-row items-center justify-between">
+    <View className="bg-app-card border border-app-border rounded-xl py-3 px-3 flex-row items-center justify-between">
       <View className="flex-row items-center">
         <View className="mr-3">
-          <Text className="text-white font-bold text-xs">{stock.symbol}</Text>
-          <Text className="text-white font-bold text-sm">Rs {stock.price.toFixed(2)}</Text>
+          <Text className="text-app-text font-bold text-xs">{stock.symbol}</Text>
+          <Text className="text-app-text font-bold text-sm">Rs {stock.price.toFixed(2)}</Text>
         </View>
         <View>
           <Text className={`${changeColor} text-[10px]`}>{sign}{stock.changeValue?.toFixed(2)}</Text>
@@ -28,7 +28,7 @@ export const MarketRangeStrip: React.FC<MarketRangeStripProps> = ({ stock }) => 
       <View className="flex-row space-x-6">
         {/* Day Range */}
         <View className="items-center">
-          <Text className="text-[#9CA3AF] text-[9px] mb-1">Day Range</Text>
+          <Text className="text-app-muted text-[9px] mb-1">Day Range</Text>
           <View className="w-16 h-0.5 bg-[#F6465D] flex-row">
             <View className="w-1/2 h-full bg-[#0ECB81]" />
           </View>
@@ -40,7 +40,7 @@ export const MarketRangeStrip: React.FC<MarketRangeStripProps> = ({ stock }) => 
 
         {/* 52W Range */}
         <View className="items-center">
-          <Text className="text-[#9CA3AF] text-[9px] mb-1">52W Range</Text>
+          <Text className="text-app-muted text-[9px] mb-1">52W Range</Text>
           <View className="w-16 h-0.5 bg-[#F6465D] flex-row">
             <View className="w-3/4 h-full bg-[#0ECB81]" />
           </View>

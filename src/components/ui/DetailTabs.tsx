@@ -10,7 +10,7 @@ interface DetailTabsProps {
 
 export const DetailTabs: React.FC<DetailTabsProps> = ({ activeTab, onTabChange }) => {
   return (
-    <View className="border-b border-[#2A2B2F] mt-2">
+    <View className="border-b border-app-border mt-2">
       <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-4">
         {TABS.map((tab) => (
           <TouchableOpacity 
@@ -18,7 +18,7 @@ export const DetailTabs: React.FC<DetailTabsProps> = ({ activeTab, onTabChange }
             onPress={() => onTabChange(tab)}
             className={`py-3 mr-6 ${activeTab === tab ? 'border-b-2 border-[#FF8A00]' : 'border-b-2 border-transparent'}`}
           >
-            <Text className={`${activeTab === tab ? 'text-white font-bold' : 'text-[#9CA3AF]'}`}>
+            <Text className={`${activeTab === tab ? 'text-app-text font-bold' : 'text-app-muted'}`}>
               {tab}
             </Text>
           </TouchableOpacity>

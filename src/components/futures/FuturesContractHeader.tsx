@@ -24,15 +24,15 @@ export const FuturesContractHeader: React.FC<FuturesContractHeaderProps> = ({
         className="flex-row items-center mb-2"
         activeOpacity={0.8}
       >
-        <View className="w-8 h-8 rounded-full bg-[#18191C] border border-[#2A2B2F] items-center justify-center mr-2">
+        <View className="w-8 h-8 rounded-full bg-app-card-soft border border-app-border items-center justify-center mr-2">
           <Text className="text-[#FF8A00] text-[10px] font-bold">KSE</Text>
         </View>
         <View className="flex-1">
           <View className="flex-row items-center">
-            <Text className="text-white text-base font-bold">{contract.symbol}</Text>
+            <Text className="text-app-text text-base font-bold">{contract.symbol}</Text>
             <Ionicons name="chevron-down" size={14} color="#FF8A00" style={{ marginLeft: 4 }} />
           </View>
-          <Text className="text-[#9CA3AF] text-xs">
+          <Text className="text-app-muted text-xs">
             {contract.name} · {contract.expiry} · {contract.exchange}
           </Text>
         </View>
@@ -54,27 +54,27 @@ export const FuturesContractHeader: React.FC<FuturesContractHeaderProps> = ({
         </View>
       </TouchableOpacity>
 
-      <View className="flex-row bg-[#111214] border border-[#2A2B2F] rounded-xl px-3 py-2">
+      <View className="flex-row bg-app-card border border-app-border rounded-xl px-3 py-2">
         <View className="flex-1">
-          <Text className="text-[#9CA3AF] text-[11px]">Index</Text>
-          <Text className="text-white text-xs font-semibold">{formatFuturesPrice(contract.indexPrice)}</Text>
+          <Text className="text-app-muted text-[11px]">Index</Text>
+          <Text className="text-app-text text-xs font-semibold">{formatFuturesPrice(contract.indexPrice)}</Text>
         </View>
         <View className="flex-1 items-center">
-          <Text className="text-[#9CA3AF] text-[11px]">24h High</Text>
-          <Text className="text-white text-xs font-semibold">{formatFuturesPrice(contract.high24h)}</Text>
+          <Text className="text-app-muted text-[11px]">24h High</Text>
+          <Text className="text-app-text text-xs font-semibold">{formatFuturesPrice(contract.high24h)}</Text>
         </View>
         <View className="flex-1 items-center">
-          <Text className="text-[#9CA3AF] text-[11px]">24h Low</Text>
-          <Text className="text-white text-xs font-semibold">{formatFuturesPrice(contract.low24h)}</Text>
+          <Text className="text-app-muted text-[11px]">24h Low</Text>
+          <Text className="text-app-text text-xs font-semibold">{formatFuturesPrice(contract.low24h)}</Text>
         </View>
         <View className="flex-1 items-end">
-          <Text className="text-[#9CA3AF] text-[11px]">Vol (24h)</Text>
-          <Text className="text-white text-xs font-semibold">{contract.volume24h.toLocaleString()}</Text>
+          <Text className="text-app-muted text-[11px]">Vol (24h)</Text>
+          <Text className="text-app-text text-xs font-semibold">{contract.volume24h.toLocaleString()}</Text>
         </View>
       </View>
 
       <View className="flex-row items-center justify-between mt-2 px-1">
-        <Text className="text-[#9CA3AF] text-xs">
+        <Text className="text-app-muted text-xs">
           Funding / Countdown{' '}
           <Text className="text-[#FF8A00] font-semibold">
             {contract.fundingRate.toFixed(4)}% / {contract.nextFundingIn}

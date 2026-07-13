@@ -1,10 +1,10 @@
 param(
-  [string]$BuildRoot = "C:\tradit"
+  [string]$BuildRoot = "C:\tradit-build"
 )
 
 $ErrorActionPreference = "Stop"
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
-$PlayStoreOut = Join-Path $ProjectRoot "release\play-store"
+$ReleaseOut = Join-Path $ProjectRoot "release"
 
 Write-Host "==> Syncing project to $BuildRoot"
 if (Test-Path $BuildRoot) {
@@ -20,7 +20,7 @@ if ($LASTEXITCODE -ge 8) { throw "robocopy failed with exit code $LASTEXITCODE" 
 
 Write-Host "==> Installing dependencies"
 Push-Location $BuildRoot
-npm install --prefer-offline 2>&1 | Out-Host
+npm install --legacy-peer-deps 2>&1 | Out-Host
 Pop-Location
 
 Write-Host "==> Running expo prebuild"
@@ -60,36 +60,36 @@ $content = $content -replace 'signingConfig signingConfigs\.debug\r?\n          
 Set-Content -Path $buildGradle -Value $content -NoNewline
 
 $gradleProps = Join-Path $BuildRoot "android\gradle.properties"
-Add-Content -Path $gradleProps -Value "`nandroid.packagingOptions.pickFirsts=**/libworklets.so"
+if (-not (Select-String -Path $gradleProps -Pattern "libworklets" -Quiet)) {
+  Add-Content -Path $gradleProps -Value "`nandroid.packagingOptions.pickFirsts=**/libworklets.so"
+}
 
-# Fix keystore path relative to android/app/
 $propsPath = Join-Path $BuildRoot "credentials\android\keystore.properties"
-$props = Get-Content $propsPath
-$props = $props -replace '^storeFile=.*', 'storeFile=../../credentials/android/tradit-upload-keystore.jks'
-Set-Content -Path $propsPath -Value $props
+if (Test-Path $propsPath) {
+  $props = Get-Content $propsPath
+  $props = $props -replace '^storeFile=.*', 'storeFile=../../credentials/android/tradit-upload-keystore.jks'
+  Set-Content -Path $propsPath -Value $props
+}
 
 Write-Host "==> Copying signing credentials"
 xcopy (Join-Path $ProjectRoot "credentials") (Join-Path $BuildRoot "credentials\") /E /I /Y | Out-Null
 
-Write-Host "==> Building release AAB"
+Write-Host "==> Building release APK"
 $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
 $env:ANDROID_SDK_ROOT = $env:ANDROID_HOME
 Push-Location (Join-Path $BuildRoot "android")
-.\gradlew.bat bundleRelease
+.\gradlew.bat assembleRelease
 Pop-Location
 
-$aab = Join-Path $BuildRoot "android\app\build\outputs\bundle\release\app-release.aab"
-if (-not (Test-Path $aab)) { throw "AAB not found at $aab" }
+$apk = Join-Path $BuildRoot "android\app\build\outputs\apk\release\app-release.apk"
+if (-not (Test-Path $apk)) { throw "APK not found at $apk" }
 
-New-Item -ItemType Directory -Force -Path $PlayStoreOut | Out-Null
+New-Item -ItemType Directory -Force -Path $ReleaseOut | Out-Null
 $version = (Get-Content (Join-Path $ProjectRoot "app.json") -Raw | ConvertFrom-Json).expo.version
-$destAab = Join-Path $PlayStoreOut "tradit2.0-v$version.aab"
-Copy-Item $aab $destAab -Force
-Copy-Item (Join-Path $ProjectRoot "credentials\android\upload_certificate.pem") (Join-Path $PlayStoreOut "upload_certificate.pem") -Force
-Copy-Item (Join-Path $ProjectRoot "credentials\android\KEYSTORE_PASSWORD.txt") (Join-Path $PlayStoreOut "KEYSTORE_PASSWORD.txt") -Force
+$destApk = Join-Path $ReleaseOut "tradit2.0-v$version.apk"
+Copy-Item $apk $destApk -Force
 
-$sizeMb = [math]::Round((Get-Item $destAab).Length / 1MB, 2)
+$sizeMb = [math]::Round((Get-Item $destApk).Length / 1MB, 2)
 Write-Host ""
-Write-Host "Play Store build complete!"
-Write-Host "AAB: $destAab ($sizeMb MB)"
-Write-Host "Certificate: $(Join-Path $PlayStoreOut 'upload_certificate.pem')"
+Write-Host "APK build complete!"
+Write-Host "APK: $destApk ($sizeMb MB)"

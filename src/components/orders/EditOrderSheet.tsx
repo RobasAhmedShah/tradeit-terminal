@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import {
   View,
   Text,
@@ -26,6 +27,7 @@ interface EditOrderSheetProps {
 const EDITABLE_STATUSES = ['Pending', 'Partially Filled', 'Queued'];
 
 export const EditOrderSheet: React.FC<EditOrderSheetProps> = ({ visible, orderId, onClose }) => {
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { getOrder, updateOrder } = useOrders();
   const { showAlert } = useAppAlert();
@@ -73,17 +75,17 @@ export const EditOrderSheet: React.FC<EditOrderSheetProps> = ({ visible, orderId
           <Pressable className="flex-1" onPress={handleClose} />
 
           <View
-            className="rounded-t-3xl border-t border-[#25272D] max-h-[88%]"
-            style={{ backgroundColor: COLORS.sheet, paddingBottom: Math.max(insets.bottom, 16) }}
+            className="rounded-t-3xl border-t border-app-border max-h-[88%]"
+            style={{ backgroundColor: colors.sheet, paddingBottom: Math.max(insets.bottom, 16) }}
           >
             <View className="items-center pt-2.5 pb-1">
-              <View className="w-10 h-1 rounded-full bg-[#3A3D44]" />
+              <View className="w-10 h-1 rounded-full bg-app-border" />
             </View>
 
-            <View className="flex-row items-center justify-between px-5 py-2.5 border-b border-[#25272D]">
-              <Text className="text-white text-[16px] font-bold">Modify Order</Text>
+            <View className="flex-row items-center justify-between px-5 py-2.5 border-b border-app-border">
+              <Text className="text-app-text text-[16px] font-bold">Modify Order</Text>
               <TouchableOpacity onPress={handleClose} hitSlop={8}>
-                <Ionicons name="close" size={22} color="#8A8D93" />
+                <Ionicons name="close" size={22} color={colors.muted} />
               </TouchableOpacity>
             </View>
 
@@ -95,13 +97,13 @@ export const EditOrderSheet: React.FC<EditOrderSheetProps> = ({ visible, orderId
             >
               {!order ? (
                 <View className="py-8 items-center">
-                  <Text className="text-[#8A8D93] text-sm">Order not found</Text>
+                  <Text className="text-app-muted text-sm">Order not found</Text>
                 </View>
               ) : (
                 <>
-                  <View className="bg-[#111214] border border-[#2A2B2F] rounded-xl p-4 mb-4">
+                  <View className="bg-app-card border border-app-border rounded-xl p-4 mb-4">
                     <View className="flex-row items-center mb-1">
-                      <Text className="text-white text-lg font-bold mr-2">{order.symbol}</Text>
+                      <Text className="text-app-text text-lg font-bold mr-2">{order.symbol}</Text>
                       <View
                         className="px-2 py-0.5 rounded border"
                         style={{
@@ -117,8 +119,8 @@ export const EditOrderSheet: React.FC<EditOrderSheetProps> = ({ visible, orderId
                         </Text>
                       </View>
                     </View>
-                    <Text className="text-[#8A8D93] text-xs">{order.companyName}</Text>
-                    <Text className="text-[#5C6068] text-[11px] mt-2">
+                    <Text className="text-app-muted text-xs">{order.companyName}</Text>
+                    <Text className="text-app-muted text-[11px] mt-2">
                       {order.type} · {order.status} · {order.id}
                     </Text>
                   </View>
@@ -129,26 +131,26 @@ export const EditOrderSheet: React.FC<EditOrderSheetProps> = ({ visible, orderId
                     </Text>
                   ) : (
                     <>
-                      <Text className="text-[#5C6068] text-[10px] font-semibold uppercase tracking-wider mb-2">
+                      <Text className="text-app-muted text-[10px] font-semibold uppercase tracking-wider mb-2">
                         Limit Price (PKR)
                       </Text>
                       <TextInput
                         value={price}
                         onChangeText={setPrice}
                         keyboardType="decimal-pad"
-                        placeholderTextColor={COLORS.mutedDarker}
-                        className="bg-[#1C1E22] border border-[#25272D] rounded-xl px-4 py-3 text-white text-base mb-4"
+                        placeholderTextColor={colors.mutedDarker}
+                        className="bg-app-input border border-app-border rounded-xl px-4 py-3 text-app-text text-base mb-4"
                       />
 
-                      <Text className="text-[#5C6068] text-[10px] font-semibold uppercase tracking-wider mb-2">
+                      <Text className="text-app-muted text-[10px] font-semibold uppercase tracking-wider mb-2">
                         Quantity
                       </Text>
                       <TextInput
                         value={quantity}
                         onChangeText={setQuantity}
                         keyboardType="number-pad"
-                        placeholderTextColor={COLORS.mutedDarker}
-                        className="bg-[#1C1E22] border border-[#25272D] rounded-xl px-4 py-3 text-white text-base mb-5"
+                        placeholderTextColor={colors.mutedDarker}
+                        className="bg-app-input border border-app-border rounded-xl px-4 py-3 text-app-text text-base mb-5"
                       />
 
                       <TouchableOpacity
@@ -163,9 +165,9 @@ export const EditOrderSheet: React.FC<EditOrderSheetProps> = ({ visible, orderId
 
                   <TouchableOpacity
                     onPress={handleClose}
-                    className="py-3.5 rounded-xl items-center border border-[#2A2B2F] mb-2"
+                    className="py-3.5 rounded-xl items-center border border-app-border mb-2"
                   >
-                    <Text className="text-[#8A8D93] font-semibold text-sm">Cancel</Text>
+                    <Text className="text-app-muted font-semibold text-sm">Cancel</Text>
                   </TouchableOpacity>
                 </>
               )}

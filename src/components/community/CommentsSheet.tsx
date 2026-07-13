@@ -14,6 +14,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePosts } from '../../context/PostsContext';
+import { useTheme } from '../../context/ThemeContext';
 import { COLORS } from '../../constants/theme';
 import { formatPostTime, PostComment } from '../../utils/postPrefs';
 import { hapticLight, hapticSuccess } from '../../utils/haptics';
@@ -28,6 +29,7 @@ export const CommentsSheet: React.FC<CommentsSheetProps> = ({ postId, visible, o
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = useWindowDimensions();
   const { getPostById, getComments, addComment } = usePosts();
+  const { colors } = useTheme();
   const [draft, setDraft] = useState('');
 
   const post = postId ? getPostById(postId) : undefined;
@@ -46,8 +48,8 @@ export const CommentsSheet: React.FC<CommentsSheetProps> = ({ postId, visible, o
   const renderComment = ({ item }: { item: PostComment }) => (
     <View className="flex-row mb-4">
       <View
-        className="w-8 h-8 rounded-full items-center justify-center mr-3 border border-[#2A2B2F]"
-        style={{ backgroundColor: COLORS.primaryTint }}
+        className="w-8 h-8 rounded-full items-center justify-center mr-3 border border-app-border"
+        style={{ backgroundColor: colors.primaryTint }}
       >
         <Text style={{ color: COLORS.primary }} className="text-[10px] font-bold">
           {item.authorInitials}
@@ -55,10 +57,10 @@ export const CommentsSheet: React.FC<CommentsSheetProps> = ({ postId, visible, o
       </View>
       <View className="flex-1">
         <View className="flex-row items-center flex-wrap gap-2">
-          <Text className="text-white text-[13px] font-semibold">{item.authorName}</Text>
-          <Text className="text-[#5C6068] text-[10px]">{formatPostTime(item.createdAt)}</Text>
+          <Text className="text-app-text text-[13px] font-semibold">{item.authorName}</Text>
+          <Text className="text-app-muted text-[10px]">{formatPostTime(item.createdAt)}</Text>
         </View>
-        <Text className="text-[#D0D0D0] text-[13px] leading-5 mt-1">{item.content}</Text>
+        <Text className="text-app-text text-[13px] leading-5 mt-1">{item.content}</Text>
       </View>
     </View>
   );
@@ -75,30 +77,30 @@ export const CommentsSheet: React.FC<CommentsSheetProps> = ({ postId, visible, o
           <View
             style={{
               height: sheetHeight,
-              backgroundColor: COLORS.sheet,
+              backgroundColor: colors.sheet,
               borderTopLeftRadius: 20,
               borderTopRightRadius: 20,
               borderTopWidth: 1,
-              borderColor: COLORS.sheetBorder,
+              borderColor: colors.sheetBorder,
             }}
           >
             <View className="items-center pt-2.5 pb-1">
-              <View className="w-10 h-1 rounded-full bg-[#3A3D44]" />
+              <View className="w-10 h-1 rounded-full" style={{ backgroundColor: colors.border }} />
             </View>
 
-            <View className="flex-row items-center justify-between px-5 py-2.5 border-b border-[#25272D]">
-              <Text className="text-white text-[16px] font-bold">
+            <View className="flex-row items-center justify-between px-5 py-2.5 border-b border-app-border">
+              <Text className="text-app-text text-[16px] font-bold">
                 Comments {comments.length > 0 ? `(${comments.length})` : ''}
               </Text>
               <TouchableOpacity onPress={onClose} hitSlop={8}>
-                <Ionicons name="close" size={22} color="#8A8D93" />
+                <Ionicons name="close" size={22} color={colors.muted} />
               </TouchableOpacity>
             </View>
 
             {post && (
-              <View className="px-5 py-2 border-b border-[#25272D]">
-                <Text className="text-[#8A8D93] text-[11px]" numberOfLines={1}>
-                  Re: <Text className="text-white font-medium">{post.author.name}</Text>
+              <View className="px-5 py-2 border-b border-app-border">
+                <Text className="text-app-muted text-[11px]" numberOfLines={1}>
+                  Re: <Text className="text-app-text font-medium">{post.author.name}</Text>
                   {' · '}
                   {post.content.length > 60 ? `${post.content.slice(0, 60)}…` : post.content}
                 </Text>
@@ -120,32 +122,32 @@ export const CommentsSheet: React.FC<CommentsSheetProps> = ({ postId, visible, o
                 ListEmptyComponent={
                   <View className="flex-1 items-center justify-center py-12">
                     <Ionicons name="chatbubble-outline" size={36} color="#3A3D44" />
-                    <Text className="text-[#8A8D93] text-sm mt-3">No comments yet</Text>
-                    <Text className="text-[#5C6068] text-xs mt-1">Be the first to reply</Text>
+                    <Text className="text-app-muted text-sm mt-3">No comments yet</Text>
+                    <Text className="text-app-muted text-xs mt-1">Be the first to reply</Text>
                   </View>
                 }
               />
             </View>
 
             <View
-              className="flex-row items-end px-4 pt-2 border-t border-[#25272D] gap-2"
+              className="flex-row items-end px-4 pt-2 border-t border-app-border gap-2"
               style={{ paddingBottom: Math.max(insets.bottom, 12) }}
             >
               <TextInput
                 value={draft}
                 onChangeText={setDraft}
                 placeholder="Add a comment..."
-                placeholderTextColor={COLORS.mutedDarker}
+                placeholderTextColor={colors.mutedDarker}
                 multiline
-                className="flex-1 bg-[#1C1E22] border border-[#25272D] rounded-xl px-3 py-2.5 text-white text-[14px] max-h-24"
+                className="flex-1 bg-app-input border border-app-border rounded-xl px-3 py-2.5 text-app-text text-[14px] max-h-24"
               />
               <TouchableOpacity
                 onPress={handleSend}
                 disabled={!draft.trim()}
                 className="w-10 h-10 rounded-full items-center justify-center mb-0.5"
-                style={{ backgroundColor: draft.trim() ? COLORS.primary : COLORS.input }}
+                style={{ backgroundColor: draft.trim() ? COLORS.primary : colors.input }}
               >
-                <Ionicons name="send" size={18} color={draft.trim() ? COLORS.black : COLORS.mutedDarker} />
+                <Ionicons name="send" size={18} color={draft.trim() ? COLORS.black : colors.mutedDarker} />
               </TouchableOpacity>
             </View>
           </View>

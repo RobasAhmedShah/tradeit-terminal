@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import {
   View,
   Text,
@@ -32,6 +33,7 @@ export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({
   editId,
   onClose,
 }) => {
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { alerts, addAlert, updateAlert, removeAlert } = usePriceAlerts();
   const { showAlert } = useAppAlert();
@@ -119,17 +121,17 @@ export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({
         <View className="flex-1 bg-black/70 justify-end">
           <TouchableOpacity className="flex-1" activeOpacity={1} onPress={onClose} />
 
-          <View className="bg-[#161719] rounded-t-3xl border-t border-[#25272D] max-h-[90%]">
+          <View className="bg-app-sheet rounded-t-3xl border-t border-app-border max-h-[90%]">
             <View className="items-center pt-3 pb-1">
-              <View className="w-10 h-1 rounded-full bg-[#3A3D44]" />
+              <View className="w-10 h-1 rounded-full bg-app-border" />
             </View>
 
             <View className="flex-row items-center justify-between px-5 py-3">
-              <Text className="text-white text-[16px] font-bold">
+              <Text className="text-app-text text-[16px] font-bold">
                 {isEditing ? 'Edit Price Alert' : 'New Price Alert'}
               </Text>
               <TouchableOpacity onPress={onClose} className="w-8 h-8 items-center justify-center">
-                <Ionicons name="close" size={22} color="#8A8D93" />
+                <Ionicons name="close" size={22} color={colors.muted} />
               </TouchableOpacity>
             </View>
 
@@ -139,8 +141,8 @@ export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{ paddingBottom: 12 }}
             >
-              <Text className="text-[#5C6068] text-[10px] font-semibold uppercase tracking-wider mb-2">Symbol</Text>
-              <View className="bg-[#1C1E22] border border-[#25272D] rounded-xl px-3 py-3 mb-1 flex-row items-center">
+              <Text className="text-app-muted text-[10px] font-semibold uppercase tracking-wider mb-2">Symbol</Text>
+              <View className="bg-app-input border border-app-border rounded-xl px-3 py-3 mb-1 flex-row items-center">
                 <TextInput
                   value={symbol}
                   onChangeText={(t) => setSymbol(t.toUpperCase())}
@@ -148,10 +150,10 @@ export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({
                   placeholderTextColor="#444"
                   autoCapitalize="characters"
                   editable={!symbolLocked}
-                  className="flex-1 text-white text-[15px] font-bold py-0"
+                  className="flex-1 text-app-text text-[15px] font-bold py-0"
                 />
                 {stock && (
-                  <Text className="text-[#8A8D93] text-[11px] ml-2" numberOfLines={1}>
+                  <Text className="text-app-muted text-[11px] ml-2" numberOfLines={1}>
                     Rs {stock.price.toFixed(2)}
                   </Text>
                 )}
@@ -159,14 +161,14 @@ export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({
               {symbol.trim() && !stock ? (
                 <Text className="text-[#F6465D] text-[11px] mb-3 mt-1">Symbol not found in market list.</Text>
               ) : stock ? (
-                <Text className="text-[#5C6068] text-[12px] mb-3 mt-1" numberOfLines={1}>
+                <Text className="text-app-muted text-[12px] mb-3 mt-1" numberOfLines={1}>
                   {stock.name}
                 </Text>
               ) : (
                 <View className="mb-3" />
               )}
 
-              <Text className="text-[#5C6068] text-[10px] font-semibold uppercase tracking-wider mb-2">Condition</Text>
+              <Text className="text-app-muted text-[10px] font-semibold uppercase tracking-wider mb-2">Condition</Text>
               <View className="flex-row gap-2 mb-4">
                 {(['above', 'below'] as const).map((c) => {
                   const active = condition === c;
@@ -178,10 +180,10 @@ export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({
                         setCondition(c);
                       }}
                       className={`flex-1 py-3 rounded-xl border items-center ${
-                        active ? 'border-[#FF8A00] bg-[#FF8A00]/10' : 'border-[#25272D] bg-[#1C1E22]'
+                        active ? 'border-[#FF8A00] bg-[#FF8A00]/10' : 'border-app-border bg-app-input'
                       }`}
                     >
-                      <Text className={`text-[13px] font-semibold ${active ? 'text-[#FF8A00]' : 'text-[#8A8D93]'}`}>
+                      <Text className={`text-[13px] font-semibold ${active ? 'text-[#FF8A00]' : 'text-app-muted'}`}>
                         {c === 'above' ? 'Rises above' : 'Falls below'}
                       </Text>
                     </TouchableOpacity>
@@ -189,25 +191,25 @@ export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({
                 })}
               </View>
 
-              <Text className="text-[#5C6068] text-[10px] font-semibold uppercase tracking-wider mb-2">
+              <Text className="text-app-muted text-[10px] font-semibold uppercase tracking-wider mb-2">
                 Target Price (PKR)
               </Text>
-              <View className="bg-[#1C1E22] border border-[#25272D] rounded-xl px-3 py-3 mb-4 flex-row items-center">
-                <Text className="text-[#8A8D93] text-[15px] mr-2">Rs</Text>
+              <View className="bg-app-input border border-app-border rounded-xl px-3 py-3 mb-4 flex-row items-center">
+                <Text className="text-app-muted text-[15px] mr-2">Rs</Text>
                 <TextInput
                   value={priceInput}
                   onChangeText={setPriceInput}
                   placeholder="0.00"
                   placeholderTextColor="#444"
                   keyboardType="decimal-pad"
-                  className="flex-1 text-white text-[15px] font-bold py-0"
+                  className="flex-1 text-app-text text-[15px] font-bold py-0"
                 />
               </View>
 
               {stock && targetPrice > 0 && (
-                <View className="bg-[#1C1E22] border border-[#25272D] rounded-xl p-3 mb-2">
-                  <Text className="text-[#8A8D93] text-[12px] leading-5">
-                    Notify when <Text className="text-white font-semibold">{stock.symbol}</Text>{' '}
+                <View className="bg-app-input border border-app-border rounded-xl p-3 mb-2">
+                  <Text className="text-app-muted text-[12px] leading-5">
+                    Notify when <Text className="text-app-text font-semibold">{stock.symbol}</Text>{' '}
                     {condition === 'above' ? 'rises above' : 'falls below'}{' '}
                     <Text className="font-semibold" style={{ color: ACCENT }}>
                       Rs {targetPrice.toFixed(2)}
@@ -225,7 +227,7 @@ export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({
             </ScrollView>
 
             <View
-              className="px-5 pt-3 border-t border-[#25272D]"
+              className="px-5 pt-3 border-t border-app-border"
               style={{ paddingBottom: Math.max(insets.bottom, 12) }}
             >
               <TouchableOpacity
@@ -234,7 +236,7 @@ export const PriceAlertSheet: React.FC<PriceAlertSheetProps> = ({
                 className="rounded-2xl py-4 items-center"
                 style={{ backgroundColor: isValid ? ACCENT : '#25272D' }}
               >
-                <Text className={`font-bold text-[15px] ${isValid ? 'text-black' : 'text-[#5C6068]'}`}>
+                <Text className={`font-bold text-[15px] ${isValid ? 'text-black' : 'text-app-muted'}`}>
                   {isEditing ? 'Save Changes' : 'Create Alert'}
                 </Text>
               </TouchableOpacity>

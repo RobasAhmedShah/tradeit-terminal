@@ -20,14 +20,14 @@ export const StockStickyActions: React.FC<StockStickyActionsProps> = ({
   
   return (
     <View 
-      className="absolute bottom-0 left-0 right-0 bg-[#050505] border-t border-[#2A2B2F] flex-row px-4 pt-3 pb-4 items-center justify-between shadow-lg shadow-black"
+      className="absolute bottom-0 left-0 right-0 bg-app-bg border-t border-app-border flex-row px-4 pt-3 pb-4 items-center justify-between shadow-lg shadow-black"
       style={{ paddingBottom: Math.max(insets.bottom + 8, 16) }}
     >
       <View className="flex-row items-center flex-1 mr-3">
         {onAlertPress && (
           <TouchableOpacity
             onPress={onAlertPress}
-            className="items-center justify-center border border-[#2A2B2F] bg-[#111214] rounded-xl px-4 py-3.5 mr-2"
+            className="items-center justify-center border border-app-border bg-app-card rounded-xl px-4 py-3.5 mr-2"
           >
             <Ionicons name="notifications-outline" size={20} color="#9CA3AF" />
           </TouchableOpacity>
@@ -35,7 +35,7 @@ export const StockStickyActions: React.FC<StockStickyActionsProps> = ({
         <TouchableOpacity
           onPress={onWatchlistPress}
           className={`flex-1 flex-row items-center justify-center border rounded-xl px-4 py-3.5 ${
-            isWatchlisted ? 'border-[#FF8A00] bg-[#FF8A00]/10' : 'border-[#2A2B2F] bg-[#111214]'
+            isWatchlisted ? 'border-[#FF8A00] bg-[#FF8A00]/10' : 'border-app-border bg-app-card'
           }`}
         >
           <Ionicons
@@ -43,7 +43,7 @@ export const StockStickyActions: React.FC<StockStickyActionsProps> = ({
             size={20}
             color={isWatchlisted ? '#FF8A00' : '#9CA3AF'}
           />
-          <Text className={`ml-2 font-bold text-sm ${isWatchlisted ? 'text-[#FF8A00]' : 'text-white'}`}>
+          <Text className={`ml-2 font-bold text-sm ${isWatchlisted ? 'text-[#FF8A00]' : 'text-app-text'}`}>
             {isWatchlisted ? 'Added' : 'Watchlist'}
           </Text>
         </TouchableOpacity>

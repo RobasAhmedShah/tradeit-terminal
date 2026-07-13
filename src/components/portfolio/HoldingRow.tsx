@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { PortfolioHolding, formatPortfolioRs } from '../../data/mockPortfolio';
+import { StockLogo } from '../ui/StockLogo';
+import { MOCK_MARKET_STOCKS } from '../../data/mockStocks';
 
 interface HoldingRowProps {
   holding: PortfolioHolding;
@@ -12,37 +14,44 @@ interface HoldingRowProps {
 export function HoldingRow({ holding, onPress, compact = false }: HoldingRowProps) {
   const isUp = holding.dayChange > 0;
   const isDown = holding.dayChange < 0;
-  const changeColor = isUp ? 'text-[#0ECB81]' : isDown ? 'text-[#F6465D]' : 'text-[#9CA3AF]';
+  const changeColor = isUp ? 'text-[#0ECB81]' : isDown ? 'text-[#F6465D]' : 'text-app-muted';
+  const stock = MOCK_MARKET_STOCKS.find((s) => s.symbol === holding.symbol);
 
   return (
     <TouchableOpacity
       onPress={onPress}
-      className={`flex-row items-center border-b border-[#2A2B2F] ${compact ? 'py-2.5' : 'py-3'}`}
+      className={`flex-row items-center border-b border-app-border ${compact ? 'py-2.5' : 'py-3'}`}
     >
-      <View className="w-8 h-8 rounded-full bg-[#0ECB81]/10 items-center justify-center mr-2">
-        <Text className="text-[#0ECB81] font-bold text-[10px]">{holding.symbol.charAt(0)}</Text>
+      <View className="mr-2">
+        <StockLogo
+          symbol={holding.symbol}
+          logoUrl={stock?.logoUrl}
+          logoColor={stock?.logoColor}
+          website={stock?.website}
+          size={compact ? 28 : 32}
+        />
       </View>
 
       <View className="flex-[1.2]">
-        <Text className={`text-white font-semibold ${compact ? 'text-[11px]' : 'text-sm'}`}>
+        <Text className={`text-app-text font-semibold ${compact ? 'text-[11px]' : 'text-sm'}`}>
           {holding.symbol}
         </Text>
-        <Text className="text-[#9CA3AF] text-[9px]" numberOfLines={1}>
+        <Text className="text-app-muted text-[9px]" numberOfLines={1}>
           {holding.name}
         </Text>
       </View>
 
       <View className="flex-[0.8] items-end">
-        <Text className={`text-white font-semibold ${compact ? 'text-[10px]' : 'text-xs'}`}>
+        <Text className={`text-app-text font-semibold ${compact ? 'text-[10px]' : 'text-xs'}`}>
           {holding.qty.toFixed(compact ? 2 : 0)}
         </Text>
       </View>
 
       <View className="flex-[1.2] items-end">
-        <Text className={`text-white font-medium ${compact ? 'text-[10px]' : 'text-xs'}`}>
+        <Text className={`text-app-text font-medium ${compact ? 'text-[10px]' : 'text-xs'}`}>
           Rs {formatPortfolioRs(holding.currentValue)}
         </Text>
-        <Text className="text-[#9CA3AF] text-[8px]">@ Rs {formatPortfolioRs(holding.avgCost)}</Text>
+        <Text className="text-app-muted text-[8px]">@ Rs {formatPortfolioRs(holding.avgCost)}</Text>
       </View>
 
       <View className="flex-[1.1] items-end">
@@ -71,9 +80,9 @@ export function HoldingRow({ holding, onPress, compact = false }: HoldingRowProp
 
 export function HoldingsEmptyState({ onBrowse }: { onBrowse: () => void }) {
   return (
-    <View className="bg-[#111214] rounded-xl p-8 border border-[#2A2B2F] items-center">
-      <Text className="text-white font-semibold text-sm mb-1">No stocks yet</Text>
-      <Text className="text-[#9CA3AF] text-xs text-center mb-4">
+    <View className="bg-app-card rounded-xl p-8 border border-app-border items-center">
+      <Text className="text-app-text font-semibold text-sm mb-1">No stocks yet</Text>
+      <Text className="text-app-muted text-xs text-center mb-4">
         Buy your first stock from the Trade tab. It will show up here.
       </Text>
       <TouchableOpacity onPress={onBrowse} className="bg-[#FF8A00] rounded-full px-5 py-2.5">

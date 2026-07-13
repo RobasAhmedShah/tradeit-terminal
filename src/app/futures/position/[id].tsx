@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useFutures } from '../../../context/FuturesContext';
+import { useTheme } from '../../../context/ThemeContext';
 import { useFuturesCloseSheet } from '../../../context/FuturesCloseSheetContext';
 import {
   estimateLiqPrice,
@@ -13,6 +14,7 @@ import { safeBack } from '../../../utils/navigation';
 
 export default function FuturesPositionDetailScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { getPositionById } = useFutures();
   const { openCloseSheet } = useFuturesCloseSheet();
@@ -21,9 +23,9 @@ export default function FuturesPositionDetailScreen() {
 
   if (!position) {
     return (
-      <SafeAreaView className="flex-1 bg-[#050505] justify-center items-center px-6">
-        <Text className="text-white text-lg font-semibold mb-2">Position not found</Text>
-        <Text className="text-[#9CA3AF] text-sm text-center mb-6">
+      <SafeAreaView className="flex-1 bg-app-bg justify-center items-center px-6">
+        <Text className="text-app-text text-lg font-semibold mb-2">Position not found</Text>
+        <Text className="text-app-muted text-sm text-center mb-6">
           This position may have been closed or no longer exists.
         </Text>
         <TouchableOpacity
@@ -43,24 +45,24 @@ export default function FuturesPositionDetailScreen() {
     openCloseSheet(position, () => safeBack(router, '/orders?tab=futures&view=positions'));
   };
 
-  const Row = ({ label, value, valueClass = 'text-white' }: { label: string; value: string; valueClass?: string }) => (
-    <View className="flex-row justify-between py-3 border-b border-[#2A2B2F]">
-      <Text className="text-[#9CA3AF] text-sm">{label}</Text>
+  const Row = ({ label, value, valueClass = 'text-app-text' }: { label: string; value: string; valueClass?: string }) => (
+    <View className="flex-row justify-between py-3 border-b border-app-border">
+      <Text className="text-app-muted text-sm">{label}</Text>
       <Text className={`text-sm font-semibold ${valueClass}`}>{value}</Text>
     </View>
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-[#050505]">
-      <View className="flex-row items-center px-4 py-3 border-b border-[#2A2B2F]">
+    <SafeAreaView className="flex-1 bg-app-bg">
+      <View className="flex-row items-center px-4 py-3 border-b border-app-border">
         <TouchableOpacity onPress={() => safeBack(router, '/orders?tab=futures&view=positions')} className="w-10">
-          <Ionicons name="arrow-back" size={24} color="white" />
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
-        <Text className="flex-1 text-center text-white text-lg font-bold mr-10">Position Detail</Text>
+        <Text className="flex-1 text-center text-app-text text-lg font-bold mr-10">Position Detail</Text>
       </View>
 
       <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
-        <View className="bg-[#111214] border border-[#2A2B2F] rounded-xl p-4 mb-4">
+        <View className="bg-app-card border border-app-border rounded-xl p-4 mb-4">
           <View className="flex-row items-center mb-3">
             <View
               className={`px-2 py-1 rounded border ${
@@ -72,8 +74,8 @@ export default function FuturesPositionDetailScreen() {
               </Text>
             </View>
             <View className="ml-3">
-              <Text className="text-white text-lg font-bold">{position.symbol}</Text>
-              <Text className="text-[#9CA3AF] text-xs">
+              <Text className="text-app-text text-lg font-bold">{position.symbol}</Text>
+              <Text className="text-app-muted text-xs">
                 {position.expiry} · {position.leverage}x
               </Text>
             </View>
@@ -90,17 +92,17 @@ export default function FuturesPositionDetailScreen() {
           <Row label="Est. Liq. Price" value={formatFuturesPrice(liqPrice)} valueClass="text-[#F6465D]" />
         </View>
 
-        <Text className="text-white text-base font-bold mb-2">Risk Management</Text>
-        <View className="bg-[#111214] border border-[#2A2B2F] rounded-xl p-4 mb-6">
-          <Row label="Take Profit" value="Not set" valueClass="text-[#9CA3AF]" />
-          <Row label="Stop Loss" value="Not set" valueClass="text-[#9CA3AF]" />
-          <TouchableOpacity className="mt-3 py-2.5 rounded-lg border border-dashed border-[#2A2B2F] items-center">
+        <Text className="text-app-text text-base font-bold mb-2">Risk Management</Text>
+        <View className="bg-app-card border border-app-border rounded-xl p-4 mb-6">
+          <Row label="Take Profit" value="Not set" valueClass="text-app-muted" />
+          <Row label="Stop Loss" value="Not set" valueClass="text-app-muted" />
+          <TouchableOpacity className="mt-3 py-2.5 rounded-lg border border-dashed border-app-border items-center">
             <Text className="text-[#FF8A00] text-sm font-semibold">+ Add TP / SL</Text>
           </TouchableOpacity>
         </View>
 
         <TouchableOpacity onPress={handleClose} className="bg-[#F6465D] py-3.5 rounded-xl items-center mb-10">
-          <Text className="text-white font-bold text-base">Close Position</Text>
+          <Text className="text-app-text font-bold text-base">Close Position</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

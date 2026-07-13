@@ -51,7 +51,7 @@ export const OrderBookCard: React.FC<OrderBookCardProps> = ({
           style={{ width: `${width}%` }}
         />
         <Text className={`${color} text-[10px] font-semibold w-[55%]`}>{price.toFixed(2)}</Text>
-        <Text className="text-white text-[10px] w-[45%] text-right">{qty.toLocaleString()}</Text>
+        <Text className="text-app-text text-[10px] w-[45%] text-right">{qty.toLocaleString()}</Text>
       </View>
     );
 
@@ -69,15 +69,15 @@ export const OrderBookCard: React.FC<OrderBookCardProps> = ({
   };
 
   return (
-    <View className="bg-[#111214] rounded-xl border border-[#2A2B2F] p-2 flex-1">
+    <View className="bg-app-card rounded-xl border border-app-border p-2 flex-1">
       <View className="flex-row items-center justify-between mb-2">
-        <Text className="text-white font-bold text-sm">Order Book</Text>
+        <Text className="text-app-text font-bold text-sm">Order Book</Text>
         <View className="flex-row items-center">
           {onPricePress ? (
             <Text className="text-[#FF8A00] text-[9px] mr-2">Tap price → limit</Text>
           ) : null}
-          <View className="bg-[#18191C] border border-[#2A2B2F] rounded px-2 py-1 flex-row items-center mr-2">
-            <Text className="text-[#9CA3AF] text-[10px] mr-1">10</Text>
+          <View className="bg-app-card-soft border border-app-border rounded px-2 py-1 flex-row items-center mr-2">
+            <Text className="text-app-muted text-[10px] mr-1">10</Text>
             <Ionicons name="caret-down" size={10} color="#9CA3AF" />
           </View>
           <Ionicons name="options-outline" size={14} color="#9CA3AF" />
@@ -85,18 +85,18 @@ export const OrderBookCard: React.FC<OrderBookCardProps> = ({
       </View>
 
       <View className="flex-row justify-between mb-2">
-        <View className="flex-1 flex-row pr-2 border-r border-[#2A2B2F]">
-          <Text className="text-[#9CA3AF] text-[9px] w-[55%]">Bid (PKR)</Text>
-          <Text className="text-[#9CA3AF] text-[9px] w-[45%] text-right">Qty</Text>
+        <View className="flex-1 flex-row pr-2 border-r border-app-border">
+          <Text className="text-app-muted text-[9px] w-[55%]">Bid (PKR)</Text>
+          <Text className="text-app-muted text-[9px] w-[45%] text-right">Qty</Text>
         </View>
         <View className="flex-1 flex-row pl-2">
-          <Text className="text-[#9CA3AF] text-[9px] w-[55%]">Ask (PKR)</Text>
-          <Text className="text-[#9CA3AF] text-[9px] w-[45%] text-right">Qty</Text>
+          <Text className="text-app-muted text-[9px] w-[55%]">Ask (PKR)</Text>
+          <Text className="text-app-muted text-[9px] w-[45%] text-right">Qty</Text>
         </View>
       </View>
 
       <View className="flex-row justify-between">
-        <View className="flex-1 pr-2 border-r border-[#2A2B2F]">
+        <View className="flex-1 pr-2 border-r border-app-border">
           {displayBids.map((bid, i) => renderRow(bid.price, bid.qty, 'bid', i))}
         </View>
         <View className="flex-1 pl-2">
@@ -104,11 +104,11 @@ export const OrderBookCard: React.FC<OrderBookCardProps> = ({
         </View>
       </View>
 
-      <View className="flex-row justify-between items-center mt-1 pt-1.5 border-t border-[#2A2B2F]">
+      <View className="flex-row justify-between items-center mt-1 pt-1.5 border-t border-app-border">
         <Text className="text-[#0ECB81] text-sm font-bold">{data.bids[0].price.toFixed(2)}</Text>
         <View className="items-center">
           <Text className="text-[#0ECB81] text-[9px]">{data.spread.value.toFixed(2)} ({data.spread.percent}%)</Text>
-          <Text className="text-[#9CA3AF] text-[8px]">Spread</Text>
+          <Text className="text-app-muted text-[8px]">Spread</Text>
         </View>
         <Text className="text-[#F6465D] text-sm font-bold">{data.asks[0].price.toFixed(2)}</Text>
       </View>

@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import Svg, { Line, Rect, Text as SvgText } from 'react-native-svg';
 import { FuturesCandle, FuturesContract, MOCK_FUTURES_CANDLES, formatFuturesPrice } from '../../data/mockFutures';
+import { ChartRulerLayer, ChartRulerToggle, useChartRuler } from '../charts/ChartRulerOverlay';
+
+const CHART_WIDTH = 280;
+const CHART_HEIGHT = 180;
+const CHART_PADDING_TOP = 18;
+const CHART_PADDING_BOTTOM = 22;
+const CHART_PADDING_X = 8;
+const CHART_MIN_PRICE = 104200;
+const CHART_MAX_PRICE = 105200;
 
 const TIMEFRAMES = ['1m', '5m', '15m', '1H', '4H', '1D'];
 
@@ -25,25 +33,42 @@ export const FuturesChartPanel: React.FC<FuturesChartPanelProps> = ({
   candles = MOCK_FUTURES_CANDLES,
 }) => {
   const [timeframe, setTimeframe] = useState('15m');
+  const { enabled: rulerEnabled, toggle: toggleRuler } = useChartRuler();
+  const [chartLayout, setChartLayout] = useState({ width: CHART_WIDTH, height: CHART_HEIGHT });
+
+  const rulerBounds = {
+    width: chartLayout.width,
+    height: chartLayout.height,
+    paddingTop: CHART_PADDING_TOP,
+    paddingBottom: CHART_PADDING_BOTTOM,
+    paddingX: CHART_PADDING_X,
+    minPrice: CHART_MIN_PRICE,
+    maxPrice: CHART_MAX_PRICE,
+  };
+  const scaledBarStep = Math.max(8, Math.round(13 * (chartLayout.width / CHART_WIDTH)));
 
   return (
-    <View className="mx-4 bg-[#111214] border border-[#2A2B2F] rounded-xl p-2 mb-3">
+    <View className="mx-4 bg-app-card border border-app-border rounded-xl p-2 mb-3">
       <View className="flex-row items-center mb-2 px-1">
-        <Text className="text-white text-xs font-semibold mr-2">{timeframe}</Text>
-        <Ionicons name="bar-chart-outline" size={12} color="#9CA3AF" style={{ marginRight: 6 }} />
-        <Text className="text-[#9CA3AF] text-[11px] mr-2">Indicators</Text>
-        <Ionicons name="expand-outline" size={12} color="#9CA3AF" style={{ marginLeft: 'auto' }} />
+        <Text className="text-app-text text-xs font-semibold mr-2">{timeframe}</Text>
+        <Text className="text-app-muted text-[11px] mr-2">Indicators</Text>
+        <View style={{ marginLeft: 'auto', flexDirection: 'row', alignItems: 'center' }}>
+          <ChartRulerToggle enabled={rulerEnabled} onToggle={toggleRuler} />
+          {rulerEnabled ? (
+            <Text className="text-app-muted text-[10px] ml-1">Drag chart</Text>
+          ) : null}
+        </View>
       </View>
 
       <View className="flex-row items-center mb-1 px-1">
-        <Text className="text-[#9CA3AF] text-[10px]">
+        <Text className="text-app-muted text-[10px]">
           {contract.symbol} · {timeframe} · {contract.exchange}
         </Text>
         <View className="w-1.5 h-1.5 rounded-full bg-[#0ECB81] ml-1" />
       </View>
 
       <View className="flex-row items-center mb-2 px-1">
-        <Text className="text-white text-xs font-semibold mr-1">
+        <Text className="text-app-text text-xs font-semibold mr-1">
           {formatFuturesPrice(contract.markPrice)}
         </Text>
         <Text className={`text-[10px] ${contract.isPositive ? 'text-[#0ECB81]' : 'text-[#F6465D]'}`}>
@@ -52,8 +77,8 @@ export const FuturesChartPanel: React.FC<FuturesChartPanelProps> = ({
         </Text>
       </View>
 
-      <View className="w-full h-[180px]">
-        <Svg width="100%" height="100%" viewBox="0 0 280 180" preserveAspectRatio="none">
+      <View className="w-full h-[180px] relative">
+        <Svg width="100%" height="100%" viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`} preserveAspectRatio="none">
           {Y_AXIS_LABELS.map((label) => (
             <React.Fragment key={label.y}>
               <Line
@@ -110,6 +135,21 @@ export const FuturesChartPanel: React.FC<FuturesChartPanelProps> = ({
             </React.Fragment>
           ))}
         </Svg>
+        <View
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+          onLayout={(e) => {
+            const { width, height } = e.nativeEvent.layout;
+            setChartLayout({ width, height });
+          }}
+        >
+          <ChartRulerLayer
+            enabled={rulerEnabled}
+            bounds={rulerBounds}
+            barStepPx={scaledBarStep}
+            timeframeLabel={timeframe}
+            priceDecimals={0}
+          />
+        </View>
       </View>
 
       <ScrollableTimeframes active={timeframe} onChange={setTimeframe} />
@@ -128,7 +168,7 @@ function ScrollableTimeframes({
     <View className="flex-row items-center mt-2 px-1">
       {TIMEFRAMES.map((tf) => (
         <TouchableOpacity key={tf} onPress={() => onChange(tf)} className="mr-3">
-          <Text className={`text-xs font-semibold ${active === tf ? 'text-[#FF8A00]' : 'text-[#9CA3AF]'}`}>
+          <Text className={`text-xs font-semibold ${active === tf ? 'text-[#FF8A00]' : 'text-app-muted'}`}>
             {tf}
           </Text>
         </TouchableOpacity>

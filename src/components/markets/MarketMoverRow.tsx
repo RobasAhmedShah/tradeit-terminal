@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Stock } from '../../types';
 import { SparklinePlaceholder } from '../ui/SparklinePlaceholder';
+import { StockLogo } from '../ui/StockLogo';
 import { formatVolume } from '../../utils/marketsHub';
 
 interface MarketMoverRowProps {
@@ -28,22 +29,28 @@ export function MarketMoverRow({ stock, variant, onPress, pulse }: MarketMoverRo
       ? 'text-[#0ECB81]'
       : variant === 'loser'
         ? 'text-[#F6465D]'
-        : 'text-[#9CA3AF]';
+        : 'text-app-muted';
   const sign = stock.isPositive ? '+' : '';
 
   return (
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.7}
-      className="flex-row items-center px-4 py-3 border-b border-[#2A2B2F]"
+      className="flex-row items-center px-4 py-3 border-b border-app-border"
     >
-      <View className="w-10 h-10 rounded-full bg-[#18191C] items-center justify-center mr-3 border border-[#2A2B2F]">
-        <Text className="text-white text-xs font-bold">{stock.symbol.charAt(0)}</Text>
+      <View className="mr-3">
+        <StockLogo
+          symbol={stock.symbol}
+          logoUrl={stock.logoUrl}
+          logoColor={stock.logoColor}
+          website={stock.website}
+          size={40}
+        />
       </View>
 
       <View className="flex-1 mr-2">
-        <Text className="text-white font-semibold text-[13px]">{stock.symbol}</Text>
-        <Text className="text-[#5C6068] text-[11px] mt-0.5" numberOfLines={1}>
+        <Text className="text-app-text font-semibold text-[13px]">{stock.symbol}</Text>
+        <Text className="text-app-muted text-[11px] mt-0.5" numberOfLines={1}>
           {stock.name}
         </Text>
       </View>
@@ -53,7 +60,7 @@ export function MarketMoverRow({ stock, variant, onPress, pulse }: MarketMoverRo
       </View>
 
       <View className="items-end mr-3 min-w-[72px]">
-        <Animated.Text style={{ opacity }} className="text-white font-semibold text-[13px]">
+        <Animated.Text style={{ opacity }} className="text-app-text font-semibold text-[13px]">
           Rs {stock.price.toFixed(2)}
         </Animated.Text>
         <Text className={`text-[11px] font-semibold mt-0.5 ${changeColor}`}>
@@ -63,8 +70,8 @@ export function MarketMoverRow({ stock, variant, onPress, pulse }: MarketMoverRo
       </View>
 
       <View className="items-end min-w-[48px]">
-        <Text className="text-[#555] text-[9px] uppercase">Vol</Text>
-        <Text className="text-[#9CA3AF] text-[11px] font-medium">{formatVolume(stock.volume)}</Text>
+        <Text className="text-app-muted text-[9px] uppercase">Vol</Text>
+        <Text className="text-app-muted text-[11px] font-medium">{formatVolume(stock.volume)}</Text>
       </View>
     </TouchableOpacity>
   );

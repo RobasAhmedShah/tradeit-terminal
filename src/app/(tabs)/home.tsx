@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import { FlatList, View, Text, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -37,6 +38,7 @@ type ListItem =
 /* ─── screen ──────────────────────────────────────────────── */
 export default function HomeScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const { watchlist } = useWatchlist();
   const {
     getFeed,
@@ -157,9 +159,9 @@ export default function HomeScreen() {
             onViewAll={() => router.push('/markets?tab=watchlist')}
           />
           {watchlist.length === 0 ? (
-            <View className="mx-4 py-6 items-center bg-[#111214] border border-[#2A2B2F] rounded-xl mb-2">
-              <Ionicons name="star-outline" size={28} color="#444" />
-              <Text className="text-[#8A8D93] text-sm mt-2 text-center px-4">
+            <View className="mx-4 py-6 items-center bg-app-card border border-app-border rounded-xl mb-2">
+              <Ionicons name="star-outline" size={28} color={colors.mutedDarker} />
+              <Text className="text-app-muted text-sm mt-2 text-center px-4">
                 Star stocks from Trade or any stock page — they appear here instantly.
               </Text>
               <TouchableOpacity onPress={() => router.push('/(tabs)/trade')} className="mt-3">
@@ -188,7 +190,7 @@ export default function HomeScreen() {
         <>
           <View className="mt-5 mb-4">
             <View className="flex-row items-end justify-between px-4 mb-3">
-              <Text className="text-white text-base font-bold">Top Gainers</Text>
+              <Text className="text-app-text text-base font-bold">Top Gainers</Text>
               <TouchableOpacity
                 onPress={() => router.push('/markets?tab=movers&type=gainers')}
                 className="flex-row items-center"
@@ -214,7 +216,7 @@ export default function HomeScreen() {
 
           <View className="mb-2">
             <View className="flex-row items-end justify-between px-4 mb-3">
-              <Text className="text-white text-base font-bold">Top Losers</Text>
+              <Text className="text-app-text text-base font-bold">Top Losers</Text>
               <TouchableOpacity
                 onPress={() => router.push('/markets?tab=movers&type=losers')}
                 className="flex-row items-center"
@@ -244,9 +246,15 @@ export default function HomeScreen() {
 
   /* ── sticky news-tabs block ──────────────────────────────── */
   const renderNewsTabs = () => (
-    <View style={{ backgroundColor: '#050505', borderBottomWidth: 1, borderBottomColor: '#2A2B2F' }}>
-      <View className="flex-row items-center justify-between px-4 pt-5 pb-1">
-        <Text className="text-white text-lg font-bold">Community</Text>
+    <View
+      style={{
+        backgroundColor: colors.card,
+        borderBottomWidth: 1,
+        borderBottomColor: colors.border,
+      }}
+    >
+      <View className="flex-row items-center justify-between px-4 pt-4 pb-1">
+        <Text className="text-app-text text-lg font-bold">Community</Text>
         <TouchableOpacity onPress={() => router.push('/markets?tab=news')} className="flex-row items-center">
           <Text className="text-[#FF8A00] text-sm mr-1">View all</Text>
           <Ionicons name="chevron-forward" size={14} color="#FF8A00" />
@@ -256,7 +264,7 @@ export default function HomeScreen() {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 10 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 2 }}
       >
         {COMMUNITY_FEED_TABS.map((cat) => {
           const active = activeCategory === cat;
@@ -268,14 +276,14 @@ export default function HomeScreen() {
                 marginRight: 24,
                 paddingBottom: 10,
                 borderBottomWidth: 2,
-                borderBottomColor: active ? '#FF8A00' : 'transparent',
+                borderBottomColor: active ? colors.primary : 'transparent',
               }}
             >
               <Text
                 style={{
                   fontSize: 14,
                   fontWeight: active ? '700' : '500',
-                  color: active ? '#FF8A00' : '#9CA3AF',
+                  color: active ? colors.primary : colors.muted,
                 }}
               >
                 {cat}
@@ -290,10 +298,10 @@ export default function HomeScreen() {
   const renderEmptyDiscover = () => (
     <View className="flex-1 px-4 pt-2">
       <DiscoverBalanceStrip />
-      <View className="mt-8 items-center py-10 px-6 bg-[#111214] border border-[#2A2B2F] rounded-2xl">
-        <Ionicons name="grid-outline" size={36} color="#444" />
-        <Text className="text-white text-base font-bold mt-4">All widgets hidden</Text>
-        <Text className="text-[#8A8D93] text-sm text-center mt-2 leading-5">
+      <View className="mt-8 items-center py-10 px-6 bg-app-card border border-app-border rounded-2xl">
+        <Ionicons name="grid-outline" size={36} color={colors.mutedDarker} />
+        <Text className="text-app-text text-base font-bold mt-4">All widgets hidden</Text>
+        <Text className="text-app-muted text-sm text-center mt-2 leading-5">
           Turn on Watchlist, Movers, or Community from Customize.
         </Text>
         <TouchableOpacity
@@ -350,7 +358,7 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#050505]" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-app-bg" edges={['top']}>
       <AppHeader
         variant="discover"
         onCustomize={() => {

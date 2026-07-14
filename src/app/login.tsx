@@ -122,7 +122,8 @@ export default function LoginScreen() {
             resizeMode="contain"
           />
         </View>
-        <Text className="text-white text-4xl font-extrabold">TradeIt</Text>
+        <Text className="text-white text-4xl font-extrabold">
+          TradeIt</Text>
       </View>
 
       <KeyboardAvoidingView

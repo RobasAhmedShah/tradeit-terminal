@@ -24,12 +24,9 @@ export function PortfolioActivityList({ items, compact = false }: PortfolioActiv
       router.push(`/portfolio/holding/${item.symbol}`);
       return;
     }
-    if (item.type === 'deposit') {
-      router.push('/deposit');
+    if (item.type === 'deposit' || item.type === 'withdraw' || item.type === 'transfer') {
+      router.push('/portfolio/activity');
       return;
-    }
-    if (item.type === 'withdraw') {
-      router.push('/withdraw');
     }
   };
 

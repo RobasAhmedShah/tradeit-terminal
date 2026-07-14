@@ -25,6 +25,7 @@ import { OrderDetailSheetProvider } from '../context/OrderDetailSheetContext';
 import { PriceAlertMonitor } from '../components/system/PriceAlertMonitor';
 import { OrderFillMonitor } from '../components/system/OrderFillMonitor';
 import { FuturesOrderFillMonitor } from '../components/system/FuturesOrderFillMonitor';
+import { SplashGate } from '../components/ui/SplashGate';
 import '../../global.css';
 
 function ThemedAppShell() {
@@ -50,6 +51,7 @@ function ThemedAppShell() {
             <AppAlertProvider>
               <MarketPricesProvider>
                 <AuthProvider>
+                  <SplashGate>
                   <WatchlistProvider>
                     <PortfolioProvider>
                       <FuturesProvider>
@@ -117,6 +119,7 @@ function ThemedAppShell() {
                       </FuturesProvider>
                     </PortfolioProvider>
                   </WatchlistProvider>
+                  </SplashGate>
                 </AuthProvider>
               </MarketPricesProvider>
             </AppAlertProvider>

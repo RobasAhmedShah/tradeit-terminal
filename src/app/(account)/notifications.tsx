@@ -127,6 +127,11 @@ export default function NotificationsScreen() {
       return;
     }
 
+    if (notif.type === 'system') {
+      router.push('/portfolio/activity');
+      return;
+    }
+
     if (notif.symbol) {
       router.push(`/stock/${notif.symbol}`);
       return;

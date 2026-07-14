@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useTheme } from '../../context/ThemeContext';
 
 import { usePortfolio } from '../../context/PortfolioContext';
@@ -25,6 +26,7 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({
   const { summary, getHolding } = usePortfolio();
   const { getStock } = useMarketPrices();
   const { showAlert } = useAppAlert();
+  const router = useRouter();
   const { colors } = useTheme();
   const [side, setSide] = useState<'buy' | 'sell'>('buy');
   const [orderType, setOrderType] = useState('Market');
@@ -145,10 +147,17 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({
         return;
       }
     } else if (totalCost > buyingPower) {
+      const gap = Math.ceil(totalCost - buyingPower);
       showAlert(
         'Insufficient buying power',
-        `You need Rs ${formatPortfolioRs(totalCost)} but only have Rs ${formatPortfolioRs(buyingPower)} available. Deposit funds first.`,
-        undefined,
+        `You need Rs ${formatPortfolioRs(totalCost)} but only have Rs ${formatPortfolioRs(buyingPower)} available.`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Deposit',
+            onPress: () => router.push(`/deposit?amount=${gap}`),
+          },
+        ],
         { tone: 'warning' }
       );
       return;

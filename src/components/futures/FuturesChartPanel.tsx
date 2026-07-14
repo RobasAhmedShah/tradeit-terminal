@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import Svg, { Line, Rect, Text as SvgText } from 'react-native-svg';
 import { FuturesCandle, FuturesContract, MOCK_FUTURES_CANDLES, formatFuturesPrice } from '../../data/mockFutures';
@@ -26,15 +26,22 @@ const Y_AXIS_LABELS = [
 interface FuturesChartPanelProps {
   contract: FuturesContract;
   candles?: FuturesCandle[];
+  onRulerActiveChange?: (active: boolean) => void;
 }
 
 export const FuturesChartPanel: React.FC<FuturesChartPanelProps> = ({
   contract,
   candles = MOCK_FUTURES_CANDLES,
+  onRulerActiveChange,
 }) => {
   const [timeframe, setTimeframe] = useState('15m');
   const { enabled: rulerEnabled, toggle: toggleRuler } = useChartRuler();
   const [chartLayout, setChartLayout] = useState({ width: CHART_WIDTH, height: CHART_HEIGHT });
+
+  useEffect(() => {
+    onRulerActiveChange?.(rulerEnabled);
+    return () => onRulerActiveChange?.(false);
+  }, [rulerEnabled, onRulerActiveChange]);
 
   const rulerBounds = {
     width: chartLayout.width,
@@ -55,7 +62,7 @@ export const FuturesChartPanel: React.FC<FuturesChartPanelProps> = ({
         <View style={{ marginLeft: 'auto', flexDirection: 'row', alignItems: 'center' }}>
           <ChartRulerToggle enabled={rulerEnabled} onToggle={toggleRuler} />
           {rulerEnabled ? (
-            <Text className="text-app-muted text-[10px] ml-1">Drag chart</Text>
+            <Text className="text-app-muted text-[10px] ml-1">Touch chart</Text>
           ) : null}
         </View>
       </View>

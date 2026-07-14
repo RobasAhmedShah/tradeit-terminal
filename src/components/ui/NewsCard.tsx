@@ -68,7 +68,7 @@ export const NewsCard: React.FC<Props> = ({
 
   return (
     <TouchableOpacity activeOpacity={0.92} onPress={onOpen} disabled={!onOpen}>
-    <View className="bg-app-bg border-b border-app-border">
+    <View className="bg-app-bg border-b border-app-border ">
 
       {/* orange top stripe for featured */}
       {featured && <View style={{ height: 3, backgroundColor: '#FF8A00' }} />}
@@ -257,7 +257,6 @@ export const NewsCard: React.FC<Props> = ({
       <View style={{
         flexDirection: 'row', alignItems: 'center',
         paddingHorizontal: 16, paddingVertical: 10,
-        borderTopWidth: 1, borderTopColor: '#111',
       }}>
         {/* comments */}
         <TouchableOpacity
@@ -320,3 +319,7 @@ export const NewsCard: React.FC<Props> = ({
     </TouchableOpacity>
   );
 };
+
+
+
+

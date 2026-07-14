@@ -25,6 +25,7 @@ export const StockLineChartPlaceholder: React.FC<StockLineChartPlaceholderProps>
 
   useEffect(() => {
     onRulerActiveChange?.(rulerEnabled);
+    return () => onRulerActiveChange?.(false);
   }, [rulerEnabled, onRulerActiveChange]);
 
   const { path, min, max } = useMemo(() => {

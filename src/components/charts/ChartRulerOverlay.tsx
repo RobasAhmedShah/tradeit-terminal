@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Svg, { Line, Circle } from 'react-native-svg';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import {
   ChartRulerBounds,
   ChartRulerPoint,
@@ -31,10 +31,10 @@ export const ChartRulerToggle: React.FC<{
   <TouchableOpacity
     onPress={onToggle}
     accessibilityRole="button"
-    accessibilityLabel="Chart crosshair"
+    accessibilityLabel="Chart ruler"
     className={`p-1.5 rounded-md ${enabled ? 'bg-[#2962FF]/20' : ''}`}
   >
-    <Ionicons name="add-outline" size={18} color={enabled ? CROSSHAIR : '#9CA3AF'} />
+    <MaterialCommunityIcons name="ruler" size={18} color={enabled ? CROSSHAIR : '#9CA3AF'} />
   </TouchableOpacity>
 );
 

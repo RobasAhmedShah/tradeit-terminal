@@ -15,7 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
-import Svg, { Defs, LinearGradient, Stop, Rect, Circle } from 'react-native-svg';
+import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 
@@ -23,37 +23,61 @@ const PRIMARY = '#FF8A00';
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 const HERO_HEIGHT = Math.round(SCREEN_H * 0.42);
 
-/** On-brand abstract gradient banner (SVG so we avoid extra deps). */
-const HeroArt: React.FC<{ width: number; height: number }> = ({ width, height }) => (
-  <Svg width={width} height={height} style={{ position: 'absolute', top: 0, left: 0 }}>
-    <Defs>
-      <LinearGradient id="hero" x1="0" y1="0" x2="1" y2="1">
-        <Stop offset="0" stopColor="#FFB347" />
-        <Stop offset="0.45" stopColor={PRIMARY} />
-        <Stop offset="1" stopColor="#C25E00" />
-      </LinearGradient>
-      <LinearGradient id="streak" x1="0" y1="0" x2="0" y2="1">
-        <Stop offset="0" stopColor="#FFFFFF" stopOpacity="0.0" />
-        <Stop offset="0.5" stopColor="#FFFFFF" stopOpacity="0.28" />
-        <Stop offset="1" stopColor="#FFFFFF" stopOpacity="0.0" />
-      </LinearGradient>
-    </Defs>
-    <Rect x="0" y="0" width={width} height={height} fill="url(#hero)" />
-    {/* Soft vertical light streaks */}
-    <Rect x={width * 0.12} y={-20} width={26} height={height + 40} fill="url(#streak)" transform={`rotate(8 ${width * 0.12} ${height / 2})`} />
-    <Rect x={width * 0.34} y={-20} width={44} height={height + 40} fill="url(#streak)" transform={`rotate(8 ${width * 0.34} ${height / 2})`} />
-    <Rect x={width * 0.58} y={-20} width={30} height={height + 40} fill="url(#streak)" transform={`rotate(8 ${width * 0.58} ${height / 2})`} />
-    <Rect x={width * 0.78} y={-20} width={52} height={height + 40} fill="url(#streak)" transform={`rotate(8 ${width * 0.78} ${height / 2})`} />
-    {/* Glow blobs for depth */}
-    <Circle cx={width * 0.8} cy={height * 0.25} r={90} fill="#FFFFFF" opacity={0.08} />
-    <Circle cx={width * 0.2} cy={height * 0.7} r={70} fill="#000000" opacity={0.1} />
-  </Svg>
-);
+/**
+ * Previous TradeIt orange hero, with straight equal-width light bars (no tilt).
+ */
+const HeroArt: React.FC<{ width: number; height: number }> = ({ width, height }) => {
+  const BAR_COUNT = 6;
+  const gap = 4;
+  const barW = (width - gap * (BAR_COUNT - 1)) / BAR_COUNT;
+  const glow = (i: number) => {
+    const phase = i % 4;
+    if (phase === 0) return 0.32;
+    if (phase === 1) return 0.14;
+    if (phase === 2) return 0.06;
+    return 0.22;
+  };
+
+  return (
+    <Svg width={width} height={height} style={{ position: 'absolute', top: 0, left: 0 }}>
+      <Defs>
+        <LinearGradient id="hero" x1="0" y1="0" x2="1" y2="1">
+          <Stop offset="0" stopColor="#FFB347" />
+          <Stop offset="0.45" stopColor={PRIMARY} />
+          <Stop offset="1" stopColor="#C25E00" />
+        </LinearGradient>
+        <LinearGradient id="streak" x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0" stopColor="#FFFFFF" stopOpacity="0" />
+          <Stop offset="0.45" stopColor="#FFFFFF" stopOpacity="0.55" />
+          <Stop offset="1" stopColor="#FFFFFF" stopOpacity="0" />
+        </LinearGradient>
+      </Defs>
+
+      <Rect x="0" y="0" width={width} height={height} fill="url(#hero)" />
+
+      {Array.from({ length: BAR_COUNT }).map((_, i) => {
+        const x = i * (barW + gap);
+        const opacity = glow(i);
+        return (
+          <Rect
+            key={i}
+            x={x}
+            y={0}
+            width={barW}
+            height={height}
+            fill="url(#streak)"
+            opacity={opacity}
+          />
+        );
+      })}
+    </Svg>
+  );
+};
 
 export default function LoginScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const { login, ready } = useAuth();
   const [email, setEmail] = useState('guesttrader@email.com');
   const [password, setPassword] = useState('demo123');
@@ -82,44 +106,53 @@ export default function LoginScreen() {
   }
 
   return (
-    <View className="flex-1 bg-app-bg">
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <StatusBar style="light" />
 
-      {/* Hero banner */}
-      <View style={{ height: HERO_HEIGHT, width: SCREEN_W }}>
+      {/* Full-bleed straight vertical bars behind everything */}
+      <View style={{ position: 'absolute', top: 0, left: 0, width: SCREEN_W, height: HERO_HEIGHT }}>
         <HeroArt width={SCREEN_W} height={HERO_HEIGHT} />
-        <View style={{ paddingTop: insets.top + 12 }} className="px-6 flex-row items-center">
-          <View className="w-9 h-9 rounded-lg items-center justify-center mr-2.5 overflow-hidden">
-            <Image
-              source={require('../../assets/tradit-logo.png')}
-              style={{ width: 34, height: 34 }}
-              resizeMode="contain"
-            />
-          </View>
-          <Text className="text-white text-2xl font-extrabold">TradeIt</Text>
+      </View>
+
+      <View style={{ paddingTop: insets.top + 12 }} className="px-6 flex-row items-center">
+        <View className="w-15 h-15 rounded-lg items-center justify-center mr-2.5 overflow-hidden">
+          <Image
+            source={require('../../assets/tradit-logo.png')}
+            style={{ width: 70, height: 70 }}
+            resizeMode="contain"
+          />
         </View>
+        <Text className="text-white text-4xl font-extrabold">TradeIt</Text>
       </View>
 
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        className="flex-1"
-        style={{ marginTop: -28 }}
+        style={{ flex: 1, marginTop: Math.round(HERO_HEIGHT * 0.48) }}
       >
         <ScrollView
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ flexGrow: 1 }}
+          contentContainerStyle={{ paddingBottom: 8 }}
         >
+          {/* Upright glass sheet — rounded top only, sides stay straight */}
           <View
-            className="flex-1 bg-app-bg px-6 pt-8"
-            style={{ borderTopLeftRadius: 28, borderTopRightRadius: 28 }}
+            style={{
+              borderTopLeftRadius: 32,
+              borderTopRightRadius: 32,
+              paddingHorizontal: 24,
+              paddingTop: 40,
+              paddingBottom: insets.bottom + 24,
+              backgroundColor: isDark ? 'rgba(17,18,20,0.88)' : 'rgba(244,245,247,0.92)',
+              borderTopWidth: 1,
+              borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+            }}
           >
             <Text className="text-app-text text-[28px] font-extrabold">Welcome back</Text>
             <Text className="text-app-muted text-sm mt-1.5">
               Please enter your credentials
             </Text>
 
-            <View className="mt-7">
+            <View className="mt-8">
               <TextInput
                 value={email}
                 onChangeText={setEmail}
@@ -182,14 +215,12 @@ export default function LoginScreen() {
               </TouchableOpacity>
             </View>
 
-            {/* Divider */}
             <View className="flex-row items-center my-7">
               <View className="flex-1 h-px bg-app-border" />
               <Text className="text-app-muted text-xs mx-3">or continue with</Text>
               <View className="flex-1 h-px bg-app-border" />
             </View>
 
-            {/* Social buttons */}
             <View className="flex-row items-center justify-center">
               <TouchableOpacity
                 onPress={handleLogin}
@@ -207,7 +238,7 @@ export default function LoginScreen() {
               </TouchableOpacity>
             </View>
 
-            <View className="flex-row items-center justify-center mt-8 mb-6">
+            <View className="flex-row items-center justify-center mt-8">
               <Text className="text-app-muted text-[13px]">Don&apos;t have an account? </Text>
               <TouchableOpacity onPress={handleLogin}>
                 <Text className="text-[#FF8A00] text-[13px] font-bold">Sign up</Text>

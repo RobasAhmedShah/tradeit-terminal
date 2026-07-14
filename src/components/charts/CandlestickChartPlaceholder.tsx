@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
 import Svg, { Line, Rect, G } from 'react-native-svg';
 import { Stock } from '../../types';
@@ -7,6 +7,7 @@ import { ChartRulerLayer, ChartRulerToggle, useChartRuler } from './ChartRulerOv
 
 interface CandlestickChartPlaceholderProps {
   stock: Stock;
+  onRulerActiveChange?: (active: boolean) => void;
 }
 
 const TIMEFRAMES: ChartTimeframe[] = ['1m', '15m', '1H', '4H', '1D'];
@@ -18,7 +19,10 @@ const BAR_STEP_PX: Record<ChartTimeframe, number> = {
   '1D': 15,
 };
 
-export const CandlestickChartPlaceholder: React.FC<CandlestickChartPlaceholderProps> = ({ stock }) => {
+export const CandlestickChartPlaceholder: React.FC<CandlestickChartPlaceholderProps> = ({
+  stock,
+  onRulerActiveChange,
+}) => {
   const screenWidth = Dimensions.get('window').width;
   const chartWidth = screenWidth - 24;
   const chartHeight = 220;
@@ -27,6 +31,12 @@ export const CandlestickChartPlaceholder: React.FC<CandlestickChartPlaceholderPr
 
   const [timeframe, setTimeframe] = useState<ChartTimeframe>('1D');
   const { enabled: rulerEnabled, toggle: toggleRuler } = useChartRuler();
+
+  useEffect(() => {
+    onRulerActiveChange?.(rulerEnabled);
+    return () => onRulerActiveChange?.(false);
+  }, [rulerEnabled, onRulerActiveChange]);
+
   const candles = useMemo(() => generateCandles(stock, timeframe), [stock.symbol, stock.price, timeframe]);
 
   const prices = candles.flatMap((c) => [c.high, c.low]);

@@ -25,6 +25,7 @@ export default function SpotTradingScreen() {
   const [bookPriceFill, setBookPriceFill] = useState<number | null>(null);
   const [selectedBookPrice, setSelectedBookPrice] = useState<number | null>(null);
   const [booting, setBooting] = useState(true);
+  const [rulerActive, setRulerActive] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setBooting(false), 350);
@@ -65,7 +66,11 @@ export default function SpotTradingScreen() {
     <SafeAreaView className="flex-1 bg-app-bg" edges={['top', 'bottom']}>
       <SpotTradingHeader />
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        scrollEnabled={!rulerActive}
+        contentContainerStyle={{ paddingBottom: 24 }}
+      >
         <View className="mb-3">
           <SpotStockSummary stock={stock} />
         </View>
@@ -77,7 +82,7 @@ export default function SpotTradingScreen() {
         {activeTab === 'Chart' && (
           <>
             <View className="mb-3 px-3">
-              <CandlestickChartPlaceholder stock={stock} />
+              <CandlestickChartPlaceholder stock={stock} onRulerActiveChange={setRulerActive} />
             </View>
 
             <View className="flex-row px-3 gap-2">

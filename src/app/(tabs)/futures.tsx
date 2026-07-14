@@ -56,6 +56,7 @@ export default function FuturesScreen() {
   const [bookPriceFill, setBookPriceFill] = useState<number | null>(null);
   const [selectedBookPrice, setSelectedBookPrice] = useState<number | null>(null);
   const [prefsReady, setPrefsReady] = useState(false);
+  const [rulerActive, setRulerActive] = useState(false);
 
   const contract: FuturesContract =
     getContractBySymbol(selectedSymbol) ?? contracts[0] ?? DEFAULT_FUTURES_CONTRACT;
@@ -114,7 +115,7 @@ export default function FuturesScreen() {
       case 'chart':
         return (
           <>
-            <FuturesChartPanel contract={contract} />
+            <FuturesChartPanel contract={contract} onRulerActiveChange={setRulerActive} />
             <View className="flex-row mx-4 gap-2 mb-3 items-stretch">
               <View className="flex-1">
                 <FuturesOrderBook
@@ -167,6 +168,7 @@ export default function FuturesScreen() {
       <ScrollView
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        scrollEnabled={!rulerActive}
         contentContainerStyle={{ paddingBottom: 88 }}
       >
         <FuturesContractHeader
